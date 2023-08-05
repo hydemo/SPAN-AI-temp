@@ -1,3 +1,4 @@
+import { LoadingIcon } from '../icons';
 import './button.scss';
 
 export type ButtonType = 'primary' | 'danger' | null;
@@ -14,6 +15,7 @@ type Props = {
   disabled?: boolean;
   tabIndex?: number;
   autoFocus?: boolean;
+  loading?: boolean;
 };
 
 export function IconButton({
@@ -28,9 +30,11 @@ export function IconButton({
   autoFocus,
   icon,
   text,
+  loading,
 }: Props) {
   return (
     <button
+      type="button"
       className={
         'icon-button' +
         ` ${bordered && 'border'} ${shadow && 'shadow'} ${
@@ -39,7 +43,7 @@ export function IconButton({
       }
       onClick={onClick}
       title={title}
-      disabled={disabled}
+      disabled={disabled || loading}
       role="button"
       tabIndex={tabIndex}
       autoFocus={autoFocus}

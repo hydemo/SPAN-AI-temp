@@ -1,34 +1,66 @@
+import { useRequest } from 'ahooks';
+
 import { ChatInput } from './ChatInput';
 import { Header } from './Header';
+import { useScrollToBottom } from './useScrollToBottom';
 
 import { ChatMessageList } from '@/components/ChatMessageList';
+import { MessageInfo } from '@/components/ChatMessageList/types';
+import { getMessages } from '@/services/apiList/chat';
+
 import './content.scss';
 
-const messages: MessageInfo[] = [
-  {
-    role: 'user',
-    content: '你好',
-    date: '2023-08-04 19:16:17',
-  },
-  {
-    role: 'agent',
-    content: '我是 ChatGPT',
-    date: '2023-08-05 19:16:17',
-  },
-];
+type Props = {
+  chatId: string;
+  refreshChats: () => void;
+};
 
-export const Content = () => {
+export const Content = ({ chatId, refreshChats }: Props) => {
+  const { scrollRef, setAutoScroll } = useScrollToBottom();
+  const onChatBodyScroll = (e: HTMLElement) => {
+    const isTouchBottom = e.scrollTop + e.clientHeight >= e.scrollHeight - 10;
+    // setHitBottom(isTouchBottom);
+    setAutoScroll(isTouchBottom);
+  };
+
+  const { data: messages, refresh: refreshMessages } = useRequest<
+    MessageInfo[],
+    any
+  >(
+    () =>
+      getMessages({
+        chatId,
+      }),
+    {
+      refreshDeps: [chatId],
+    },
+  );
+
   return (
     <div className="window-content">
       <div className="chat">
         <Header
-          topic="Conversation Summary: Hello Ivan Generate Title"
+          topic={messages?.[0]?.content || '新的聊天'}
           messages={messages}
         />
-        <div className="chat-body">
+        <div
+          className="chat-body"
+          ref={scrollRef}
+          onScroll={(e) => onChatBodyScroll(e.currentTarget)}
+          // onWheel={(e) => setAutoScroll(e.deltaY > 0)}
+          onTouchStart={() => {
+            setAutoScroll(false);
+          }}
+        >
           <ChatMessageList messages={messages} />
         </div>
-        <ChatInput />
+        <ChatInput
+          refreshChats={refreshChats}
+          refreshMessages={refreshMessages}
+          chatId={chatId}
+          messages={messages}
+          setAutoScroll={setAutoScroll}
+        />
       </div>
     </div>
   );

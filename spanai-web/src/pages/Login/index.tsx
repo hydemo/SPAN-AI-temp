@@ -1,13 +1,13 @@
 import cookies from 'js-cookie';
 import { parse } from 'query-string';
 import { useState } from 'react';
+import { history } from 'umi';
 
 import { IconButton } from '@/components/IconButton';
 import { BotIcon } from '@/components/icons';
 import { login } from '@/services/apiList/user';
 
 import './login.scss';
-import { history } from 'umi';
 
 export default () => {
   const query = parse(history.location.search);
@@ -15,6 +15,10 @@ export default () => {
   const [passwordValue, setPasswordValue] = useState('');
 
   const handleLogin = async () => {
+    if (!emailValue || !passwordValue) {
+      return;
+    }
+
     const msg = await login({
       username: emailValue.trim(),
       password: passwordValue.trim(),
@@ -27,6 +31,12 @@ export default () => {
       history.push((redirect || '/chat') as any);
       // await fetchUserInfo();
       return;
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleLogin();
     }
   };
 
@@ -48,6 +58,7 @@ export default () => {
         onChange={(e) => {
           setEmailValue(e.currentTarget.value);
         }}
+        onKeyDown={handleKeyDown}
         value={emailValue}
       />
       <input
@@ -57,6 +68,7 @@ export default () => {
         onChange={(e) => {
           setPasswordValue(e.currentTarget.value);
         }}
+        onKeyDown={handleKeyDown}
         value={passwordValue}
       />
 

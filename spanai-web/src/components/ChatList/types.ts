@@ -1,5 +1,6 @@
 export type ChatInfo = {
-  title: string;
-  count: number;
-  time: string;
+  _id: string;
+  name: string;
+  count?: number;
+  createdAt: string;
 };

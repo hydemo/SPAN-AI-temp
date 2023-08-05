@@ -43,7 +43,7 @@ export class ConversationService {
   }
 
   async getMessageByChat(chatId: string) {
-    return await this.conversationModel.find({ chat: chatId }).sort({ createdAt: -1 });
+    return await this.conversationModel.find({ chat: chatId });
   }
 
   async sendGPTMessage(chatId: string, content: string) {
@@ -66,6 +66,7 @@ export class ConversationService {
     };
     const newUserConversation = await this.conversationModel.create(newConversation);
     const aiMessage = await this.sendGPTMessage(message.chatId, message.content);
+    console.log(aiMessage);
     const newAIRespnose: CreateConversationDTO = {
       user,
       chat: message.chatId,

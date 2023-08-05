@@ -1,16 +1,33 @@
-import { useDebounceEffect } from 'ahooks';
+import { useDebounceEffect, useRequest } from 'ahooks';
 import { useRef, useState } from 'react';
 
 import { autoGrowTextArea } from './utils';
 
+import { MessageInfo } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
 import { SendWhiteIcon } from '@/components/icons';
 import { LAST_INPUT_KEY } from '@/constant';
+import { sendMessages } from '@/services/apiList/chat';
 
-export const ChatInput = () => {
+type Props = {
+  chatId: string;
+  messages?: MessageInfo[];
+  refreshChats: () => void;
+  refreshMessages: () => void;
+  setAutoScroll: (value: boolean) => void;
+};
+
+export const ChatInput = ({
+  chatId,
+  messages,
+  refreshChats,
+  refreshMessages,
+  setAutoScroll,
+}: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState('');
   const [inputRows, setInputRows] = useState(2);
+  const [loading, setLoading] = useState(false);
 
   useDebounceEffect(
     () => {
@@ -29,8 +46,24 @@ export const ChatInput = () => {
     setUserInput(text);
   };
 
-  const doSubmit = (userInput: string) => {
-    alert('你提交了问题');
+  const doSubmit = async (userInput: string) => {
+    if (userInput.length === 0) {
+      return;
+    }
+    setLoading(true);
+    setAutoScroll(true);
+    try {
+      await sendMessages({
+        content: userInput,
+        model: 'gpt-3.5-turbo',
+        chatId,
+        parent: messages?.[messages?.length - 1]?._id || chatId,
+      });
+      refreshChats();
+      refreshMessages();
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -44,7 +77,14 @@ export const ChatInput = () => {
       e.preventDefault();
       return;
     }
-    if (shouldSubmit(e)) {
+    if (
+      e.key === 'Enter' &&
+      !e.ctrlKey &&
+      !e.metaKey &&
+      !e.altKey &&
+      !e.shiftKey &&
+      userInput.length > 0
+    ) {
       doSubmit(userInput);
       e.preventDefault();
     }
@@ -84,11 +124,13 @@ export const ChatInput = () => {
           }}
         />
         <IconButton
+          loading={loading}
           icon={<SendWhiteIcon />}
           text="发送"
           className="chat-input-send"
           type="primary"
-          // onClick={() => doSubmit(userInput)}
+          disabled={loading || Boolean(userInput.length <= 0)}
+          onClick={() => doSubmit(userInput)}
         />
       </div>
     </div>

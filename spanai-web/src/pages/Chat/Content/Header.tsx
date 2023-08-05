@@ -2,11 +2,13 @@ import { IconButton } from '@/components/IconButton';
 
 type Props = {
   topic: string;
-  messages: any[];
+  messages?: any[];
 };
 
 export const Header = ({ topic = '新的聊天', messages }: Props) => {
-  const isMobile = false;
+  if (!messages) {
+    return;
+  }
 
   return (
     <div className="window-header" data-tauri-drag-region>

@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Inject, Request, UseGuards, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Inject, Request, UseGuards, Body, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SendMessageDTO } from 'src/module/conversation/conversation.dto';
@@ -21,7 +21,7 @@ export class ApiConversationController {
   @Get('/')
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '消息列表', description: '消息列表' })
-  async list(@Param('chatId') chatId: string) {
+  async list(@Query('chatId') chatId: string) {
     return await this.conversationService.getMessageByChat(chatId);
   }
 }

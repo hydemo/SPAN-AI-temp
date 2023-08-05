@@ -1,5 +1,6 @@
-type MessageInfo = {
+export type MessageInfo = {
+  _id: string;
   content: string;
   role: string;
-  date?: string;
+  createdAt: string;
 };

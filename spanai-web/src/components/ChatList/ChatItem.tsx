@@ -1,19 +1,25 @@
-import { DeleteIcon } from '../icons';
+import moment from 'moment';
+
+import { ChatInfo } from './types';
 
 type Props = {
-  selected?: boolean;
-  title: string;
-  count: number;
-  time: string;
+  chatId: string;
+  data: ChatInfo;
+  onSetSelectedChatId: (chatId: string) => void;
 };
 
-export const ChatItem = ({ selected, title, count, time }: Props) => {
-  const handleDelete = () => {};
+export const ChatItem = ({
+  chatId,
+  data: { _id, name = '新的聊天', count = 0, createdAt },
+  onSetSelectedChatId,
+}: Props) => {
+  const selected = chatId === _id;
+  // const handleDelete = () => {};
 
   return (
     <div
       className={`chat-item ${selected && 'chat-item-selected'}`}
-      // onClick={props.onClick}
+      onClick={() => onSetSelectedChatId(_id)}
       // ref={(ele) => {
       //   draggableRef.current = ele;
       //   provided.innerRef(ele);
@@ -22,15 +28,17 @@ export const ChatItem = ({ selected, title, count, time }: Props) => {
       // {...provided.dragHandleProps}
       // title={}
     >
-      <div className={'chat-item-title'}>{title}</div>
+      <div className={'chat-item-title'}>{name}</div>
       <div className={'chat-item-info'}>
         <div className={'chat-item-count'}>{count} 条对话</div>
-        <div className={'chat-item-date'}>{time}</div>
+        <div className={'chat-item-date'}>
+          {moment(createdAt).format('YYYY-MM-DD HH:mm:ss')}
+        </div>
       </div>
 
-      <div className={'chat-item-delete'} onClickCapture={handleDelete}>
+      {/* <div className={'chat-item-delete'} onClickCapture={handleDelete}>
         <DeleteIcon />
-      </div>
+      </div> */}
     </div>
   );
 };
