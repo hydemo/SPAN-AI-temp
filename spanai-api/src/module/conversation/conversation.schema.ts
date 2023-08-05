@@ -14,7 +14,7 @@ export class Conversation {
   // 对话内容
   @Prop()
   content: string;
-  // 发送人 system user
+  // 发送人 assistant user
   @Prop()
   role: string;
   // 模型

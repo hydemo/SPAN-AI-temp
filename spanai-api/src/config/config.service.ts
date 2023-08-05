@@ -90,6 +90,10 @@ export class ConfigService {
       REDIS_PASS: Joi.string().required(),
 
       REDIS_KEYPREFIX: Joi.string().required(),
+
+      OPENAI_BASEURL: Joi.string().required(),
+
+      OPENAI_APIKEY: Joi.string().required(),
     });
 
     const { error, value: validatedEnvConfig } = envVarsSchema.validate(envConfig);
@@ -219,5 +223,13 @@ export class ConfigService {
         `mongodb://${this.envConfig.DATABASE_USER}:${this.envConfig.DATABASE_PWD}` +
         `@${this.envConfig.DATABASE_HOST}:${this.envConfig.DATABASE_PORT}/${this.envConfig.DATABASE_NAME}`,
     };
+  }
+
+  get openAIBaseUrl(): string {
+    return this.envConfig.OPENAI_BASEURL;
+  }
+
+  get openAIApiKey(): string {
+    return this.envConfig.OPENAI_APIKEY;
   }
 }

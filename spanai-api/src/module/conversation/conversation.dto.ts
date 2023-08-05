@@ -20,8 +20,8 @@ export class CreateConversationDTO {
 
   @IsString()
   @Type(() => String)
-  @ApiProperty({ description: '发送方', enum: ['system', 'user'] })
-  readonly role: 'system' | 'user';
+  @ApiProperty({ description: '发送方', enum: ['assistant', 'user'] })
+  readonly role: 'assistant' | 'user';
 
   @IsString()
   @Type(() => String)
@@ -56,4 +56,9 @@ export class SendMessageDTO {
   @Type(() => String)
   @ApiProperty({ description: '父级' })
   readonly parent: string;
+
+  @IsMongoId()
+  @Type(() => String)
+  @ApiProperty({ description: '聊天Id' })
+  readonly chatId: string;
 }

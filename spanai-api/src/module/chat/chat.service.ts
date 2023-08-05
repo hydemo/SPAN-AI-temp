@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { CreateChatDTO, UpdateChatDTO } from './chat.dto';
 import { IChat, Chat } from './chat.schema';
 
 @Injectable()
@@ -34,13 +33,22 @@ export class ChatService {
     return { data, total };
   }
 
-  async create(chat: CreateChatDTO) {
-    await this.chatModel.create(chat);
+  async create(user: string) {
+    await this.chatModel.create({ user });
     return true;
   }
 
-  async update(id: string, chat: UpdateChatDTO) {
-    await this.chatModel.findByIdAndUpdate(id, chat);
+  async getChatsByUser(user: string) {
+    const chats = await this.chatModel.find({ user });
+    if (!chats.length) {
+      const newChat = await this.chatModel.create({ user });
+      return [newChat];
+    }
+    return chats;
+  }
+
+  async update(id: string, name: string) {
+    await this.chatModel.findByIdAndUpdate(id, { name });
     return true;
   }
 }

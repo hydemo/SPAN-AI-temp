@@ -1,13 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+
+import { GPTService } from '../AIHandler/GPT.service';
+import { ChatService } from '../chat/chat.service';
 
 import { CreateConversationDTO, SendMessageDTO, UpdateConversationDTO } from './conversation.dto';
 import { IConversation, Conversation } from './conversation.schema';
 
 @Injectable()
 export class ConversationService {
-  constructor(@InjectModel(Conversation.name) private readonly conversationModel: Model<IConversation>) {}
+  constructor(
+    @InjectModel(Conversation.name) private readonly conversationModel: Model<IConversation>,
+    @Inject(GPTService) private readonly gptService: GPTService,
+    @Inject(ChatService) private readonly chatService: ChatService,
+  ) {}
 
   // 获取员工全部信息
   async list(pagination: any) {
@@ -34,17 +41,39 @@ export class ConversationService {
     return { data, total };
   }
 
-  async sendMessage(user: string, chat: string, message: SendMessageDTO) {
+  async getMessageByChat(chatId: string) {
+    return await this.conversationModel.find({ chat: chatId }).sort({ createdAt: -1 });
+  }
+
+  async sendGPTMessage(chatId: string, content: string) {
+    const messages = await this.getMessageByChat(chatId);
+    if (!messages.length) {
+      await this.chatService.update(chatId, content);
+    }
+    const formatMessages = messages.map((item) => ({ content: item.content, role: item.role }));
+    return await this.gptService.conversation(formatMessages);
+  }
+
+  async sendMessage(user: string, message: SendMessageDTO) {
     const newConversation: CreateConversationDTO = {
       user,
-      chat,
+      chat: message.chatId,
       content: message.content,
       model: message.model,
       parent: message.parent,
       role: 'user',
     };
-    // const response = await this.
-    await this.conversationModel.create(newConversation);
+    const newUserConversation = await this.conversationModel.create(newConversation);
+    const aiMessage = await this.sendGPTMessage(message.chatId, message.content);
+    const newAIRespnose: CreateConversationDTO = {
+      user,
+      chat: message.chatId,
+      content: aiMessage,
+      model: message.model,
+      parent: newUserConversation._id,
+      role: 'assistant',
+    };
+    await this.conversationModel.create(newAIRespnose);
     return true;
   }
 

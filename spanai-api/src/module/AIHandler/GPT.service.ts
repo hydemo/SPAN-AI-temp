@@ -1,23 +1,46 @@
-// import { Injectable } from '@nestjs/common';
-// import { ConfigService } from 'src/config/config.service';
+import { Injectable } from '@nestjs/common';
+import axios from 'axios';
+import { ConfigService } from 'src/config/config.service';
 
-// @Injectable()
-// export class GPTService {
-//   constructor(config: ConfigService) {}
-//   // GPT
+import { OpenaiPath } from './constant';
 
-//   getHeaders() {
-//     const headers: Record<string, string> = {
-//       'Content-Type': 'application/json',
-//       'x-requested-with': 'XMLHttpRequest',
-//     };
+@Injectable()
+export class GPTService {
+  constructor(readonly config: ConfigService) {}
+  // GPT
 
-//     const makeBearer = (token: string) => `Bearer ${token.trim()}`;
+  getHeaders() {
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      'x-requested-with': 'XMLHttpRequest',
+    };
 
-//     // use user's api key first
-//     headers.Authorization = makeBearer(accessStore.token);
-//     return headers;
-//   }
+    const makeBearer = (token: string) => `Bearer ${token}`;
 
-//   // async Conversation(messages: any) {}
-// }
+    // use user's api key first
+    headers.Authorization = makeBearer(this.config.openAIApiKey);
+    return headers;
+  }
+
+  async conversation(messages: any) {
+    const requestPayload = {
+      messages,
+      stream: false,
+      model: 'gpt-3.5-turbo',
+      temperature: 0.5,
+      presence_penalty: 0,
+      frequency_penalty: 0,
+      top_p: 1,
+    };
+    const res = await axios({
+      url: `${this.config.openAIBaseUrl}/${OpenaiPath.ChatPath}`,
+      method: 'POST',
+      data: requestPayload,
+      headers: this.getHeaders(),
+    });
+    if (res.data && res.data.choice) {
+      return res.data.choices[0].message.content;
+    }
+    return '';
+  }
+}

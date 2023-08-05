@@ -11,6 +11,7 @@ import { CMSAdminController } from './controller/cms/admin.controller';
 import { CMSUserController } from './controller/cms/user.controller';
 import { InitModule } from './init/init.module';
 import { AdminModule } from './module/admin/admin.module';
+import { AIHandlerModule } from './module/AIHandler/AIHandler.module';
 import { UserModule } from './module/user/user.module';
 import { CryptoUtil } from './utils/crypto.util';
 import { EmailUtil } from './utils/email.util';
@@ -22,6 +23,7 @@ import { EmailUtil } from './utils/email.util';
     AdminModule,
     UserModule,
     ConfigModule,
+    AIHandlerModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     RedisModule.forRootAsync({
       useFactory: (configService: ConfigService) => configService.redis,
