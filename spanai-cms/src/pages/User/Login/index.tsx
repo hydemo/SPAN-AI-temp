@@ -56,7 +56,7 @@ const Login: React.FC = () => {
 
   const localhostInitialValues = isDev
     ? {
-        username: username || 'span',
+        username: username || 'spanai',
         password: 'admin',
       }
     : {

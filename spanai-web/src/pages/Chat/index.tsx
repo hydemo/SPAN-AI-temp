@@ -1,12 +1,11 @@
-import { Content } from "./Content";
-import { SideBar } from "./SideBar";
-import "./container.scss";
+import { Content } from './Content';
+import { SideBar } from './SideBar';
 
 export default function Chat() {
   return (
-    <div className="container">
+    <>
       <SideBar />
       <Content />
-    </div>
+    </>
   );
 }

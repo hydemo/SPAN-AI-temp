@@ -1,7 +1,8 @@
-import { IconButton } from "@/components/IconButton";
-import { ChatList } from "@/components/ChatList";
-import { AddIcon, DragIcon } from "@/components/icons";
-import { useDragSidebar } from "./useDragSidebar";
+import { useDragSidebar } from './useDragSidebar';
+
+import { ChatList } from '@/components/ChatList';
+import { IconButton } from '@/components/IconButton';
+import { AddIcon, DragIcon } from '@/components/icons';
 
 export const SideBar = () => {
   const shouldNarrow = false;
@@ -18,13 +19,13 @@ export const SideBar = () => {
         <div>
           <IconButton
             icon={<AddIcon />}
-            text={shouldNarrow ? undefined : "新的聊天"}
+            text={shouldNarrow ? undefined : '新的聊天'}
             shadow
           />
         </div>
       </div>
       <div
-        className={"sidebar-drag"}
+        className={'sidebar-drag'}
         onMouseDown={(e) => onDragMouseDown(e as any)}
       >
         <DragIcon />
