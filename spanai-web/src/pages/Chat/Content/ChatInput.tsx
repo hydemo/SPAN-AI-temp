@@ -1,13 +1,15 @@
-import { IconButton } from "@/components/IconButton";
-import { SendWhiteIcon } from "@/components/icons";
-import { LAST_INPUT_KEY } from "@/constant";
-import { useRef, useState } from "react";
-import { useDebounceEffect } from "ahooks";
-import { autoGrowTextArea } from "./utils";
+import { useDebounceEffect } from 'ahooks';
+import { useRef, useState } from 'react';
+
+import { autoGrowTextArea } from './utils';
+
+import { IconButton } from '@/components/IconButton';
+import { SendWhiteIcon } from '@/components/icons';
+import { LAST_INPUT_KEY } from '@/constant';
 
 export const ChatInput = () => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
-  const [userInput, setUserInput] = useState("");
+  const [userInput, setUserInput] = useState('');
   const [inputRows, setInputRows] = useState(2);
 
   useDebounceEffect(
@@ -28,17 +30,17 @@ export const ChatInput = () => {
   };
 
   const doSubmit = (userInput: string) => {
-    alert('你提交了问题')
-  }
+    alert('你提交了问题');
+  };
 
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // if ArrowUp and no userInput, fill with last input
     if (
-      e.key === "ArrowUp" &&
+      e.key === 'ArrowUp' &&
       userInput.length <= 0 &&
       !(e.metaKey || e.altKey || e.ctrlKey)
     ) {
-      setUserInput(localStorage.getItem(LAST_INPUT_KEY) ?? "");
+      setUserInput(localStorage.getItem(LAST_INPUT_KEY) ?? '');
       e.preventDefault();
       return;
     }
@@ -65,7 +67,7 @@ export const ChatInput = () => {
           onSearch("");
         }}
       /> */}
-      <div className={"chat-input-panel-inner"}>
+      <div className={'chat-input-panel-inner'}>
         <textarea
           ref={inputRef}
           className="chat-input"

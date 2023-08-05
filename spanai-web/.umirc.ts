@@ -1,8 +1,8 @@
-import { defineConfig } from "umi";
-import routes from "./config/routes";
+import { defineConfig } from 'umi';
+import routes from './config/routes';
 
 export default defineConfig({
   routes,
-  npmClient: "yarn",
+  npmClient: 'yarn',
   clickToComponent: {},
 });

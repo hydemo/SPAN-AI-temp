@@ -1,18 +1,22 @@
 {
-  "version": "1.0.0",
   "name": "spanai-web",
+  "version": "1.0.0",
   "private": true,
   "author": "double2kill <379563000@qq.com>",
   "scripts": {
-    "dev": "umi dev",
     "build": "umi build",
+    "dev": "umi dev",
+    "format": "prettier --cache --write .",
     "postinstall": "umi setup",
     "setup": "umi setup",
     "start": "PORT=5001 npm run dev"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^16.3.0",
+    "@umijs/max": "^4.0.74",
     "ahooks": "^3.7.8",
+    "antd": "^5.8.2",
+    "eslint-plugin-import": "^2.28.0",
     "umi": "^4.0.74"
   },
   "devDependencies": {

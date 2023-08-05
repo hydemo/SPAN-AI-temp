@@ -1,18 +1,19 @@
-import { ChatMessageList } from "@/components/ChatMessageList";
-import { ChatInput } from "./ChatInput";
-import { Header } from "./Header";
-import "./content.scss";
+import { ChatInput } from './ChatInput';
+import { Header } from './Header';
+
+import { ChatMessageList } from '@/components/ChatMessageList';
+import './content.scss';
 
 const messages: MessageInfo[] = [
   {
-    role: "user",
-    content: "你好",
-    date: "2023-08-04 19:16:17",
+    role: 'user',
+    content: '你好',
+    date: '2023-08-04 19:16:17',
   },
   {
-    role: "agent",
-    content: "我是 ChatGPT",
-    date: "2023-08-05 19:16:17",
+    role: 'agent',
+    content: '我是 ChatGPT',
+    date: '2023-08-05 19:16:17',
   },
 ];
 

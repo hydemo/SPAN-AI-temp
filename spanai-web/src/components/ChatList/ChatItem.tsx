@@ -1,4 +1,4 @@
-import { DeleteIcon } from "../icons";
+import { DeleteIcon } from '../icons';
 
 type Props = {
   selected?: boolean;
@@ -12,7 +12,7 @@ export const ChatItem = ({ selected, title, count, time }: Props) => {
 
   return (
     <div
-      className={`chat-item ${selected && "chat-item-selected"}`}
+      className={`chat-item ${selected && 'chat-item-selected'}`}
       // onClick={props.onClick}
       // ref={(ele) => {
       //   draggableRef.current = ele;
@@ -22,13 +22,13 @@ export const ChatItem = ({ selected, title, count, time }: Props) => {
       // {...provided.dragHandleProps}
       // title={}
     >
-      <div className={"chat-item-title"}>{title}</div>
-      <div className={"chat-item-info"}>
-        <div className={"chat-item-count"}>{count} 条对话</div>
-        <div className={"chat-item-date"}>{time}</div>
+      <div className={'chat-item-title'}>{title}</div>
+      <div className={'chat-item-info'}>
+        <div className={'chat-item-count'}>{count} 条对话</div>
+        <div className={'chat-item-date'}>{time}</div>
       </div>
 
-      <div className={"chat-item-delete"} onClickCapture={handleDelete}>
+      <div className={'chat-item-delete'} onClickCapture={handleDelete}>
         <DeleteIcon />
       </div>
     </div>

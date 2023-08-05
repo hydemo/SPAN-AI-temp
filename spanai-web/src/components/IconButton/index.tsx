@@ -1,6 +1,6 @@
-import "./button.scss";
+import './button.scss';
 
-export type ButtonType = "primary" | "danger" | null;
+export type ButtonType = 'primary' | 'danger' | null;
 
 type Props = {
   onClick?: () => void;
@@ -32,10 +32,10 @@ export function IconButton({
   return (
     <button
       className={
-        "icon-button" +
-        ` ${bordered && "border"} ${shadow && "shadow"} ${
-          className ?? ""
-        } clickable ${type ?? ""}`
+        'icon-button' +
+        ` ${bordered && 'border'} ${shadow && 'shadow'} ${
+          className ?? ''
+        } clickable ${type ?? ''}`
       }
       onClick={onClick}
       title={title}
@@ -46,13 +46,13 @@ export function IconButton({
     >
       {icon && (
         <div
-          className={"icon-button-icon" + ` ${type === "primary" && "no-dark"}`}
+          className={'icon-button-icon' + ` ${type === 'primary' && 'no-dark'}`}
         >
           {icon}
         </div>
       )}
 
-      {text && <div className={"icon-button-text"}>{text}</div>}
+      {text && <div className={'icon-button-text'}>{text}</div>}
     </button>
   );
 }
