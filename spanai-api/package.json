@@ -1,5 +1,5 @@
 {
-  "name": "span-api",
+  "name": "spanai-api",
   "version": "0.0.1",
   "private": true,
   "description": "",
@@ -18,8 +18,8 @@
     "mv:install": "mv node_modules/nest-redis ~/ && yarn && mv ~/nest-redis node_modules/",
     "pm2": "pm2 start pm2.yml",
     "prebuild": "rimraf dist",
-    "publish": "scp -r dist liuchen@www.greatwebtech.cn:~/alaric/spansurvey/span-api/",
-    "qinghua": "rsync -a -e 'ssh -p 22222' src root@101.6.9.6:/qinghua/spansurvey/span-api",
+    "publish": "scp -r dist liuchen@www.greatwebtech.cn:~/alaric/spansurvey/spanai-api/",
+    "qinghua": "rsync -a -e 'ssh -p 22222' src root@101.6.9.6:/qinghua/spansurvey/spanai-api",
     "reload": "export NODE_ENV=production && nest build && pm2 reload span",
     "start": "export NODE_ENV=development && nest start --watch",
     "start:debug": "export NODE_ENV=development && nest start --debug --watch",

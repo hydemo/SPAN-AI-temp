@@ -27,6 +27,10 @@ export const ChatInput = () => {
     setUserInput(text);
   };
 
+  const doSubmit = (userInput: string) => {
+    alert('你提交了问题')
+  }
+
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     // if ArrowUp and no userInput, fill with last input
     if (
@@ -38,10 +42,10 @@ export const ChatInput = () => {
       e.preventDefault();
       return;
     }
-    // if (shouldSubmit(e) && promptHints.length === 0) {
-    //   doSubmit(userInput);
-    //   e.preventDefault();
-    // }
+    if (shouldSubmit(e)) {
+      doSubmit(userInput);
+      e.preventDefault();
+    }
   };
   return (
     <div className="chat-input-panel">

@@ -1,5 +1,5 @@
 {
-  "name": "span-cms",
+  "name": "spanai-cms",
   "version": "1.0.0",
   "private": true,
   "author": "double2kill <379563000@qq.com>",
@@ -22,8 +22,8 @@
     "lint:eslint:all": "yarn run lint:eslint \"src/**/*.{js,jsx,ts,tsx}\" \"*.js\"",
     "lint:eslint:all:fix": "yarn run lint:eslint:all --fix",
     "lint:eslint:fix": "yarn run lint:eslint --fix",
-    "publish": "scp cms/index.html liuchen@www.greatwebtech.cn:~/alaric/spansurvey/span-cms/cms",
-    "publish:qinghua": "rsync -a -e 'ssh -p 22222' ./cms/index.html root@101.6.9.6:/qinghua/spansurvey/span-cms/cms",
+    "publish": "scp cms/index.html liuchen@www.greatwebtech.cn:~/alaric/spansurvey/spanai-cms/cms",
+    "publish:qinghua": "rsync -a -e 'ssh -p 22222' ./cms/index.html root@101.6.9.6:/qinghua/spansurvey/spanai-cms/cms",
     "setup": "max setup",
     "start": "PORT=6001 npm run dev"
   },
