@@ -7,7 +7,6 @@ import { LeanDocument, Model } from 'mongoose';
 import { RedisService } from 'nest-redis';
 import { ApiErrorCode } from 'src/common/enum/api-error-code.enum';
 import { ApiException } from 'src/common/exception/api.exception';
-import { IResult } from 'src/common/interface/result.interface';
 import { ConfigService } from 'src/config/config.service';
 import { EmailUtil } from 'src/utils/email.util';
 
@@ -35,7 +34,7 @@ export class AdminService {
   }
 
   // 创建数据
-  async create(createAdminDTO: CreateAdminDTO): Promise<IResult> {
+  async create(createAdminDTO: CreateAdminDTO): Promise<void> {
     const existing: IAdmin = await this.adminModel.findOne({
       $or: [
         { email: createAdminDTO.email, isDelete: false },
@@ -58,7 +57,7 @@ export class AdminService {
     createAdminDTO.password = this.cryptoUtil.encryptPassword(createAdminDTO.password);
     createAdminDTO.registerTime = Date.now();
     await this.adminModel.create(createAdminDTO);
-    return { status: 200 };
+    return;
   }
 
   // 根据账号查找
@@ -72,28 +71,19 @@ export class AdminService {
   }
 
   // 登陆
-  async login(username: string, password: string, ip: string): Promise<IResult> {
+  async login(username: string, password: string, ip: string): Promise<any> {
     const admin: any = await this.findByUsername(username);
     // 判断账号是否存在
     if (!admin) {
-      return { status: 400, code: 4013 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
 
-    //判断账号是否正在审核
-    if (admin.status === 0) {
-      return { status: 400, code: 4057 };
-    }
-
-    //判断账号是否正在审核
-    if (admin.status === 1) {
-      return { status: 400, code: 4058 };
-    }
     //判断账号是否被删除
     if (admin.isDelete) {
-      return { status: 400, code: 4024 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     if (!this.cryptoUtil.checkPassword(password, admin.password)) {
-      return { status: 400, code: 4011 };
+      throw new ApiException('Login Failed', ApiErrorCode.NO_PERMISSION, 400);
     }
     const token = await this.jwtService.sign({ id: admin._id, type: 'admin' });
     const client = this.redis.getClient();
@@ -106,7 +96,7 @@ export class AdminService {
       .lean()
       .exec();
     delete admin.password;
-    return { status: 200, code: 2001, data: { token, userinfo: admin } };
+    return { token, userinfo: admin };
   }
 
   // 发送邮箱验证码
@@ -114,11 +104,11 @@ export class AdminService {
     const admin: any = await this.findByUsername(username);
     // 判断账号是否存在
     if (!admin) {
-      return { status: 400, code: 4013 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     //判断账号是否被删除
     if (admin.isDelete) {
-      return { status: 400, code: 4024 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     const code = await this.emailUtil.genVerifyCode(admin._id);
     return await this.emailUtil.sendVerifyCode(admin.email, code);
@@ -129,11 +119,11 @@ export class AdminService {
     const admin: any = await this.findByUsername(username);
     // 判断账号是否存在
     if (!admin) {
-      return { status: 400, code: 4013 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     //判断账号是否被删除
     if (admin.isDelete) {
-      return { status: 400, code: 4024 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     const check = await this.emailUtil.codeVerify(admin._id, code);
     if (check) {
@@ -141,7 +131,7 @@ export class AdminService {
         id: admin._id,
         type: 'admin',
       });
-      return { status: 200, data: token };
+      return token;
     }
   }
 
@@ -150,19 +140,19 @@ export class AdminService {
     const admin: any = await this.findByUsername(username);
     // 判断账号是否存在
     if (!admin) {
-      return { status: 400, code: 4013 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     //判断账号是否被删除
     if (admin.isDelete) {
-      return { status: 400, code: 4024 };
+      throw new ApiException('User Not Found', ApiErrorCode.NO_EXIST, 404);
     }
     const password = await this.cryptoUtil.encryptPassword(md5(reset.password));
     const msg = await this.jwtService.verify(reset.token);
     if (msg.type === 'admin' && msg.id === String(admin._id)) {
       await this.adminModel.findByIdAndUpdate(admin._id, { password });
-      return { status: 200, code: 2012 };
+      return true;
     } else {
-      return { status: 400, code: 4008 };
+      throw new ApiException('Token invalid', ApiErrorCode.NO_EXIST, 400);
     }
   }
 
@@ -170,11 +160,11 @@ export class AdminService {
   async resetNewPassword(id: string, reset: NewPassDTO) {
     const admin: any = await this.findById(id);
     if (!this.cryptoUtil.checkPassword(reset.oldPass, admin.password)) {
-      return { status: 400, code: 4011 };
+      throw new ApiException('Login Failed', ApiErrorCode.NO_PERMISSION, 400);
     }
     const password = await this.cryptoUtil.encryptPassword(reset.newPass);
     await this.adminModel.findByIdAndUpdate(admin._id, { password });
-    return { status: 200 };
+    return true;
   }
 
   // 重置密码token校验
@@ -185,45 +175,5 @@ export class AdminService {
       return res.redirect(`${this.config.cms_url}/resetpasswordOverTime`);
     }
     return res.redirect(`${this.config.cms_url}/resetpassword?token=${token}`);
-  }
-
-  // 账号列表
-  async list(pagination: any, user: IAdmin) {
-    if (user.role !== 0) {
-      throw new ApiException('NO Permission', ApiErrorCode.NO_PERMISSION, 403);
-    }
-    const { current = 1, pageSize = 20, username } = pagination;
-    const condition: any = {
-      isDelete: false,
-      $or: [
-        {
-          username: new RegExp(username || '', 'i'),
-        },
-        {
-          email: new RegExp(username || '', 'i'),
-        },
-        {
-          phone: new RegExp(username || '', 'i'),
-        },
-      ],
-    };
-
-    const data = await this.adminModel
-      .find(condition)
-      .sort({ createdAt: -1 })
-      .limit(pageSize)
-      .skip((current - 1) * pageSize)
-      .select({ password: 0 })
-      .lean()
-      .exec();
-    const total = await this.adminModel.countDocuments(condition);
-    return { data, total };
-  }
-
-  // 修改密码
-  async changePassword(id: string, password: string): Promise<void> {
-    await this.adminModel.findByIdAndUpdate(id, {
-      password: this.cryptoUtil.encryptPassword(password),
-    });
   }
 }

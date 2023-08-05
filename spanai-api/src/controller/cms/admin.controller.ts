@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Query, UseGuards, Inject, Request, Put, Response } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, UseGuards, Inject, Request, Put, Response } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiOkResponse, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
 import { LoginDTO, ResetPassDTO, CodeVerifyDTO, NewPassDTO } from 'src/module/admin/admin.dto';
@@ -63,16 +63,5 @@ export class CMSAdminController {
   @ApiOperation({ summary: '重置密码', description: '重置密码' })
   async forgetTokenCheck(@Query('token') token: string, @Response() res): Promise<any> {
     return await this.adminService.forgetTokenCheck(token, res);
-  }
-
-  @Put('/accounts/:id/password')
-  @UseGuards(AuthGuard())
-  @ApiOkResponse({
-    description: '修改密码',
-  })
-  @ApiOperation({ summary: '修改密码', description: '修改密码' })
-  async changePassword(@Param('id') id: string, @Body('password') password: string): Promise<any> {
-    await this.adminService.changePassword(id, password);
-    return { status: 200 };
   }
 }

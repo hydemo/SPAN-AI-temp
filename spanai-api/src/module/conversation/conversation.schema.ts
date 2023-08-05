@@ -14,15 +14,15 @@ export class Conversation {
   // 对话内容
   @Prop()
   content: string;
-  // 发送人
+  // 发送人 system user
   @Prop()
   role: string;
   // 模型
   @Prop()
   model: string;
   // 模型
-  @Prop()
-  version: string;
+  @Prop({ default: 0 })
+  version: number;
   // 父级
   @Prop()
   parent: string;

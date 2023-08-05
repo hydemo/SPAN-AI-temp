@@ -19,6 +19,10 @@
     ],
   },
   {
+    path: '/',
+    redirect: '/userManagement',
+  },
+  {
     path: '/userManagement',
     name: 'userManagement',
     icon: 'setting',

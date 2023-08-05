@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { CreateConversationDTO, UpdateConversationDTO } from './conversation.dto';
+import { CreateConversationDTO, SendMessageDTO, UpdateConversationDTO } from './conversation.dto';
 import { IConversation, Conversation } from './conversation.schema';
 
 @Injectable()
@@ -13,8 +13,8 @@ export class ConversationService {
   async list(pagination: any) {
     const condition: any = {};
     const searchCondition = [];
-    if (pagination.name) {
-      searchCondition.push({ name: new RegExp(pagination.name, 'i') });
+    if (pagination.chat) {
+      condition.chat = pagination.chat;
     }
     if (pagination.user) {
       condition.user = pagination.user;
@@ -34,8 +34,17 @@ export class ConversationService {
     return { data, total };
   }
 
-  async create(conversation: CreateConversationDTO) {
-    await this.conversationModel.create(conversation);
+  async sendMessage(user: string, chat: string, message: SendMessageDTO) {
+    const newConversation: CreateConversationDTO = {
+      user,
+      chat,
+      content: message.content,
+      model: message.model,
+      parent: message.parent,
+      role: 'user',
+    };
+    // const response = await this.
+    await this.conversationModel.create(newConversation);
     return true;
   }
 

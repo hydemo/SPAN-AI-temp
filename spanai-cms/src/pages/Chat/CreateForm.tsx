@@ -24,7 +24,7 @@ export default (props: FormProps) => {
       title={type === 'Add' ? '新增' : '修改'}
       initialValues={record}
       autoFocusFirstInput
-      visible={visible}
+      open={visible}
       modalProps={{
         destroyOnClose: true,
         onCancel,
