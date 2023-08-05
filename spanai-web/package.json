@@ -1,0 +1,23 @@
+{
+  "version": "1.0.0",
+  "name": "spanai-web",
+  "private": true,
+  "author": "double2kill <379563000@qq.com>",
+  "scripts": {
+    "dev": "umi dev",
+    "build": "umi build",
+    "postinstall": "umi setup",
+    "setup": "umi setup",
+    "start": "PORT=5001 npm run dev"
+  },
+  "dependencies": {
+    "@hello-pangea/dnd": "^16.3.0",
+    "ahooks": "^3.7.8",
+    "umi": "^4.0.74"
+  },
+  "devDependencies": {
+    "@types/react": "^18.0.33",
+    "@types/react-dom": "^18.0.11",
+    "typescript": "^5.0.3"
+  }
+}

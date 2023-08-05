@@ -1,0 +1,31 @@
+{
+  "name": "span-ai",
+  "private": true,
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "lerna": "^7.1.4"
+  },
+  "devDependencies": {},
+  "workspaces": {
+    "packages": [
+      "spanai-cms",
+      "spanai-web",
+      "spanai-api"
+    ]
+  },
+  "scripts": {
+    "start": "lerna run start --scope '{spanai-web,spanai-cms,spanai-api}'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hydemo/SPAN-AI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hydemo/SPAN-AI/issues"
+  },
+  "homepage": "https://github.com/hydemo/SPAN-AI#readme"
+}
