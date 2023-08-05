@@ -1,0 +1,11 @@
+- script: ./dist/main.js
+  name: span
+  cwd: ./
+  watch_options:
+    followSymlinks: false
+  error_file: ./log/ship-error.log
+  out_file: ./log/ship-out.log
+  pid_file: ./log/ship-pid.log
+  log_date_format: YYYY-MM-DD HH:mm:ss
+  env:
+    NODE_ENV: production

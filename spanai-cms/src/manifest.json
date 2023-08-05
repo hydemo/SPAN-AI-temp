@@ -1,0 +1,22 @@
+{
+  "name": "SPAN",
+  "short_name": "SPAN",
+  "display": "standalone",
+  "start_url": "./?utm_source=homescreen",
+  "theme_color": "#fff",
+  "background_color": "#fff",
+  "icons": [
+    {
+      "src": "http://qn.greatwebtech.cn/home/span-logo.png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "http://qn.greatwebtech.cn/home/span-logo.png",
+      "sizes": "128x128"
+    },
+    {
+      "src": "http://qn.greatwebtech.cn/home/span-logo.png",
+      "sizes": "512x512"
+    }
+  ]
+}

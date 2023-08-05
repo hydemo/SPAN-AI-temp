@@ -1,0 +1,9 @@
+/lambda/
+/scripts
+/config
+.history
+public
+dist
+cms
+.umi
+mock
