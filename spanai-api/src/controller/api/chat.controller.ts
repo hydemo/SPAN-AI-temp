@@ -1,12 +1,13 @@
 import { Controller, Get, Post, Inject, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ChatService } from 'src/module/chat/chat.service';
 
 @ApiTags('api/chats')
+@ApiBearerAuth()
 @ApiForbiddenResponse({ description: 'Unauthorized' })
 @Controller('api/chats')
-export class ApiUserController {
+export class ApiChatController {
   constructor(@Inject(ChatService) private chatService: ChatService) {}
 
   @Post('/')

@@ -5,7 +5,7 @@ import { MongodIdPipe } from 'src/common/pipe/mongodId.pipe';
 import { CreateUserDTO, UpdateUserDTO } from 'src/module/user/user.dto';
 import { UserService } from 'src/module/user/user.service';
 
-@ApiTags('api/user')
+@ApiTags('admin/user')
 @ApiForbiddenResponse({ description: 'Unauthorized' })
 @Controller('admin/users')
 export class CMSUserController {

@@ -35,6 +35,7 @@ export class ConversationService {
       .limit(pagination.pageSize)
       .skip((pagination.current - 1) * pagination.pageSize)
       .select({ password: 0 })
+      .populate({ path: 'user', model: 'User' })
       .lean()
       .exec();
     const total = await this.conversationModel.countDocuments(condition).lean().exec();
@@ -60,7 +61,7 @@ export class ConversationService {
       chat: message.chatId,
       content: message.content,
       model: message.model,
-      parent: message.parent,
+      parent: message.parent ? message.parent : message.chatId,
       role: 'user',
     };
     const newUserConversation = await this.conversationModel.create(newConversation);
@@ -74,7 +75,7 @@ export class ConversationService {
       role: 'assistant',
     };
     await this.conversationModel.create(newAIRespnose);
-    return true;
+    return aiMessage;
   }
 
   async update(id: string, conversation: UpdateConversationDTO) {

@@ -136,7 +136,8 @@ export class UserService {
     if (usernameExist.length) {
       throw new ApiException('username Exist', ApiErrorCode.EMAIL_EXIST, 400);
     }
-    await this.userModel.create(user);
+    const password = this.cryptoUtil.encryptPassword(user.password);
+    await this.userModel.create({ ...user, password });
     return true;
   }
 }

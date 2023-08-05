@@ -1,13 +1,14 @@
 import { Controller, Get, Post, Inject, Request, UseGuards, Param, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
+import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { SendMessageDTO } from 'src/module/conversation/conversation.dto';
 import { ConversationService } from 'src/module/conversation/conversation.service';
 
 @ApiTags('api/conversations')
 @ApiForbiddenResponse({ description: 'Unauthorized' })
 @Controller('api/conversations')
-export class ApiUserController {
+@ApiBearerAuth()
+export class ApiConversationController {
   constructor(@Inject(ConversationService) private conversationService: ConversationService) {}
 
   @Post('/')

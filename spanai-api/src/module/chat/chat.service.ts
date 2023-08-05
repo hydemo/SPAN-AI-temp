@@ -27,6 +27,7 @@ export class ChatService {
       .limit(pagination.pageSize)
       .skip((pagination.current - 1) * pagination.pageSize)
       .select({ password: 0 })
+      .populate({ path: 'user', model: 'User' })
       .lean()
       .exec();
     const total = await this.chatModel.countDocuments(condition).lean().exec();

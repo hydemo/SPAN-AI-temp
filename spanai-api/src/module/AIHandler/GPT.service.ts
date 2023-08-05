@@ -38,7 +38,8 @@ export class GPTService {
       data: requestPayload,
       headers: this.getHeaders(),
     });
-    if (res.data && res.data.choice) {
+    console.log(res.data.choices);
+    if (res.data?.choices) {
       return res.data.choices[0].message.content;
     }
     return '';

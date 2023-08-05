@@ -2,9 +2,9 @@ import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { useRef } from 'react';
 
-import { getChats } from '@/services/apiList/chat';
+import { getConversation } from '@/services/apiList/conversation';
 
-export const ChatList = () => {
+export const ConversationList = () => {
   const actionRef = useRef<ActionType>();
 
   const columns: ProColumns<any>[] = [
@@ -18,8 +18,13 @@ export const ChatList = () => {
       valueType: 'text',
     },
     {
-      title: '对话标题',
-      dataIndex: 'name',
+      title: '发送类型',
+      dataIndex: 'role',
+      valueType: 'text',
+    },
+    {
+      title: '消息',
+      dataIndex: 'content',
       valueType: 'text',
     },
     {
@@ -34,7 +39,7 @@ export const ChatList = () => {
       <ProTable<API.CompanyListItem, API.PageParams>
         actionRef={actionRef}
         rowKey="_id"
-        request={getChats}
+        request={getConversation}
         columns={columns}
         search={{
           labelWidth: 120,
@@ -57,4 +62,4 @@ export const ChatList = () => {
   );
 };
 
-export default ChatList;
+export default ConversationList;

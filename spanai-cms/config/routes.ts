@@ -20,18 +20,48 @@
   },
   {
     path: '/',
-    redirect: '/userManagement',
+    redirect: '/chat',
+  },
+  {
+    path: '/chat',
+    name: '消息管理',
+    icon: 'setting',
+    routes: [
+      {
+        path: '/chat',
+        redirect: '/chat/chat',
+      },
+      {
+        path: '/chat/chat',
+        name: '对话列表',
+        icon: 'smile',
+        component: './Chat/Chat',
+      },
+      {
+        path: '/chat/conversation',
+        name: '消息列表',
+        icon: 'smile',
+        component: './Conversation/Conversation',
+      },
+      {
+        component: './404',
+      },
+    ],
   },
   {
     path: '/userManagement',
-    name: 'userManagement',
+    name: '系统管理',
     icon: 'setting',
     access: 'isSuperAdmin',
     routes: [
       {
+        path: '/userManagement',
+        redirect: '/userManagement/userList',
+      },
+      {
         path: '/userManagement/userList',
-        name: 'userList',
-        icon: 'smile',
+        name: '用户管理',
+        icon: 'setting',
         component: './UserManagement/UserList',
       },
       {

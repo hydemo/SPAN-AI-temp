@@ -9,10 +9,7 @@ import { UserService } from 'src/module/user/user.service';
 @ApiForbiddenResponse({ description: 'Unauthorized' })
 @Controller('api/user')
 export class ApiUserController {
-  constructor(
-    @Inject(UserService) private userService: UserService,
-    @Inject(GPTService) private GPTService: GPTService,
-  ) {}
+  constructor(@Inject(UserService) private userService: UserService) {}
 
   @Post('/login')
   @ApiOperation({ summary: '注册组织', description: '注册组织' })
