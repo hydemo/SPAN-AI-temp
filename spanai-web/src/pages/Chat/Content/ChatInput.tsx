@@ -61,6 +61,7 @@ export const ChatInput = ({
       });
       refreshChats();
       refreshMessages();
+      setUserInput('');
     } finally {
       setLoading(false);
     }
