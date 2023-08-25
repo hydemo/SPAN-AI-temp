@@ -10,7 +10,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - "/docker-volumesvolumes/redis.conf:/conf/redis.conf"
+      - "/docker-volumes/redis.conf:/conf/redis.conf"
       - "/docker-volumes/redisData:/data/"
     command: redis-server /conf/redis.conf
 
