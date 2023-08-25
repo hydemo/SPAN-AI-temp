@@ -7,12 +7,12 @@ services:
     restart: always
     command: redis-server --requirepass H2I3iP39ChReHjqPxA3o
     networks:
-     - ringcentral
+     - spanai
     ports:
       - "6379:6379"
     volumes:
-      - "redis.conf:/conf/redis.conf"
-      - "redisData:/data/"
+      - "/docker-volumesvolumes/redis.conf:/conf/redis.conf"
+      - "/docker-volumes/redisData:/data/"
     command: redis-server /conf/redis.conf
 
   mongo:
@@ -23,13 +23,13 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: H2I3iP39ChReHjqPxA3o
     volumes:
-      - "mongoData:/data/db"
+      - "/docker-volumes/mongoData:/data/db"
     networks:
-      - ringcentral
+      - spanai
     ports:
       - '27017:27017'
       
 networks:
-  ringcentral:
+  spanai:
     external: true
 
