@@ -13,11 +13,12 @@
     ]
   },
   "scripts": {
+    "prebuild": "rimraf dist",
+    "build": "export NODE_ENV=production && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "mv:install": "mv node_modules/nest-redis ~/ && yarn && mv ~/nest-redis node_modules/",
     "pm2": "pm2 start pm2.yml",
-    "prebuild": "rimraf dist",
     "publish": "scp -r dist liuchen@www.greatwebtech.cn:~/alaric/spansurvey/spanai-api/",
     "qinghua": "rsync -a -e 'ssh -p 22222' src root@101.6.9.6:/qinghua/spansurvey/spanai-api",
     "reload": "export NODE_ENV=production && nest build && pm2 reload span",
