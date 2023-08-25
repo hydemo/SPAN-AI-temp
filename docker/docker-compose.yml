@@ -5,7 +5,6 @@ services:
     container_name: redis
     hostname: redis
     restart: always
-    command: redis-server --requirepass H2I3iP39ChReHjqPxA3o
     networks:
      - spanai
     ports:
