@@ -5,4 +5,5 @@ export default defineConfig({
   routes,
   npmClient: 'yarn',
   clickToComponent: {},
+  hash: true,
 });

@@ -29,7 +29,7 @@ export default defineConfig({
     baseNavigator: false,
   },
   manifest: {
-    basePath: process.env.NODE_ENV === 'production' ? qiniuBase : '/',
+    basePath: 'cms'
   },
   clickToComponent: {},
   mfsu: false,
