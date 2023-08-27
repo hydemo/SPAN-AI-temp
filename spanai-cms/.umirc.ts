@@ -5,9 +5,9 @@ import defaultSettings from './config/defaultSettings';
 const qiniuBase = process.env.MODE === 'dev' ? 'cms_dev' : 'cms';
 
 export default defineConfig({
-  outputPath: '/cms/',
+  outputPath: 'cms',
   base: '/cms/',
-  publicPath: '/cms/',
+  publicPath: 'cms',
   antd: {},
   access: {},
   model: {},
