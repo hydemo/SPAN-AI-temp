@@ -6,11 +6,7 @@ const qiniuBase = process.env.MODE === 'dev' ? 'cms_dev' : 'cms';
 
 export default defineConfig({
   outputPath: 'cms',
-  base: process.env.NODE_ENV === 'production' ? '/cms/' : '/',
-  publicPath:
-    process.env.NODE_ENV === 'production'
-      ? `https://qn.greatwebtech.cn/${qiniuBase}/`
-      : '/',
+  base: '/cms',
   antd: {},
   access: {},
   model: {},
