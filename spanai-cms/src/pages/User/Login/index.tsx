@@ -44,7 +44,7 @@ const Login: React.FC = () => {
       cookies.set('admin_access_token', msg.token);
       cookies.set('admin_userinfo', JSON.stringify(msg.userinfo));
       await fetchUserInfo();
-      const initUrl = isDev ? '/' : '/cms';
+      const initUrl = isDev ? '/' : '/cms/';
       window.location.href =
         redirect &&
         (redirect !== '/userManagement/userList' || msg.userinfo?.role === 0)
