@@ -78,15 +78,14 @@ export default (props: FormProps) => {
         />
       )}
       <ProFormSelect
-        mode="tags"
-        name="models"
-        label="支持模型"
+        name="model"
+        label="模型"
         request={async () => [
-          { label: 'gpt-3.5', value: 'gpt-3.5' },
-          { label: 'gpt-4.0', value: 'gpt-4.0' },
+          { label: 'gpt-3.5-turbo', value: 'gpt-3.5-turbo' },
+          { label: 'gpt-4', value: 'gpt-4' },
         ]}
-        placeholder="请选择支持模型"
-        rules={[{ required: true, message: '请选择支持模型' }]}
+        placeholder="请选择模型"
+        rules={[{ required: true, message: '请选择模型' }]}
       />
       <ProFormDigit
         label="单个问题最大token数"

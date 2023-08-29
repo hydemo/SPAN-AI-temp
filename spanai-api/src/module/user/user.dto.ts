@@ -25,10 +25,10 @@ export class UpdateUserDTO {
   @ApiProperty({ description: '邮箱' })
   readonly email: string;
 
-  @IsString({ each: true })
+  @IsString()
   @Type(() => String)
-  @ApiProperty({ description: '可用模型' })
-  readonly models: string[];
+  @ApiProperty({ description: '模型' })
+  readonly model: string;
 
   @IsString()
   @Type(() => String)

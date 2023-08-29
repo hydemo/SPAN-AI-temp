@@ -1,4 +1,5 @@
 import { useDebounceEffect, useRequest } from 'ahooks';
+import { Spin } from 'antd';
 import { useRef, useState } from 'react';
 
 import { autoGrowTextArea } from './utils';
@@ -15,6 +16,7 @@ type Props = {
   refreshChats: () => void;
   refreshMessages: () => void;
   setAutoScroll: (value: boolean) => void;
+  setInputMessage: (message: MessageInfo[]) => void;
 };
 
 export const ChatInput = ({
@@ -23,6 +25,7 @@ export const ChatInput = ({
   refreshChats,
   refreshMessages,
   setAutoScroll,
+  setInputMessage,
 }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState('');
@@ -47,7 +50,7 @@ export const ChatInput = ({
   };
 
   const doSubmit = async (userInput: string) => {
-    if (userInput.length === 0) {
+    if (userInput.length === 0 || loading) {
       return;
     }
     setLoading(true);
@@ -60,8 +63,8 @@ export const ChatInput = ({
         parent: messages?.[messages?.length - 1]?._id || chatId,
       });
       refreshChats();
+      setInputMessage([]);
       refreshMessages();
-      setUserInput('');
     } finally {
       setLoading(false);
     }
@@ -86,12 +89,30 @@ export const ChatInput = ({
       !e.shiftKey &&
       userInput.length > 0
     ) {
+      setUserInput('');
       doSubmit(userInput);
+      setInputMessage([
+        {
+          role: 'user',
+          createdAt: Date.now(),
+          content: userInput,
+          _id: '',
+        },
+      ]);
       e.preventDefault();
     }
   };
   return (
     <div className="chat-input-panel">
+      <Spin
+        tip="回复中......"
+        size="large"
+        spinning={loading}
+        style={{ top: '-400px' }}
+      >
+        <div />
+      </Spin>
+
       {/* <ChatActions
         showPromptModal={() => setShowPromptModal(true)}
         scrollToBottom={scrollToBottom}
@@ -110,6 +131,7 @@ export const ChatInput = ({
       /> */}
       <div className={'chat-input-panel-inner'}>
         <textarea
+          disabled={loading}
           ref={inputRef}
           className="chat-input"
           // placeholder={Locale.Chat.Input(submitKey)}

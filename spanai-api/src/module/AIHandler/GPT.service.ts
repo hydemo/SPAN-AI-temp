@@ -22,11 +22,11 @@ export class GPTService {
     return headers;
   }
 
-  async conversation(messages: any) {
+  async conversation(messages: any, model: string) {
     const requestPayload = {
       messages,
       stream: false,
-      model: 'gpt-3.5-turbo',
+      model: model ? model : 'gpt-3.5-turbo',
       temperature: 0.5,
       presence_penalty: 0,
       frequency_penalty: 0,

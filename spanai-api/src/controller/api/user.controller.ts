@@ -1,7 +1,5 @@
 import { Body, Controller, Post, Inject, Request } from '@nestjs/common';
-// import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
-import { GPTService } from 'src/module/AIHandler/GPT.service';
 import { LoginDTO } from 'src/module/user/user.dto';
 import { UserService } from 'src/module/user/user.service';
 

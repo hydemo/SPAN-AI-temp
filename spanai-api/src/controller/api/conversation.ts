@@ -15,7 +15,7 @@ export class ApiConversationController {
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '发送消息', description: '发送消息' })
   async create(@Request() req: any, @Body() message: SendMessageDTO) {
-    return await this.conversationService.sendMessage(req.user._id, message);
+    return await this.conversationService.sendMessage(req.user, message);
   }
 
   @Get('/')

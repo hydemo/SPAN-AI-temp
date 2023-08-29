@@ -39,13 +39,8 @@ export const UserList = () => {
     },
     {
       title: '支持模型',
-      dataIndex: 'models',
+      dataIndex: 'model',
       valueType: 'text',
-      render: (_: any, record) => {
-        return record.models
-          ? record.models.map((item: string) => <Tag key={item}>{item}</Tag>)
-          : null;
-      },
       search: false,
     },
     {

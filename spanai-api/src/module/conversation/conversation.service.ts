@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 
 import { GPTService } from '../AIHandler/GPT.service';
 import { ChatService } from '../chat/chat.service';
+import { IUser } from '../user/user.schema';
 
 import { CreateConversationDTO, SendMessageDTO, UpdateConversationDTO } from './conversation.dto';
 import { IConversation, Conversation } from './conversation.schema';
@@ -46,18 +47,18 @@ export class ConversationService {
     return await this.conversationModel.find({ chat: chatId });
   }
 
-  async sendGPTMessage(chatId: string, content: string) {
+  async sendGPTMessage(chatId: string, content: string, model: string) {
     const messages = await this.getMessageByChat(chatId);
-    if (!messages.length) {
+    if (messages.length <= 1) {
       await this.chatService.update(chatId, content);
     }
     const formatMessages = messages.map((item) => ({ content: item.content, role: item.role }));
-    return await this.gptService.conversation(formatMessages);
+    return await this.gptService.conversation(formatMessages, model);
   }
 
-  async sendMessage(user: string, message: SendMessageDTO) {
+  async sendMessage(user: IUser, message: SendMessageDTO) {
     const newConversation: CreateConversationDTO = {
-      user,
+      user: user._id,
       chat: message.chatId,
       content: message.content,
       model: message.model,
@@ -65,10 +66,9 @@ export class ConversationService {
       role: 'user',
     };
     const newUserConversation = await this.conversationModel.create(newConversation);
-    const aiMessage = await this.sendGPTMessage(message.chatId, message.content);
-    console.log(aiMessage);
+    const aiMessage = await this.sendGPTMessage(message.chatId, message.content, user.model);
     const newAIRespnose: CreateConversationDTO = {
-      user,
+      user: user._id,
       chat: message.chatId,
       content: aiMessage,
       model: message.model,

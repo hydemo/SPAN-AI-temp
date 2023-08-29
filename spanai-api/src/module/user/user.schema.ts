@@ -17,6 +17,9 @@ export class User {
   // 头像
   @Prop()
   avatar: string;
+  // 当前模型
+  @Prop()
+  model: string;
   // 支持模型
   @Prop([String])
   models: string[];
