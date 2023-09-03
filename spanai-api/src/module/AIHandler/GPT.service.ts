@@ -37,10 +37,10 @@ export class GPTService {
       method: 'POST',
       data: requestPayload,
       headers: this.getHeaders(),
-      // proxy: {
-      //   host: '127.0.0.1',
-      //   port: 7890,
-      // },
+      proxy: {
+        host: '127.0.0.1',
+        port: 7890,
+      },
     });
     if (res.data?.choices) {
       return res.data;
