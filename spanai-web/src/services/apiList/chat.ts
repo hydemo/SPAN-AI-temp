@@ -1,6 +1,10 @@
+import cookies from 'js-cookie';
+
 import { request } from '@/utils/request';
 
 export async function getChats() {
+  const token = cookies.get('web_access_token');
+  if (!token) { return [] }
   return request({
     url: 'chats',
     method: 'GET',
@@ -21,6 +25,8 @@ export async function newChats() {
 }
 
 export async function getMessages(params: { chatId: string }) {
+  const token = cookies.get('web_access_token');
+  if (!token) { return [] }
   return request({
     url: 'conversations',
     method: 'GET',

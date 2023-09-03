@@ -26,6 +26,12 @@ export class Conversation {
   // 父级
   @Prop()
   parent: string;
+  // prompt token数量
+  @Prop()
+  promptTokens: number;
+  // 总token数量
+  @Prop()
+  totalTokens: number;
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);

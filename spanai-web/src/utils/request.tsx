@@ -5,13 +5,6 @@ import { history } from 'umi';
 
 import { baseURL } from './config';
 
-import enUS from '@/locales/en-US';
-import zhCN from '@/locales/zh-CN';
-const locale = {
-  'zh-CN': zhCN,
-  en_US: enUS,
-};
-
 const getLocale = () => 'zh-CN';
 
 export async function request(options: any) {
@@ -83,7 +76,7 @@ export async function request(options: any) {
       // @HACK
       /* eslint-disable no-underscore-dangle */
       setTimeout(() => {
-        history.push('/');
+        history.push('/login');
       }, 2000);
 
       return {};

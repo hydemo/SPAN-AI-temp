@@ -3,11 +3,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { CryptoUtil } from '@utils/crypto.util';
+import * as md5 from 'md5';
 import { LeanDocument, Model } from 'mongoose';
 import { RedisService } from 'nest-redis';
 import { ApiException } from 'src/common/exception/api.exception';
+import * as XLSX from 'xlsx';
 
-import { CreateUserDTO, UpdateUserDTO } from './user.dto';
+import { CreateUserDTO, Password, UpdateUserDTO } from './user.dto';
 import { IUser, User } from './user.schema';
 
 @Injectable()
@@ -23,8 +25,8 @@ export class UserService {
   async findByUsername(username: string): Promise<LeanDocument<IUser>> {
     return await this.userModel
       .findOne({
-        isDelete: false,
-        $or: [{ username }, { email: username }],
+        isDelete: { $ne: true },
+        $or: [{ username }, { email: username }, { phone: username }],
       })
       // .select({ username: 1, avatar: 1, isDelete: 1, password: 1, email: 1, phone: 1 })
       .lean()
@@ -40,6 +42,11 @@ export class UserService {
   async signOut(userId: string): Promise<void> {
     const client = this.redis.getClient();
     await client.hdel('User_Token', String(userId));
+  }
+
+  // 注销
+  async delete(userId: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, { isDelete: true });
   }
 
   // 根据id查找
@@ -76,7 +83,7 @@ export class UserService {
   // 获取员工全部信息
   async list(pagination: any) {
     const condition: any = {
-      isDelete: false,
+      isDelete: { $ne: true },
     };
     const searchCondition = [];
     if (pagination.email) {
@@ -107,7 +114,7 @@ export class UserService {
     }
     if (user.email && user.email !== userExist.email) {
       const emailExist = await this.userModel
-        .find({ email: user.email, _id: { $ne: id }, isDelete: false })
+        .find({ email: user.email, _id: { $ne: id }, isDelete: { $ne: true } })
         .lean()
         .exec();
       if (emailExist.length) {
@@ -116,28 +123,103 @@ export class UserService {
     }
     if (user.username && user.username !== userExist.username) {
       const usernameExist = await this.userModel
-        .find({ username: user.username, _id: { $ne: id }, isDelete: false })
+        .find({ username: user.username, _id: { $ne: id }, isDelete: { $ne: true } })
         .lean()
         .exec();
       if (usernameExist.length) {
         throw new ApiException('username Exist', ApiErrorCode.EMAIL_EXIST, 400);
       }
     }
-    await this.userModel.findByIdAndUpdate(id, user);
+    const updateUser = {
+      expired: '',
+      singleQuestionToken: 0,
+      singleChatToken: 0,
+      questionCount: 0,
+      ...user,
+    };
+    await this.userModel.findByIdAndUpdate(id, updateUser);
     return true;
   }
 
   async create(user: CreateUserDTO) {
-    const emailExist = await this.userModel.find({ email: user.email, isDelete: false }).lean().exec();
+    const emailExist = await this.userModel
+      .find({ email: user.email, isDelete: { $ne: true } })
+      .lean()
+      .exec();
     if (emailExist.length) {
       throw new ApiException('Email Exist', ApiErrorCode.EMAIL_EXIST, 400);
     }
-    const usernameExist = await this.userModel.find({ username: user.username, isDelete: false }).lean().exec();
+    const usernameExist = await this.userModel
+      .find({ username: user.username, isDelete: { $ne: true } })
+      .lean()
+      .exec();
     if (usernameExist.length) {
       throw new ApiException('username Exist', ApiErrorCode.EMAIL_EXIST, 400);
+    }
+    const phoneExist = await this.userModel
+      .find({ phone: user.username, isDelete: { $ne: true } })
+      .lean()
+      .exec();
+    if (phoneExist.length) {
+      throw new ApiException('phone Exist', ApiErrorCode.PHONE_EXIST, 400);
     }
     const password = this.cryptoUtil.encryptPassword(user.password);
     await this.userModel.create({ ...user, password });
     return true;
+  }
+
+  async updateToken(user: IUser, promptTokens: number, totalTokens: number) {
+    const usedPromptTokens = user.usedPromptTokens || 0;
+    const usedTotalTokens = user.usedTotalTokens || 0;
+    await this.userModel.findByIdAndUpdate(user._id, {
+      usedPromptTokens: usedPromptTokens + promptTokens,
+      usedTotalTokens: usedTotalTokens + totalTokens,
+    });
+  }
+
+  async uploadTemplate(path: string, filename: string) {
+    const workbook = XLSX.readFile(`${path}/${filename}`);
+    const sheetNames = workbook.SheetNames;
+    const worksheet = workbook.Sheets[sheetNames[0]];
+    const users = XLSX.utils.sheet_to_json(worksheet);
+    const newUsers: CreateUserDTO[] = users
+      .map((item) => {
+        const password = this.cryptoUtil.encryptPassword(md5(item['初始密码'].toString() || '1234'));
+        const model = item['模型'] && item['模型'] === 'gpt-4' ? 'gpt-4' : 'gpt-3.5-turbo';
+        return {
+          username: item['用户名'],
+          email: item['电子邮箱'],
+          phone: item['手机号'],
+          password,
+          model,
+          expired: item['过期时间'] || '',
+          singleQuestionToken: item['单个问题最大token'] ? parseInt(item['单个问题最大token']) : 0,
+          singleChatToken: item['单个聊天最大token数'] ? parseInt(item['单个聊天最大token数']) : 0,
+          questionCount: item['问题数'] ? parseInt(item['问题数']) : 0,
+        };
+      })
+      .filter((v) => v);
+    const usernames = newUsers.map((item) => item.username);
+    const emails = newUsers.map((item) => item.email);
+    const phones = newUsers.map((item) => item.phone);
+    const exist = await this.userModel.find({
+      $or: [
+        { username: { $in: usernames }, isDelete: { $ne: true } },
+        { email: { $in: emails }, isDelete: { $ne: true } },
+        { phone: { $in: phones }, isDelete: { $ne: true } },
+      ],
+    });
+    if (exist.length) {
+      throw new ApiException('用户已存在', ApiErrorCode.EMAIL_EXIST, 400);
+    }
+    console.log(newUsers, 'ss');
+    await this.userModel.insertMany(newUsers);
+  }
+
+  // 重置密码
+  async resetPassword(userId: string, reset: Password) {
+    const password = await this.cryptoUtil.encryptPassword(reset.password);
+    await this.userModel.findByIdAndUpdate(userId, { password });
+    return { status: 200, msg: 'success' };
   }
 }

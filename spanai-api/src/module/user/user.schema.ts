@@ -8,6 +8,9 @@ export class User {
   // 用户名
   @Prop()
   username: string;
+  // 手机号
+  @Prop()
+  phone: string;
   // 密码
   @Prop()
   password: string;
@@ -29,9 +32,17 @@ export class User {
   @Prop()
   singleQuestionToken: number;
   @Prop()
+  singleChatToken: number;
+  @Prop()
   questionCount: number;
   @Prop()
-  lastModel: number;
+  usedPromptTokens: number;
+  @Prop()
+  usedTotalTokens: number;
+  @Prop()
+  lastModel: string;
+  @Prop({ default: false })
+  isDelete: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

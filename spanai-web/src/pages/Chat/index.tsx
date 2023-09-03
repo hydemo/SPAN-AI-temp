@@ -1,5 +1,7 @@
 import { usePrevious, useRequest } from 'ahooks';
+import cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
+import { history } from 'umi';
 
 import { Content } from './Content';
 import { SideBar } from './SideBar';
@@ -16,6 +18,10 @@ export default function Chat() {
   const previousChatsData = usePrevious(chatsData);
 
   useEffect(() => {
+    const token = cookies.get('web_access_token');
+    if (!token) {
+      return history.push('/login');
+    }
     if (chatsData?.length > (previousChatsData?.length || 0)) {
       setSelectedChatId(chatsData[0]?._id);
     }

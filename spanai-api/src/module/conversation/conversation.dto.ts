@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsMongoId, IsString } from 'class-validator';
+import { IsMongoId, IsNumber, IsString } from 'class-validator';
 
 export class CreateConversationDTO {
   @IsMongoId()
@@ -32,6 +32,16 @@ export class CreateConversationDTO {
   @Type(() => String)
   @ApiProperty({ description: '父级' })
   readonly parent: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ description: '当前会话消的prompt token数' })
+  readonly promptTokens?: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ description: '当前会话消耗总的token数' })
+  readonly totalTokens?: string;
 }
 
 export class UpdateConversationDTO {

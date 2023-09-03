@@ -5,7 +5,6 @@ import { PassportModule } from '@nestjs/passport';
 import { CryptoUtil } from '@utils/crypto.util';
 import { EmailUtil } from 'src/utils/email.util';
 
-
 import { User, UserSchema } from './user.schema';
 import { UserService } from './user.service';
 

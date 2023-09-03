@@ -14,7 +14,7 @@ export default (props: FormProps) => {
     <ModalForm
       title="修改密码"
       autoFocusFirstInput
-      open={visible}
+      visible={visible}
       modalProps={{
         destroyOnClose: true,
         onCancel,

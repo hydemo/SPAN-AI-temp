@@ -50,9 +50,13 @@ export const ChatInput = ({
   };
 
   const doSubmit = async (userInput: string) => {
+    setUserInput('');
     if (userInput.length === 0 || loading) {
       return;
     }
+    setInputMessage([
+      { content: userInput, role: 'user', _id: '', createdAt: Date.now() },
+    ]);
     setLoading(true);
     setAutoScroll(true);
     try {
@@ -77,7 +81,8 @@ export const ChatInput = ({
       userInput.length <= 0 &&
       !(e.metaKey || e.altKey || e.ctrlKey)
     ) {
-      setUserInput(localStorage.getItem(LAST_INPUT_KEY) ?? '');
+      setUserInput('');
+      // setUserInput(localStorage.getItem(LAST_INPUT_KEY) ?? '');
       e.preventDefault();
       return;
     }

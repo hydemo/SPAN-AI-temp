@@ -1,11 +1,13 @@
 import { PlusOutlined } from '@ant-design/icons';
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { Popconfirm, message, Tag, Button } from 'antd';
+import { Popconfirm, message, Button } from 'antd';
 import { useRef, useState } from 'react';
 
 import ChangePassword from './ChangePassword';
 import CreateForm from './CreateForm';
+import { DownloadTemplate } from './DownloadTemplate';
+import { UploadTemplate } from './UploadTemplate';
 
 import {
   getUserList,
@@ -33,6 +35,11 @@ export const UserList = () => {
       valueType: 'text',
     },
     {
+      title: '手机号',
+      dataIndex: 'phone',
+      valueType: 'text',
+    },
+    {
       title: '邮箱',
       dataIndex: 'email',
       valueType: 'text',
@@ -46,6 +53,24 @@ export const UserList = () => {
     {
       title: '单个问题最大token',
       dataIndex: 'singleQuestionToken',
+      valueType: 'text',
+      search: false,
+    },
+    {
+      title: '单个聊天最大token数',
+      dataIndex: 'singleChatToken',
+      valueType: 'text',
+      search: false,
+    },
+    {
+      title: '已用总token',
+      dataIndex: 'usedTotalTokens',
+      valueType: 'text',
+      search: false,
+    },
+    {
+      title: '已用总prompt token',
+      dataIndex: 'usedPromptTokens',
       valueType: 'text',
       search: false,
     },
@@ -132,8 +157,13 @@ export const UserList = () => {
           labelWidth: 120,
         }}
         toolBarRender={() => [
+          <DownloadTemplate key="template" />,
+          <UploadTemplate
+            key="upload"
+            onSuccess={() => actionRef.current.reload()}
+          />,
           <Button
-            key="button"
+            key="add"
             icon={<PlusOutlined />}
             onClick={() => {
               setCreateModal(true);

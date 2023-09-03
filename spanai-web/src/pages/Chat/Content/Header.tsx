@@ -1,4 +1,8 @@
-import { IconButton } from '@/components/IconButton';
+import { stringify } from 'querystring';
+
+import { LogoutOutlined } from '@ant-design/icons';
+import cookies from 'js-cookie';
+import { history } from 'umi';
 
 type Props = {
   topic: string;
@@ -9,6 +13,23 @@ export const Header = ({ topic = '新的聊天', messages }: Props) => {
   if (!messages) {
     return;
   }
+
+  const loginOut = async () => {
+    // await outLogin();
+    const { query = {}, search, pathname } = history.location;
+    const { redirect } = query;
+    // Note: There may be security issues, please note
+    if (window.location.pathname !== '/login' && !redirect) {
+      history.push({
+        pathname: '/login',
+        search: stringify({
+          redirect: pathname + search,
+        }),
+      });
+    }
+    cookies.remove('web_access_token');
+    cookies.remove('web_userinfo');
+  };
 
   return (
     <div className="window-header" data-tauri-drag-region>
@@ -24,6 +45,7 @@ export const Header = ({ topic = '新的聊天', messages }: Props) => {
         </div>
       </div>
       <div className="window-actions">
+        <LogoutOutlined onClick={loginOut} />
         {/* {isMobile && (
           <div className="window-action-button">
             <IconButton

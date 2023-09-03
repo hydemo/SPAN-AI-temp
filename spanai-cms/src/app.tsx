@@ -1,9 +1,9 @@
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
-import { SettingDrawer } from '@ant-design/pro-components';
+// import { SettingDrawer } from '@ant-design/pro-components';
 import cookies from 'js-cookie';
 import { parse } from 'query-string';
 import type { RunTimeLayoutConfig } from 'umi';
-import { history, setLocale, getLocale } from 'umi';
+import { history, setLocale } from 'umi';
 
 import defaultSettings from '../config/defaultSettings';
 

@@ -23,14 +23,25 @@ export const ConversationList = () => {
       valueType: 'text',
     },
     {
+      title: 'prompt token数',
+      dataIndex: 'promptTokens',
+      valueType: 'text',
+    },
+    {
+      title: '总token数',
+      dataIndex: 'totalTokens',
+      valueType: 'text',
+    },
+    {
       title: '消息',
       dataIndex: 'content',
       valueType: 'text',
+      width: '700px',
     },
     {
       title: '创建时间',
       dataIndex: 'createdAt',
-      valueType: 'Date',
+      valueType: 'date',
     },
   ];
 

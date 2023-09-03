@@ -1,7 +1,7 @@
 export const isDev = ['localhost', '127.0.0.1'].includes(location.hostname);
 
 export const baseURL = isDev
-  ? `http://${location.hostname}:8801/admin`
+  ? `http://${location.hostname}:8001/admin`
   : `${location.origin}/admin`;
 
 export const webUrl = isDev

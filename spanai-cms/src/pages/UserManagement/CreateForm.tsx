@@ -49,6 +49,7 @@ export default (props: FormProps) => {
           },
         ]}
       />
+      <ProFormText name="phone" label="手机号" placeholder="手机号" />
       <ProFormText
         name="email"
         label="邮箱"
@@ -90,6 +91,12 @@ export default (props: FormProps) => {
       <ProFormDigit
         label="单个问题最大token数"
         name="singleQuestionToken"
+        style={{ width: '100%' }}
+        min={1}
+      />
+      <ProFormDigit
+        label="单个聊天最大token数"
+        name="singleChatToken"
         style={{ width: '100%' }}
         min={1}
       />

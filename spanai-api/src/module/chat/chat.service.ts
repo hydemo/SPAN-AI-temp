@@ -23,7 +23,7 @@ export class ChatService {
     }
     const data = await this.chatModel
       .find(condition)
-      .sort({ layerId: 1 })
+      .sort({ createdAt: -1 })
       .limit(pagination.pageSize)
       .skip((pagination.current - 1) * pagination.pageSize)
       .select({ password: 0 })
