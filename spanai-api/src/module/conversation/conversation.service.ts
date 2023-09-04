@@ -56,10 +56,11 @@ export class ConversationService {
   }
 
   async getMessages(chatId: string, content: string) {
-    const messages = await this.getMessageByChat(chatId);
+    const messages: any = await this.getMessageByChat(chatId);
     if (messages.length <= 1) {
       await this.chatService.update(chatId, content);
     }
+    messages.push({ content, role: 'user' });
     return messages.map((item) => ({ content: item.content, role: item.role }));
   }
 
