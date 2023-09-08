@@ -1,4 +1,4 @@
-import { request } from '@/utils/request';
+import { request, downloadExcel } from '@/utils/request';
 
 export async function getUserList(options?: { [key: string]: any }) {
   return request({
@@ -51,5 +51,11 @@ export async function updateUser(id, body: any) {
       'Content-Type': 'application/json',
     },
     data: body,
+  });
+}
+
+export function downloadTemplate() {
+  downloadExcel({
+    url: 'users/template',
   });
 }

@@ -4140,6 +4140,11 @@
     "@smithy/util-buffer-from" "^2.0.0"
     tslib "^2.5.0"
 
+"@streamparser/json@^0.0.6":
+  version "0.0.6"
+  resolved "https://registry.npmmirror.com/@streamparser/json/-/json-0.0.6.tgz#6d5853197f52d765d99a23767c951c03676a0e27"
+  integrity sha512-vL9EVn/v+OhZ+Wcs6O4iKE9EUpwHUqHmCtNUMWjqp+6dr85+XPOSGTEsqYNq1Vn04uk9SWlOVmx9J48ggJVT2Q==
+
 "@stylelint/postcss-css-in-js@^0.38.0":
   version "0.38.0"
   resolved "https://registry.npmmirror.com/@stylelint/postcss-css-in-js/-/postcss-css-in-js-0.38.0.tgz#eabb061df932744db766f11a153ae1c465b6263c"
@@ -6886,6 +6891,11 @@ commander@^2.20.0:
   version "2.20.3"
   resolved "https://registry.npmmirror.com/commander/-/commander-2.20.3.tgz#fd485e84c03eb4881c20722ba48035e8531aeb33"
   integrity sha512-GpVkmM8vF2vQUkj2LvZmD35JxeJOLCwJ9cUkugyk2nuhbv3+mJvpLYYt+0+USMxE+oj+ey/lJEnhZw75x/OMcQ==
+
+commander@^6.2.0:
+  version "6.2.1"
+  resolved "https://registry.npmmirror.com/commander/-/commander-6.2.1.tgz#0792eb682dfbc325999bb2b84fddddba110ac73c"
+  integrity sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==
 
 commander@^7.2.0:
   version "7.2.0"
@@ -11071,6 +11081,15 @@ json-stringify-safe@^5.0.1:
   resolved "https://registry.npmmirror.com/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
   integrity sha512-ZClg6AaYvamvYEE82d3Iyd3vSSIjQ+odgjaTzRuO3s7toCdFKczob2i0zCh7JE8kWn17yvAWhUVxvqGwUalsRA==
 
+json2csv@^6.0.0-alpha.2:
+  version "6.0.0-alpha.2"
+  resolved "https://registry.npmmirror.com/json2csv/-/json2csv-6.0.0-alpha.2.tgz#ef859e8883a5db1077d784e302a79003c13c212f"
+  integrity sha512-nJ3oP6QxN8z69IT1HmrJdfVxhU1kLTBVgMfRnNZc37YEY+jZ4nU27rBGxT4vaqM/KUCavLRhntmTuBFqZLBUcA==
+  dependencies:
+    "@streamparser/json" "^0.0.6"
+    commander "^6.2.0"
+    lodash.get "^4.4.2"
+
 json2mq@^0.2.0:
   version "0.2.0"
   resolved "https://registry.npmmirror.com/json2mq/-/json2mq-0.2.0.tgz#b637bd3ba9eabe122c83e9720483aeb10d2c904a"
@@ -11526,6 +11545,11 @@ lodash.flatten@^4.4.0:
   version "4.4.0"
   resolved "https://registry.npmmirror.com/lodash.flatten/-/lodash.flatten-4.4.0.tgz#f31c22225a9632d2bbf8e4addbef240aa765a61f"
   integrity sha512-C5N2Z3DgnnKr0LOpv/hKCgKdb7ZZwafIrsesve6lmzvZIRZRGaZ/l6Q8+2W7NaT+ZwO3fFlSCzCzrDCFdJfZ4g==
+
+lodash.get@^4.4.2:
+  version "4.4.2"
+  resolved "https://registry.npmmirror.com/lodash.get/-/lodash.get-4.4.2.tgz#2d177f652fa31e939b4438d5341499dfa3825e99"
+  integrity sha512-z+Uw/vLuy6gQe8cfaFWD7p0wVv8fJl3mbzXh33RS+0oW2wvUqiRXiQ69gLWSLpgB5/6sU+r6BlQR0MBILadqTQ==
 
 lodash.includes@^4.3.0:
   version "4.3.0"

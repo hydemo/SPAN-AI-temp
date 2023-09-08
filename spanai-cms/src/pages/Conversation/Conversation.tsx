@@ -2,6 +2,8 @@ import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
 import { useRef } from 'react';
 
+import { Download } from './Download';
+
 import { getConversation } from '@/services/apiList/conversation';
 
 export const ConversationList = () => {
@@ -39,9 +41,14 @@ export const ConversationList = () => {
       width: '700px',
     },
     {
-      title: '创建时间',
-      dataIndex: 'createdAt',
+      title: '提问时间',
+      dataIndex: 'questionTime',
       valueType: 'date',
+    },
+    {
+      title: '回复时间（秒）',
+      dataIndex: 'answerTime',
+      valueType: 'text',
     },
   ];
 
@@ -55,19 +62,7 @@ export const ConversationList = () => {
         search={{
           labelWidth: 120,
         }}
-        // toolBarRender={() => [
-        //   <Button
-        //     key="button"
-        //     icon={<PlusOutlined />}
-        //     onClick={() => {
-        //       setCreateModal(true);
-        //       setType('Add');
-        //     }}
-        //     type="primary"
-        //   >
-        //     新建
-        //   </Button>,
-        // ]}
+        toolBarRender={() => [<Download key="download" />]}
       />
     </PageContainer>
   );

@@ -32,6 +32,12 @@ export class Conversation {
   // 总token数量
   @Prop()
   totalTokens: number;
+  // 提问时间
+  @Prop()
+  questionTime: Date;
+  // 回复时间
+  @Prop()
+  answerTime: number;
 }
 
 export const ConversationSchema = SchemaFactory.createForClass(Conversation);

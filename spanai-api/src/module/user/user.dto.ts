@@ -14,6 +14,18 @@ export class LoginDTO {
   password: string;
 }
 
+export class ResetMyPassDTO {
+  @IsString()
+  @Type(() => String)
+  @ApiProperty({ description: '旧密码' })
+  readonly oldPass: string;
+
+  @IsString()
+  @Type(() => String)
+  @ApiProperty({ description: '新密码' })
+  readonly newPass: string;
+}
+
 export class UpdateUserDTO {
   @IsString()
   @Type(() => String)

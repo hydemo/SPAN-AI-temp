@@ -125,7 +125,7 @@ const AvatarDropdown: React.FC<GlobalHeaderRightProps> = () => {
       <ModalForm
         modalProps={{ destroyOnClose: true }}
         title="修改密码"
-        open={modalVisible}
+        visible={modalVisible}
         onVisibleChange={setModalVisible}
         onFinish={handleChangePassword}
       >

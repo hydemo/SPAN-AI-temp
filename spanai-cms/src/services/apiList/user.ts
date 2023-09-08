@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { getLocale } from 'umi';
-import { request, downloadExcel } from '@/utils/request';
+import { request } from '@/utils/request';
 import md5 from 'md5';
 
 /** 登录接口 POST /api/login/account */
@@ -95,8 +95,4 @@ export async function newPassword(
   });
 }
 
-export function downloadTemplate() {
-  downloadExcel({
-    url: 'users/template',
-  });
-}
+

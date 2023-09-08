@@ -42,6 +42,16 @@ export class CreateConversationDTO {
   @Type(() => Number)
   @ApiProperty({ description: '当前会话消耗总的token数' })
   readonly totalTokens?: string;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ description: '提问时间' })
+  readonly questionTime: number;
+
+  @IsNumber()
+  @Type(() => Number)
+  @ApiProperty({ description: '回复时间' })
+  readonly answerTime?: number;
 }
 
 export class UpdateConversationDTO {

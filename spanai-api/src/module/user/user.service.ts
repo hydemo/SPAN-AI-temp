@@ -4,12 +4,13 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { CryptoUtil } from '@utils/crypto.util';
 import * as md5 from 'md5';
+import * as moment from 'moment';
 import { LeanDocument, Model } from 'mongoose';
 import { RedisService } from 'nest-redis';
 import { ApiException } from 'src/common/exception/api.exception';
 import * as XLSX from 'xlsx';
 
-import { CreateUserDTO, Password, UpdateUserDTO } from './user.dto';
+import { CreateUserDTO, Password, UpdateUserDTO, ResetMyPassDTO } from './user.dto';
 import { IUser, User } from './user.schema';
 
 @Injectable()
@@ -68,6 +69,10 @@ export class UserService {
     if (!this.cryptoUtil.checkPassword(password, user.password)) {
       throw new ApiException('Login Failed', ApiErrorCode.NO_EXIST, 404);
     }
+    const now = moment().format('YYYY-MM-DD');
+    if (user.expired && now > user.expired) {
+      throw new ApiException('用户已过期，请联系管理员!', ApiErrorCode.NO_PERMISSION, 403);
+    }
     const token = this.jwtService.sign({ id: user._id, type: 'user' }, { expiresIn: '7d' });
     await this.userModel
       .findByIdAndUpdate(user._id, {
@@ -78,6 +83,16 @@ export class UserService {
       .exec();
     delete user.password;
     return { token, userinfo: user };
+  }
+
+  async resetMyPassword(user: IUser, reset: ResetMyPassDTO) {
+    const result = this.cryptoUtil.checkPassword(reset.oldPass, user.password);
+    if (!result) {
+      throw new ApiException('密码错误', ApiErrorCode.NO_PERMISSION, 403);
+    }
+    const password = this.cryptoUtil.encryptPassword(reset.newPass);
+    await this.userModel.findByIdAndUpdate(user._id, { password });
+    return true;
   }
 
   // 获取员工全部信息

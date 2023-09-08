@@ -1,7 +1,7 @@
 import { DownloadOutlined } from '@ant-design/icons';
 import { Button } from 'antd';
 
-import { downloadTemplate } from '@/services/apiList/user';
+import { downloadTemplate } from '@/services/apiList/userManagement';
 
 export const DownloadTemplate = () => {
   const handleDownload = () => {

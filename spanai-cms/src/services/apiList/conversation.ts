@@ -1,7 +1,7 @@
 // @ts-ignore
 /* eslint-disable */
 import { getLocale } from 'umi';
-import { request } from '@/utils/request';
+import { request, downloadExcel } from '@/utils/request';
 
 export async function getConversation(options?: { [key: string]: any }) {
   return request({
@@ -11,5 +11,11 @@ export async function getConversation(options?: { [key: string]: any }) {
       'Content-Type': 'application/json',
     },
     params: options,
+  });
+}
+
+export function download(type) {
+  downloadExcel({
+    url: `conversations/download?type=${type}`,
   });
 }

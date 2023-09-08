@@ -1,10 +1,14 @@
+import * as fs from 'fs';
+
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import * as JSON2CSV from 'json2csv';
 import * as moment from 'moment';
 import { Model } from 'mongoose';
 import * as GptTokenCounter from 'openai-gpt-token-counter';
 import { ApiErrorCode } from 'src/common/enum/api-error-code.enum';
 import { ApiException } from 'src/common/exception/api.exception';
+import * as XLSX from 'xlsx';
 
 import { GPTService } from '../AIHandler/GPT.service';
 import { ChatService } from '../chat/chat.service';
@@ -15,9 +19,9 @@ import { CreateConversationDTO, SendMessageDTO, UpdateConversationDTO } from './
 import { IConversation, Conversation } from './conversation.schema';
 
 const gptTokenCounter: any = GptTokenCounter;
-
 @Injectable()
 export class ConversationService {
+  private PATH = 'temp/download';
   constructor(
     @InjectModel(Conversation.name) private readonly conversationModel: Model<IConversation>,
     @Inject(GPTService) private readonly gptService: GPTService,
@@ -97,6 +101,7 @@ export class ConversationService {
   }
 
   async sendMessage(user: IUser, message: SendMessageDTO) {
+    const questionTime = Date.now();
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
     await this.limitCheck(formatMessages, user);
@@ -104,6 +109,7 @@ export class ConversationService {
     const responseContent = aiMessage.choices[0].message.content;
     const promptTokens = aiMessage.usage.prompt_tokens;
     const totalTokens = aiMessage.usage.total_tokens;
+    const answerTime = (Date.now() - questionTime) / 1000;
     const newConversation: CreateConversationDTO = {
       user: user._id,
       chat: message.chatId,
@@ -113,6 +119,8 @@ export class ConversationService {
       role: 'user',
       promptTokens,
       totalTokens,
+      questionTime,
+      answerTime,
     };
     const newUserConversation = await this.conversationModel.create(newConversation);
     const newAIRespnose: CreateConversationDTO = {
@@ -124,6 +132,8 @@ export class ConversationService {
       role: 'assistant',
       promptTokens,
       totalTokens,
+      questionTime,
+      answerTime,
     };
     await this.conversationModel.create(newAIRespnose);
     await this.userService.updateToken(user, promptTokens, totalTokens);
@@ -133,5 +143,60 @@ export class ConversationService {
   async update(id: string, conversation: UpdateConversationDTO) {
     await this.conversationModel.findByIdAndUpdate(id, conversation);
     return true;
+  }
+
+  async download(type: string) {
+    const result: any = await this.conversationModel.find().populate({ model: 'User', path: 'user' });
+    const answerMap = {};
+    result.forEach((item) => {
+      if (item.role === 'assistant') {
+        answerMap[item.parent] = item;
+      }
+    });
+    const downLoadResult = result
+      .filter((item) => item.role === 'user')
+      .map((item) => {
+        const answer = answerMap[item._id] || {};
+        return {
+          用户Id: item.user._id,
+          用户名: item.user.username,
+          chatId: item.chat,
+          prompt内容: item.content,
+          ai回复内容: answer.content,
+          'prompt token': item.promptTokens,
+          总token: item.totalTokens,
+          prompt时间: item.questionTime ? moment(item.questionTime).format('YYYY-MM-DD HH:mm:ss') : '',
+          回复时间: item.answerTime,
+        };
+      });
+    const filename = `聊天记录-${moment().format('YYYY-MM-DD')}`;
+    switch (type) {
+      case 'xlsx':
+        const sheet = XLSX.utils.json_to_sheet(downLoadResult);
+        const sheetName = '未完成名单';
+        const SheetNames = [];
+        const Sheets = {};
+
+        SheetNames.push(sheetName);
+        Sheets[sheetName] = sheet;
+        const workbook = {
+          SheetNames,
+          Sheets,
+        };
+        XLSX.writeFile(workbook, `${this.PATH}/${filename}.xlsx`);
+        break;
+      case 'json':
+        fs.writeFileSync(`${this.PATH}/${filename}.json`, JSON.stringify(downLoadResult, null, '\t'));
+        break;
+      case 'csv':
+        const parser = new JSON2CSV.Parser();
+        console.log(parser, 'ss');
+        const csvResult = parser.parse(downLoadResult);
+        fs.writeFileSync(`${this.PATH}/${filename}.csv`, csvResult);
+      default:
+        break;
+    }
+
+    return `${filename}.${type}`;
   }
 }

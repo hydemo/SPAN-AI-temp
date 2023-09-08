@@ -24,7 +24,7 @@ export async function changePass(
   body: API.ChangePassword,
   options?: { [key: string]: any },
 ) {
-  return request({
+  request({
     url: 'user/password',
     method: 'PUT',
     headers: {

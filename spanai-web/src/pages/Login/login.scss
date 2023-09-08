@@ -39,4 +39,33 @@
       margin-bottom: 10px;
     }
   }
+
+  .auth-agreement-container {
+    display: flex;
+    align-items: center; /* 垂直居中对齐 */
+    margin-bottom: 3vh;
+  }
+
+  .auth-agreement-checkbox {
+    margin-right: 8px;
+  }
+
+  .auth-agreement {
+    margin-left: 4px;
+    font-size: 14px;
+    color: rgb(29, 147, 171); /* 设置链接文字颜色 */
+    text-decoration: none; /* 移除下划线 */
+    transition: color 0.3s; /* 添加颜色渐变过渡效果 */
+  }
+
+  .auth-agreement:hover {
+    text-decoration: underline; /* 鼠标悬停时添加下划线 */
+  }
+
+  .auth-agreement-popupButton {
+    padding-top: 8px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
 }
