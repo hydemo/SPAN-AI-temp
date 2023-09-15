@@ -33,11 +33,14 @@ export class ConversationService {
   async list(pagination: any) {
     const condition: any = {};
     const searchCondition = [];
-    if (pagination.chat) {
-      condition.chat = pagination.chat;
+    if (pagination.content) {
+      condition.content = new RegExp(pagination.content || '', 'i');
     }
     if (pagination.user) {
       condition.user = pagination.user;
+    }
+    if (pagination.role) {
+      condition.role = pagination.role;
     }
     if (searchCondition.length) {
       condition.$or = searchCondition;

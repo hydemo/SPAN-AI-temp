@@ -18,15 +18,16 @@ export const ChatList = () => {
       valueType: 'text',
     },
     {
+      title: '创建时间',
+      dataIndex: 'createdAt',
+      valueType: 'date',
+      search: false,
+    },
+    {
       title: '对话标题',
       dataIndex: 'name',
       valueType: 'text',
       width: '700px',
-    },
-    {
-      title: '创建时间',
-      dataIndex: 'createdAt',
-      valueType: 'date',
     },
   ];
 
