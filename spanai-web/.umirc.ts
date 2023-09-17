@@ -6,4 +6,9 @@ export default defineConfig({
   npmClient: 'yarn',
   clickToComponent: {},
   hash: true,
+  theme: {
+    'root-entry-name': 'variable',
+    'primary-color': '#4e3abc',
+    'blue-base': '#4e3abc',
+  },
 });

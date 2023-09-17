@@ -150,7 +150,7 @@ export default () => {
         >
           <Button
             style={{
-              backgroundColor: 'rgb(29, 147, 171)',
+              backgroundColor: 'var(--primary)',
             }}
             type="primary"
             className="auth-agreement-popup-button"

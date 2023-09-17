@@ -23,6 +23,10 @@
   .auth-input {
     width: 350px;
     margin: 3vh 0;
+
+    // &:focus-visible {
+    //   border: 1px solid var(--primary) !important;
+    // }
   }
 
   .auth-input + .auth-input {
@@ -53,7 +57,7 @@
   .auth-agreement {
     margin-left: 4px;
     font-size: 14px;
-    color: rgb(29, 147, 171); /* 设置链接文字颜色 */
+    color: var(--primary); /* 设置链接文字颜色 */
     text-decoration: none; /* 移除下划线 */
     transition: color 0.3s; /* 添加颜色渐变过渡效果 */
   }

@@ -95,7 +95,7 @@ export const Header = ({ topic = '新的聊天', messages }: Props) => {
         <div>
           <Dropdown overlay={menuHeaderDropdown}>
             <SettingOutlined
-              style={{ color: 'rgb(29, 147, 171)', fontSize: '20px' }}
+              style={{ color: 'var(--primary)', fontSize: '20px' }}
             />
           </Dropdown>
           {/* {isMobile && (
