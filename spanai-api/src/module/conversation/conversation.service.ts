@@ -71,8 +71,8 @@ export class ConversationService {
     return messages.map((item) => ({ content: item.content, role: item.role }));
   }
 
-  async sendGPTMessage(messages: any[], model: any) {
-    return await this.gptService.conversation(messages, model);
+  sendGPTMessage(messages: any[], model: any) {
+    this.gptService.conversation(messages, model);
   }
 
   expiredCheck(user: IUser) {
@@ -104,43 +104,43 @@ export class ConversationService {
   }
 
   async sendMessage(user: IUser, message: SendMessageDTO) {
-    const questionTime = Date.now();
+    // const questionTime = Date.now();
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
     await this.limitCheck(formatMessages, user);
-    const aiMessage = await this.sendGPTMessage(formatMessages, user.model);
-    const responseContent = aiMessage.choices[0].message.content;
-    const promptTokens = aiMessage.usage.prompt_tokens;
-    const totalTokens = aiMessage.usage.total_tokens;
-    const answerTime = (Date.now() - questionTime) / 1000;
-    const newConversation: CreateConversationDTO = {
-      user: user._id,
-      chat: message.chatId,
-      content: message.content,
-      model: aiMessage.model,
-      parent: message.parent ? message.parent : message.chatId,
-      role: 'user',
-      promptTokens,
-      totalTokens,
-      questionTime,
-      answerTime,
-    };
-    const newUserConversation = await this.conversationModel.create(newConversation);
-    const newAIRespnose: CreateConversationDTO = {
-      user: user._id,
-      chat: message.chatId,
-      content: responseContent,
-      model: aiMessage.model,
-      parent: newUserConversation._id,
-      role: 'assistant',
-      promptTokens,
-      totalTokens,
-      questionTime,
-      answerTime,
-    };
-    await this.conversationModel.create(newAIRespnose);
-    await this.userService.updateToken(user, promptTokens, totalTokens);
-    return responseContent;
+    return this.sendGPTMessage(formatMessages, user.model);
+    // const responseContent = aiMessage.choices[0].message.content;
+    // const promptTokens = aiMessage.usage.prompt_tokens;
+    // const totalTokens = aiMessage.usage.total_tokens;
+    // const answerTime = (Date.now() - questionTime) / 1000;
+    // const newConversation: CreateConversationDTO = {
+    //   user: user._id,
+    //   chat: message.chatId,
+    //   content: message.content,
+    //   model: aiMessage.model,
+    //   parent: message.parent ? message.parent : message.chatId,
+    //   role: 'user',
+    //   promptTokens,
+    //   totalTokens,
+    //   questionTime,
+    //   answerTime,
+    // };
+    // const newUserConversation = await this.conversationModel.create(newConversation);
+    // const newAIRespnose: CreateConversationDTO = {
+    //   user: user._id,
+    //   chat: message.chatId,
+    //   content: responseContent,
+    //   model: aiMessage.model,
+    //   parent: newUserConversation._id,
+    //   role: 'assistant',
+    //   promptTokens,
+    //   totalTokens,
+    //   questionTime,
+    //   answerTime,
+    // };
+    // await this.conversationModel.create(newAIRespnose);
+    // await this.userService.updateToken(user, promptTokens, totalTokens);
+    // return responseContent;
   }
 
   async update(id: string, conversation: UpdateConversationDTO) {

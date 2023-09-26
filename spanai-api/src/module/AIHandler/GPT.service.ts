@@ -22,17 +22,17 @@ export class GPTService {
     return headers;
   }
 
-  async conversation(messages: any, model: string) {
+  conversation(messages: any, model: string) {
     const requestPayload = {
       messages,
-      stream: false,
+      stream: true,
       model: model ? model : 'gpt-3.5-turbo',
       temperature: 0.5,
       presence_penalty: 0,
       frequency_penalty: 0,
       top_p: 1,
     };
-    const res = await axios({
+    const res = axios({
       url: `${this.config.openAIBaseUrl}/${OpenaiPath.ChatPath}`,
       method: 'POST',
       data: requestPayload,
@@ -42,9 +42,21 @@ export class GPTService {
         port: 7890,
       },
     });
-    if (res.data?.choices) {
-      return res.data;
-      // return res.data.choices[0].message.content;
+    return res;
+  }
+
+  async models() {
+    const res = await axios({
+      url: `${this.config.openAIBaseUrl}/${OpenaiPath.ListModelPath}`,
+      method: 'GET',
+      headers: this.getHeaders(),
+      proxy: {
+        host: '127.0.0.1',
+        port: 7890,
+      },
+    });
+    if (res.data?.data) {
+      return res.data.data;
     }
     return '';
   }
