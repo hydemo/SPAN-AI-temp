@@ -15,8 +15,11 @@ export class ApiConversationController {
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '发送消息', description: '发送消息' })
   async create(@Request() req: any, @Body() message: SendMessageDTO, @Response() res: any) {
-    const response: any = this.conversationService.sendMessage(req.user, message);
-    response.pipe(res);
+    const response: any = await this.conversationService.sendMessage(req.user, message);
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Connection', 'keep-alive');
+    response.data.pipe(res);
   }
 
   @Get('/')

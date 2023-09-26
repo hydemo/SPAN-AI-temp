@@ -32,17 +32,17 @@ export class GPTService {
       frequency_penalty: 0,
       top_p: 1,
     };
-    const res = axios({
+    return axios({
       url: `${this.config.openAIBaseUrl}/${OpenaiPath.ChatPath}`,
       method: 'POST',
       data: requestPayload,
       headers: this.getHeaders(),
-      proxy: {
-        host: '127.0.0.1',
-        port: 7890,
-      },
+      responseType: 'stream',
+      // proxy: {
+      //   host: '127.0.0.1',
+      //   port: 7890,
+      // },
     });
-    return res;
   }
 
   async models() {

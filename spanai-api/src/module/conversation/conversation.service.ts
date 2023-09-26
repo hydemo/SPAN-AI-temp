@@ -71,10 +71,6 @@ export class ConversationService {
     return messages.map((item) => ({ content: item.content, role: item.role }));
   }
 
-  sendGPTMessage(messages: any[], model: any) {
-    this.gptService.conversation(messages, model);
-  }
-
   expiredCheck(user: IUser) {
     const now = moment().format('YYYY-MM-DD');
     if (user.expired && now > user.expired) {
@@ -107,8 +103,8 @@ export class ConversationService {
     // const questionTime = Date.now();
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
-    await this.limitCheck(formatMessages, user);
-    return this.sendGPTMessage(formatMessages, user.model);
+    this.limitCheck(formatMessages, user);
+    return this.gptService.conversation(formatMessages, user.model);
     // const responseContent = aiMessage.choices[0].message.content;
     // const promptTokens = aiMessage.usage.prompt_tokens;
     // const totalTokens = aiMessage.usage.total_tokens;
