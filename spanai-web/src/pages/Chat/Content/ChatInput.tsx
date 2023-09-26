@@ -1,5 +1,7 @@
-import { useDebounceEffect, useRequest } from 'ahooks';
+import { fetchEventSource } from '@fortaine/fetch-event-source';
+import { useDebounceEffect } from 'ahooks';
 import { Spin } from 'antd';
+import cookies from 'js-cookie';
 import { useRef, useState } from 'react';
 
 import { autoGrowTextArea } from './utils';
@@ -7,8 +9,8 @@ import { autoGrowTextArea } from './utils';
 import { MessageInfo } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
 import { SendWhiteIcon } from '@/components/icons';
-import { LAST_INPUT_KEY } from '@/constant';
 import { sendMessages } from '@/services/apiList/chat';
+import { baseURL } from '@/utils/config';
 
 type Props = {
   chatId: string;
@@ -19,6 +21,11 @@ type Props = {
   setInputMessage: (message: MessageInfo[]) => void;
 };
 
+const sendGPTMessages = (
+  { userInput, chatId, messages },
+  setInputMessage,
+) => {};
+
 export const ChatInput = ({
   chatId,
   messages,
@@ -26,6 +33,7 @@ export const ChatInput = ({
   refreshMessages,
   setAutoScroll,
   setInputMessage,
+  inputMessage,
 }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState('');
@@ -60,12 +68,75 @@ export const ChatInput = ({
     setLoading(true);
     setAutoScroll(true);
     try {
-      await sendMessages({
+      // await sendGPTMessages({ userInput, chatId, messages }, setInputMessage);
+
+      let responseText = '';
+
+      const requestPayload = {
         content: userInput,
         model: 'gpt-3.5-turbo',
         chatId,
         parent: messages?.[messages?.length - 1]?._id || chatId,
+      };
+
+      const chatPath = baseURL + '/conversations';
+      const controller = new AbortController();
+      const token = cookies.get('web_access_token');
+      const chatPayload = {
+        method: 'POST',
+        body: JSON.stringify(requestPayload),
+        signal: controller.signal,
+        headers: {
+          'Content-Type': 'application/json',
+          'x-requested-with': 'XMLHttpRequest',
+          Authorization: `Bearer ${token}`,
+        },
+      };
+
+      fetchEventSource(chatPath, {
+        ...chatPayload,
+        async onopen(res) {
+          console.log('[OpenAI] onopen');
+        },
+        onmessage(msg) {
+          if (msg.data === '[DONE]') {
+            return;
+          }
+          const text = msg.data;
+          try {
+            const json = JSON.parse(text);
+            const delta = json.choices[0].delta.content;
+            if (delta) {
+              responseText += delta;
+              setInputMessage((inputMessages) => {
+                let temp = [...inputMessages];
+                console.log(temp);
+                if (temp[1]) {
+                  console.log(temp);
+                  temp[1].content = responseText;
+                } else {
+                  temp.push({
+                    content: responseText,
+                    role: 'assistant',
+                    _id: '',
+                    createdAt: Date.now(),
+                  });
+                }
+                return temp;
+              });
+              // console.log(responseText);
+            }
+          } catch (e) {
+            console.error('[Request] parse error', text, msg);
+          }
+        },
+        onclose() {},
+        onerror(e) {
+          throw e;
+        },
+        openWhenHidden: true,
       });
+
       refreshChats();
       setInputMessage([]);
       refreshMessages();

@@ -4,7 +4,9 @@ import { request } from '@/utils/request';
 
 export async function getChats() {
   const token = cookies.get('web_access_token');
-  if (!token) { return [] }
+  if (!token) {
+    return [];
+  }
   return request({
     url: 'chats',
     method: 'GET',
@@ -26,7 +28,9 @@ export async function newChats() {
 
 export async function getMessages(params: { chatId: string }) {
   const token = cookies.get('web_access_token');
-  if (!token) { return [] }
+  if (!token) {
+    return [];
+  }
   return request({
     url: 'conversations',
     method: 'GET',
@@ -50,7 +54,10 @@ export async function sendMessages(data: SendMessageData) {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
+      Accept: 'text/event-stream',
+      // 'Content-Type': 'text/event-stream', // 设置请求头为 text/event-stream
     },
     data,
+    responseType: 'stream',
   });
 }

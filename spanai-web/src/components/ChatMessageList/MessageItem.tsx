@@ -25,7 +25,7 @@ export const MessageItem = ({ data: { role, content, createdAt } }: Props) => {
     // </div>
     <div className={isUser ? 'chat-message-user' : 'chat-message'}>
       <div className="chat-message-container">
-        <div className="chat-message-item">
+        <div className="chat-message-item markdown-body">
           <ReactMarkdown
             remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
             rehypePlugins={[

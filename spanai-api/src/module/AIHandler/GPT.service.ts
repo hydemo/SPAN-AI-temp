@@ -4,6 +4,8 @@ import { ConfigService } from 'src/config/config.service';
 
 import { OpenaiPath } from './constant';
 
+const isProduction = process.env.NODE_ENV === 'production';
+
 @Injectable()
 export class GPTService {
   constructor(readonly config: ConfigService) {}
@@ -38,10 +40,12 @@ export class GPTService {
       data: requestPayload,
       headers: this.getHeaders(),
       responseType: 'stream',
-      // proxy: {
-      //   host: '127.0.0.1',
-      //   port: 7890,
-      // },
+      proxy: isProduction
+        ? {
+            host: '127.0.0.1',
+            port: 7890,
+          }
+        : undefined,
     });
   }
 
