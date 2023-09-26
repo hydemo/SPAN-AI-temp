@@ -67,82 +67,77 @@ export const ChatInput = ({
     ]);
     setLoading(true);
     setAutoScroll(true);
-    try {
-      // await sendGPTMessages({ userInput, chatId, messages }, setInputMessage);
+    // await sendGPTMessages({ userInput, chatId, messages }, setInputMessage);
 
-      let responseText = '';
+    let responseText = '';
 
-      const requestPayload = {
-        content: userInput,
-        model: 'gpt-3.5-turbo',
-        chatId,
-        parent: messages?.[messages?.length - 1]?._id || chatId,
-      };
+    const requestPayload = {
+      content: userInput,
+      model: 'gpt-3.5-turbo',
+      chatId,
+      parent: messages?.[messages?.length - 1]?._id || chatId,
+    };
 
-      const chatPath = baseURL + '/conversations';
-      const controller = new AbortController();
-      const token = cookies.get('web_access_token');
-      const chatPayload = {
-        method: 'POST',
-        body: JSON.stringify(requestPayload),
-        signal: controller.signal,
-        headers: {
-          'Content-Type': 'application/json',
-          'x-requested-with': 'XMLHttpRequest',
-          Authorization: `Bearer ${token}`,
-        },
-      };
+    const chatPath = baseURL + '/conversations';
+    const controller = new AbortController();
+    const token = cookies.get('web_access_token');
+    const chatPayload = {
+      method: 'POST',
+      body: JSON.stringify(requestPayload),
+      signal: controller.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-requested-with': 'XMLHttpRequest',
+        Authorization: `Bearer ${token}`,
+      },
+    };
 
-      fetchEventSource(chatPath, {
-        ...chatPayload,
-        async onopen(res) {
-          console.log('[OpenAI] onopen');
-        },
-        onmessage(msg) {
-          if (msg.data === '[DONE]') {
-            return;
-          }
-          const text = msg.data;
-          try {
-            const json = JSON.parse(text);
-            const delta = json.choices[0].delta.content;
-            if (delta) {
-              responseText += delta;
-              setInputMessage((inputMessages) => {
-                let temp = [...inputMessages];
+    fetchEventSource(chatPath, {
+      ...chatPayload,
+      onmessage(msg) {
+        if (msg.data === '[DONE]') {
+          return;
+        }
+        const text = msg.data;
+        try {
+          const json = JSON.parse(text);
+          const delta = json.choices[0].delta.content;
+          if (delta) {
+            responseText += delta;
+            setInputMessage((inputMessages) => {
+              let temp = [...inputMessages];
+              console.log(temp);
+              if (temp[1]) {
                 console.log(temp);
-                if (temp[1]) {
-                  console.log(temp);
-                  temp[1].content = responseText;
-                } else {
-                  temp.push({
-                    content: responseText,
-                    role: 'assistant',
-                    _id: '',
-                    createdAt: Date.now(),
-                  });
-                }
-                return temp;
-              });
-              // console.log(responseText);
-            }
-          } catch (e) {
-            console.error('[Request] parse error', text, msg);
+                temp[1].content = responseText;
+              } else if (temp[0]) {
+                temp.push({
+                  content: responseText,
+                  role: 'assistant',
+                  _id: '',
+                  createdAt: Date.now(),
+                });
+              }
+              return temp;
+            });
+            // console.log(responseText);
           }
-        },
-        onclose() {},
-        onerror(e) {
-          throw e;
-        },
-        openWhenHidden: true,
-      });
-
-      refreshChats();
-      setInputMessage([]);
-      refreshMessages();
-    } finally {
-      setLoading(false);
-    }
+        } catch (e) {
+          console.error('[Request] parse error', text, msg);
+        }
+      },
+      onclose() {
+        refreshChats();
+        setInputMessage([]);
+        refreshMessages();
+        setLoading(false);
+      },
+      onerror(e) {
+        setLoading(false);
+        throw e;
+      },
+      openWhenHidden: true,
+    });
   };
 
   const onInputKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
