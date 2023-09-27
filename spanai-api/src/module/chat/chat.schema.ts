@@ -11,6 +11,9 @@ export class Chat {
   // 密码
   @Prop()
   name: string;
+  // 密码
+  @Prop({ default: 0 })
+  conversionCount: number;
 }
 
 export const ChatSchema = SchemaFactory.createForClass(Chat);

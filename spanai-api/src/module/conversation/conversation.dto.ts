@@ -16,12 +16,12 @@ export class CreateConversationDTO {
   @IsString()
   @Type(() => String)
   @ApiProperty({ description: '用户' })
-  readonly content: string;
+  content: string;
 
   @IsString()
   @Type(() => String)
   @ApiProperty({ description: '发送方', enum: ['assistant', 'user'] })
-  readonly role: 'assistant' | 'user';
+  role: 'assistant' | 'user';
 
   @IsString()
   @Type(() => String)
@@ -31,17 +31,17 @@ export class CreateConversationDTO {
   @IsMongoId()
   @Type(() => String)
   @ApiProperty({ description: '父级' })
-  readonly parent: string;
+  parent: string;
 
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ description: '当前会话消的prompt token数' })
-  readonly promptTokens?: string;
+  readonly promptTokens?: number;
 
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ description: '当前会话消耗总的token数' })
-  readonly totalTokens?: string;
+  totalTokens?: number;
 
   @IsNumber()
   @Type(() => Number)
@@ -51,7 +51,7 @@ export class CreateConversationDTO {
   @IsNumber()
   @Type(() => Number)
   @ApiProperty({ description: '回复时间' })
-  readonly answerTime?: number;
+  answerTime?: number;
 }
 
 export class UpdateConversationDTO {

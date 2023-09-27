@@ -2,10 +2,10 @@ import * as fs from 'fs';
 
 import { Inject, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { GPTTokens } from 'gpt-tokens';
 import * as JSON2CSV from 'json2csv';
 import * as moment from 'moment';
 import { Model } from 'mongoose';
-import * as GptTokenCounter from 'openai-gpt-token-counter';
 import { ApiErrorCode } from 'src/common/enum/api-error-code.enum';
 import { ApiException } from 'src/common/exception/api.exception';
 import * as XLSX from 'xlsx';
@@ -18,7 +18,6 @@ import { UserService } from '../user/user.service';
 import { CreateConversationDTO, SendMessageDTO, UpdateConversationDTO } from './conversation.dto';
 import { IConversation, Conversation } from './conversation.schema';
 
-const gptTokenCounter: any = GptTokenCounter;
 @Injectable()
 export class ConversationService {
   private PATH = 'temp/download';
@@ -90,53 +89,83 @@ export class ConversationService {
       throw new ApiException('提问数已达限制，请联系管理员!', ApiErrorCode.NO_PERMISSION, 403);
     }
     const model: any = user.model || 'gpt-3.5-turbo';
-    const tokenCount = gptTokenCounter.chat(messages, model);
+    const usageInfo = new GPTTokens({ model, messages });
+    const tokenCount = usageInfo.promptUsedTokens;
     if (tokenCount > user.singleQuestionToken) {
       throw new ApiException('单个问题超出token数限制，请简化提问方式!', ApiErrorCode.NO_PERMISSION, 403);
     }
     if (user.singleChatToken && chatTokens + tokenCount > user.singleChatToken) {
       throw new ApiException('单个聊天窗口超出token数限制，请联系管理员!', ApiErrorCode.NO_PERMISSION, 403);
     }
+    return tokenCount;
+  }
+
+  async saveResult(user: IUser, newConversation: CreateConversationDTO, responseContent: string, count: number) {
+    const newUserConversation = await this.conversationModel.create(newConversation);
+    const newAIRespnose: CreateConversationDTO = {
+      ...newConversation,
+      content: responseContent,
+      parent: newUserConversation._id,
+      role: 'assistant',
+    };
+    await this.conversationModel.create(newAIRespnose);
+    await this.userService.updateToken(user, 1, 2);
+    await this.chatService.updateConversionCount(newConversation.chat, count + 1);
+    return responseContent;
   }
 
   async sendMessage(user: IUser, message: SendMessageDTO) {
-    // const questionTime = Date.now();
+    const questionTime = Date.now();
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
-    this.limitCheck(formatMessages, user);
-    return this.gptService.conversation(formatMessages, user.model);
-    // const responseContent = aiMessage.choices[0].message.content;
-    // const promptTokens = aiMessage.usage.prompt_tokens;
-    // const totalTokens = aiMessage.usage.total_tokens;
-    // const answerTime = (Date.now() - questionTime) / 1000;
-    // const newConversation: CreateConversationDTO = {
-    //   user: user._id,
-    //   chat: message.chatId,
-    //   content: message.content,
-    //   model: aiMessage.model,
-    //   parent: message.parent ? message.parent : message.chatId,
-    //   role: 'user',
-    //   promptTokens,
-    //   totalTokens,
-    //   questionTime,
-    //   answerTime,
-    // };
-    // const newUserConversation = await this.conversationModel.create(newConversation);
-    // const newAIRespnose: CreateConversationDTO = {
-    //   user: user._id,
-    //   chat: message.chatId,
-    //   content: responseContent,
-    //   model: aiMessage.model,
-    //   parent: newUserConversation._id,
-    //   role: 'assistant',
-    //   promptTokens,
-    //   totalTokens,
-    //   questionTime,
-    //   answerTime,
-    // };
-    // await this.conversationModel.create(newAIRespnose);
-    // await this.userService.updateToken(user, promptTokens, totalTokens);
-    // return responseContent;
+    const promptTokens = await this.limitCheck(formatMessages, user);
+    const response: any = await this.gptService.conversation(formatMessages, user.model);
+    let responseText = '';
+    const newConversation: CreateConversationDTO = {
+      user: user._id,
+      chat: message.chatId,
+      content: message.content,
+      model: user.model,
+      parent: message.parent ? message.parent : message.chatId,
+      role: 'user',
+      promptTokens,
+      totalTokens: 0,
+      questionTime,
+      answerTime: 0,
+    };
+    response.data.on('data', (chunk: any) => {
+      const lines = chunk
+        .toString()
+        .split('\n')
+        .filter((line) => line.trim() !== '');
+      for (const line of lines) {
+        const msg = line.replace(/^data: /, '');
+        if (msg == '[DONE]') {
+          const answerTime = (Date.now() - questionTime) / 1000;
+          newConversation.answerTime = answerTime;
+          const model: any = user.model;
+          const usageInfo = new GPTTokens({
+            model,
+            messages: [{ role: 'assistant', content: responseText }],
+          });
+          const answerTokens = usageInfo.completionUsedTokens;
+          newConversation.totalTokens = promptTokens + answerTokens;
+          this.saveResult(user, newConversation, responseText, formatMessages.length);
+        } else {
+          const parsed = JSON.parse(msg);
+          if (parsed.choices[0].delta.content) {
+            //解析出来的内容
+            let content = parsed.choices[0].delta.content;
+            if (content.startsWith(':')) {
+              //转义
+              content = '\\\\' + content;
+            }
+            responseText += content;
+          }
+        }
+      }
+    });
+    return response;
   }
 
   async update(id: string, conversation: UpdateConversationDTO) {

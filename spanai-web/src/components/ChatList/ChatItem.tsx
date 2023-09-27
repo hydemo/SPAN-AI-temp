@@ -10,7 +10,7 @@ type Props = {
 
 export const ChatItem = ({
   chatId,
-  data: { _id, name = '新的聊天', count = 0, createdAt },
+  data: { _id, name = '新的聊天', conversionCount = 0, createdAt },
   onSetSelectedChatId,
 }: Props) => {
   const selected = chatId === _id;
@@ -30,7 +30,7 @@ export const ChatItem = ({
     >
       <div className={'chat-item-title'}>{name}</div>
       <div className={'chat-item-info'}>
-        <div className={'chat-item-count'}>{count} 条对话</div>
+        <div className={'chat-item-count'}>{conversionCount} 条对话</div>
         <div className={'chat-item-date'}>
           {moment(createdAt).format('YYYY-MM-DD HH:mm:ss')}
         </div>

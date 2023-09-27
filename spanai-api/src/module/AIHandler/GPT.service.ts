@@ -24,7 +24,7 @@ export class GPTService {
     return headers;
   }
 
-  conversation(messages: any, model: string) {
+  async conversation(messages: any, model: string) {
     const requestPayload = {
       messages,
       stream: true,
@@ -34,19 +34,20 @@ export class GPTService {
       frequency_penalty: 0,
       top_p: 1,
     };
-    return axios({
+    const payload: any = {
       url: `${this.config.openAIBaseUrl}/${OpenaiPath.ChatPath}`,
       method: 'POST',
       data: requestPayload,
       headers: this.getHeaders(),
       responseType: 'stream',
-      proxy: isProduction
-        ? {
-            host: '127.0.0.1',
-            port: 7890,
-          }
-        : undefined,
-    });
+    };
+    if (isProduction) {
+      payload.proxy = {
+        host: '127.0.0.1',
+        port: 7890,
+      };
+    }
+    return await axios(payload);
   }
 
   async models() {

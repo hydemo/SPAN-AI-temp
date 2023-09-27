@@ -52,4 +52,9 @@ export class ChatService {
     await this.chatModel.findByIdAndUpdate(id, { name });
     return true;
   }
+
+  async updateConversionCount(id: string, conversionCount: number) {
+    await this.chatModel.findByIdAndUpdate(id, { conversionCount });
+    return true;
+  }
 }
