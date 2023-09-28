@@ -1,7 +1,7 @@
 import { LoadingOutlined } from '@ant-design/icons';
 import { fetchEventSource } from '@fortaine/fetch-event-source';
 import { useDebounceEffect } from 'ahooks';
-import { Spin } from 'antd';
+import { Spin, notification } from 'antd';
 import cookies from 'js-cookie';
 import { useRef, useState } from 'react';
 
@@ -11,7 +11,13 @@ import { MessageInfo } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
 import { LoadingIcon, SendWhiteIcon } from '@/components/icons';
 import { sendMessages } from '@/services/apiList/chat';
+import { getUserUsage } from '@/services/apiList/user';
+import {
+  LimitError,
+  checkUserUsageLimitError,
+} from '@/utils/checkUserUsageLimitError';
 import { baseURL } from '@/utils/config';
+import { apiErrorHandler } from '@/utils/request';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 18 }} spin />;
 
@@ -65,6 +71,29 @@ export const ChatInput = ({
     if (userInput.length === 0 || loading) {
       return;
     }
+
+    const userUsage = await getUserUsage();
+    const checkResult = checkUserUsageLimitError({
+      userUsage,
+      userInput,
+      messages,
+    });
+    if (checkResult) {
+      const messageMap: any = {
+        [LimitError.IsExpired]: '用户已过期, 请联系管理员!',
+        [LimitError.IsUserQuestionExceedLimit]: '提问数已达限制, 请联系管理员!',
+        [LimitError.IsSingleQuestionExceedLimit]:
+          '单个问题超出token数限制, 请简化提问方式!',
+        [LimitError.IsChatQuestionExceedLimit]:
+          '单个聊天窗口超出token数限制, 请联系管理员!',
+      };
+      notification.error({
+        message: '错误',
+        description: messageMap[checkResult] || checkResult,
+        duration: 2,
+      });
+      return;
+    }
     setInputMessage([
       { content: userInput, role: 'user', _id: '', createdAt: Date.now() },
     ]);
@@ -97,6 +126,12 @@ export const ChatInput = ({
 
     fetchEventSource(chatPath, {
       ...chatPayload,
+      async onopen(response) {
+        if (response.ok) {
+          return; // everything's good
+        }
+        apiErrorHandler(response.status);
+      },
       onmessage(msg) {
         if (msg.data === '[DONE]') {
           return;
@@ -136,17 +171,6 @@ export const ChatInput = ({
       },
       onerror(e) {
         setLoading(false);
-        setInputMessage((inputMessages) => {
-          let temp = [...inputMessages];
-          temp.push({
-            content: 'API 返回错误，可能是因为 token 已超出限制',
-            role: 'assistant',
-            _id: '',
-            createdAt: Date.now(),
-            type: 'error',
-          });
-          return temp;
-        });
         throw e;
       },
       openWhenHidden: true,

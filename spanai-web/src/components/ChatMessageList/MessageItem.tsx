@@ -27,15 +27,7 @@ export const MessageItem = ({
     // </div>
     <div className={isUser ? 'chat-message-user' : 'chat-message'}>
       <div className="chat-message-container">
-        <div
-          className="chat-message-item markdown-body"
-          style={{
-            color:
-              type === 'error'
-                ? 'var(--color-prettylights-syntax-keyword)'
-                : 'inherit',
-          }}
-        >
+        <div className="chat-message-item markdown-body">
           <ReactMarkdown
             remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
             rehypePlugins={[
