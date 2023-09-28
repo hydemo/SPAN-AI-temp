@@ -7,6 +7,7 @@ import { EmailUtil } from 'src/utils/email.util';
 
 import { AIHandlerModule } from '../AIHandler/AIHandler.module';
 import { ChatModule } from '../chat/chat.module';
+import { SummaryModule } from '../summary/summary.module';
 import { UserModule } from '../user/user.module';
 
 import { Conversation, ConversationSchema } from './conversation.schema';
@@ -27,6 +28,7 @@ import { ConversationService } from './conversation.service';
     MongooseModule.forFeature([{ name: Conversation.name, schema: ConversationSchema }]),
     ChatModule,
     UserModule,
+    SummaryModule,
   ],
 })
 export class ConversationModule {}

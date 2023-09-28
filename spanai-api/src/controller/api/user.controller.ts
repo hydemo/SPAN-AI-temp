@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Inject, Request, UseGuards, Put } from '@nestjs/common';
+import { Body, Controller, Post, Inject, Request, UseGuards, Put, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
 import { LoginDTO, ResetMyPassDTO } from 'src/module/user/user.dto';
@@ -15,6 +15,19 @@ export class ApiUserController {
   async login(@Body() login: LoginDTO, @Request() req: any) {
     const clientIp = req.headers['x-real-ip'] ? req.headers['x-real-ip'] : req.ip.replace(/::ffff:/, '');
     return await this.userService.login(login.username, login.password, clientIp);
+  }
+
+  @Get('/usage')
+  @UseGuards(AuthGuard())
+  @ApiOperation({ summary: '获取用户剩余token', description: '获取用户剩余token' })
+  async usage(@Request() req: any) {
+    return {
+      expired: req.user.expired,
+      singleQuestionToken: req.user.singleQuestionToken,
+      singleChatToken: req.user.singleChatToken,
+      questionCount: req.user.questionCount,
+      model: req.user.model,
+    };
   }
 
   @Put('/password')

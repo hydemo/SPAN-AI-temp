@@ -12,6 +12,8 @@ import * as XLSX from 'xlsx';
 
 import { GPTService } from '../AIHandler/GPT.service';
 import { ChatService } from '../chat/chat.service';
+import { ISummary } from '../summary/summary.schema';
+import { SummaryService } from '../summary/summary.service';
 import { IUser } from '../user/user.schema';
 import { UserService } from '../user/user.service';
 
@@ -26,6 +28,7 @@ export class ConversationService {
     @Inject(GPTService) private readonly gptService: GPTService,
     @Inject(ChatService) private readonly chatService: ChatService,
     @Inject(UserService) private readonly userService: UserService,
+    @Inject(SummaryService) private readonly summaryService: SummaryService,
   ) {}
 
   // 获取员工全部信息
@@ -100,7 +103,13 @@ export class ConversationService {
     return tokenCount;
   }
 
-  async saveResult(user: IUser, newConversation: CreateConversationDTO, responseContent: string, count: number) {
+  async saveResult(
+    user: IUser,
+    newConversation: CreateConversationDTO,
+    responseContent: string,
+    messages: any,
+    summary: ISummary,
+  ) {
     const newUserConversation = await this.conversationModel.create(newConversation);
     const newAIRespnose: CreateConversationDTO = {
       ...newConversation,
@@ -110,7 +119,9 @@ export class ConversationService {
     };
     await this.conversationModel.create(newAIRespnose);
     await this.userService.updateToken(user, 1, 2);
-    await this.chatService.updateConversionCount(newConversation.chat, count + 1);
+    await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
+    const newMessages = [{ role: 'assistant', content: responseContent }];
+    this.summaryService.addSummary(summary, [...messages, ...newMessages], newConversation.model, newConversation.chat);
     return responseContent;
   }
 
@@ -119,7 +130,13 @@ export class ConversationService {
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
     const promptTokens = await this.limitCheck(formatMessages, user);
-    const response: any = await this.gptService.conversation(formatMessages, user.model);
+    const messagesWithSummary = await this.summaryService.getMessageWithSummary(
+      message.chatId,
+      formatMessages,
+      user.model || 'gpt-3.5-turbo',
+    );
+    console.log(messagesWithSummary, 'sss');
+    const response: any = await this.gptService.conversation(messagesWithSummary.messages, user.model, true);
     let responseText = '';
     const newConversation: CreateConversationDTO = {
       user: user._id,
@@ -140,6 +157,7 @@ export class ConversationService {
         .filter((line) => line.trim() !== '');
       for (const line of lines) {
         const msg = line.replace(/^data: /, '');
+        console.log(msg, 'msg');
         if (msg == '[DONE]') {
           const answerTime = (Date.now() - questionTime) / 1000;
           newConversation.answerTime = answerTime;
@@ -150,7 +168,7 @@ export class ConversationService {
           });
           const answerTokens = usageInfo.completionUsedTokens;
           newConversation.totalTokens = promptTokens + answerTokens;
-          this.saveResult(user, newConversation, responseText, formatMessages.length);
+          this.saveResult(user, newConversation, responseText, formatMessages, messagesWithSummary.summary);
         } else {
           const parsed = JSON.parse(msg);
           if (parsed.choices[0].delta.content) {

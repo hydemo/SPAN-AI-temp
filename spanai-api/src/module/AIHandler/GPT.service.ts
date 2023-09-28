@@ -24,10 +24,10 @@ export class GPTService {
     return headers;
   }
 
-  async conversation(messages: any, model: string) {
+  async conversation(messages: any, model: string, stream: boolean) {
     const requestPayload = {
       messages,
-      stream: true,
+      stream,
       model: model ? model : 'gpt-3.5-turbo',
       temperature: 0.5,
       presence_penalty: 0,
@@ -39,8 +39,11 @@ export class GPTService {
       method: 'POST',
       data: requestPayload,
       headers: this.getHeaders(),
-      responseType: 'stream',
     };
+    if (stream) {
+      payload.responseType = 'stream';
+    }
+    console.log(payload, messages, 'payload');
     if (isProduction) {
       payload.proxy = {
         host: '127.0.0.1',
