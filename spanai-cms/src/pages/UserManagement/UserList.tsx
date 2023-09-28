@@ -7,6 +7,7 @@ import { useRef, useState } from 'react';
 import ChangePassword from './ChangePassword';
 import CreateForm from './CreateForm';
 import { DownloadTemplate } from './DownloadTemplate';
+import ReportList from './ReportList';
 import { UploadTemplate } from './UploadTemplate';
 
 import {
@@ -21,6 +22,7 @@ export const UserList = () => {
   const actionRef = useRef<ActionType>();
   const [createModal, setCreateModal] = useState<boolean>(false);
   const [passwordModal, setPasswordModal] = useState<boolean>(false);
+  const [reportModal, setReportModal] = useState<boolean>(false);
   const [row, setRow] = useState<any>({});
   const [type, setType] = useState<'Add' | 'Edit'>('Add');
 
@@ -123,6 +125,15 @@ export const UserList = () => {
         >
           修改密码
         </a>,
+        <a
+          key="reports"
+          onClick={() => {
+            setReportModal(true);
+            setRow(record);
+          }}
+        >
+          报告列表
+        </a>,
       ],
     },
   ];
@@ -186,6 +197,11 @@ export const UserList = () => {
         visible={createModal}
         type={type}
         record={row}
+      />
+      <ReportList
+        userId={row._id}
+        onCancel={() => setReportModal(false)}
+        visible={reportModal}
       />
     </PageContainer>
   );

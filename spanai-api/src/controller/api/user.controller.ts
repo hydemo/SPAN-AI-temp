@@ -62,8 +62,8 @@ export class ApiUserController {
       storage: multer.diskStorage({
         destination: join(`temp/upload`),
         filename: (req, file, cb) => {
-          if (!fs.existsSync(join(`temp/upload/${req.user.username}`))) {
-            fs.mkdirSync(join(`temp/upload/${req.user.username}`));
+          if (!fs.existsSync(join(`temp/upload/${req.user._id}`))) {
+            fs.mkdirSync(join(`temp/upload/${req.user._id}`));
           }
           const extendName = extname(file.originalname);
           const baseName = file.originalname.replace(extendName, '');

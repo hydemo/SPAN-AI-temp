@@ -59,3 +59,20 @@ export function downloadTemplate() {
     url: 'users/template',
   });
 }
+
+export async function getReportList(userId: string) {
+  return request({
+    url: `/users/${userId}/reports`,
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}
+
+export function downloadReport(userId: string, reportName: string) {
+  downloadExcel({
+    url: `users/${userId}/reports/download`,
+    params: { reportName },
+  });
+}

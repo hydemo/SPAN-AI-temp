@@ -1,3 +1,6 @@
+import * as fs from 'fs';
+import { join } from 'path';
+
 import { ApiErrorCode } from '@common/enum/api-error-code.enum';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -236,5 +239,15 @@ export class UserService {
     const password = await this.cryptoUtil.encryptPassword(reset.password);
     await this.userModel.findByIdAndUpdate(userId, { password });
     return { status: 200, msg: 'success' };
+  }
+
+  // 获取上传报告列表
+  async reports(userId: string) {
+    const userPath = join(`temp/upload/${userId}`);
+    if (!fs.existsSync(userPath)) {
+      return [];
+    }
+    const fileList: string[] = fs.readdirSync(userPath);
+    return fileList.filter((item) => item[0] !== '.').map((item) => ({ name: item }));
   }
 }
