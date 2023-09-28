@@ -90,7 +90,7 @@ export const ChatInput = ({
       notification.error({
         message: '错误',
         description: messageMap[checkResult] || checkResult,
-        duration: 2,
+        duration: 5,
       });
       return;
     }

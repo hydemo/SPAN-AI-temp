@@ -13,7 +13,9 @@ const checkUserQuestionExceedLimit = (
   messages: any[],
   questionCount: number,
 ) => {
-  return messages.length >= questionCount;
+  return (
+    messages.filter((item) => item.role === 'user').length >= questionCount
+  );
 };
 
 export enum LimitError {
