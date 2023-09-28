@@ -44,7 +44,7 @@ export class SummaryService {
       reversedRecentMessages.unshift(messages[i]);
       const usageInfo = new GPTTokens({ model, messages });
       const tokenCount = usageInfo.promptUsedTokens;
-      if (tokenCount > 3001) {
+      if (tokenCount > 4001) {
         break;
       }
     }
@@ -66,7 +66,7 @@ export class SummaryService {
     const usageInfo = new GPTTokens({ model, messages });
     const tokenCount = usageInfo.promptUsedTokens;
 
-    if (tokenCount > 1000) {
+    if (tokenCount > 4000) {
       const n = toBeSummarizedMsgs.length;
       toBeSummarizedMsgs = toBeSummarizedMsgs.slice(Math.max(0, n - 4));
     }
