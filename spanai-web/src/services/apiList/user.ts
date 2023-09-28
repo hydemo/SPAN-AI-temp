@@ -48,3 +48,13 @@ export async function changeName(
     data: { fullname },
   });
 }
+
+export async function getUserUsage() {
+  return request({
+    url: 'user/usage',
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+}

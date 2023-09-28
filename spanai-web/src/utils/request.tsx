@@ -7,6 +7,41 @@ import { baseURL } from './config';
 
 const getLocale = () => 'zh-CN';
 
+export const apiErrorHandler = (status: number, code?: string) => {
+  if (status === 401) {
+    cookies.remove('web_access_token');
+    // @HACK
+    /* eslint-disable no-underscore-dangle */
+    setTimeout(() => {
+      history.push('/login');
+    }, 2000);
+
+    return {};
+  }
+  // environment should not be used
+  if (status === 403) {
+    notification.error({
+      message: `请求错误 ${status}`,
+      description: '无访问权限',
+      duration: 2,
+    });
+    return {};
+  }
+  if (status <= 504 && status >= 500) {
+    notification.error({
+      message: `请求错误 ${status}`,
+      description: '服务器异常',
+      duration: 2,
+    });
+    return {};
+  }
+  if (code) return {};
+  if (status >= 404 && status < 422) {
+    return {};
+  }
+  return {};
+};
+
 export async function request(options: any) {
   const { headers, extendUrl, responseType } = options;
   const axiosReq: any = axios.create({
@@ -71,38 +106,7 @@ export async function request(options: any) {
 
   return axiosReq(options).catch((e: any) => {
     const status = e.name;
-    if (status === 401) {
-      cookies.remove('web_access_token');
-      // @HACK
-      /* eslint-disable no-underscore-dangle */
-      setTimeout(() => {
-        history.push('/login');
-      }, 2000);
-
-      return {};
-    }
-    // environment should not be used
-    if (status === 403) {
-      // notification.error({
-      //   message: `请求错误 ${status}`,
-      //   description: '无访问权限',
-      //   duration: 2,
-      // });
-      return {};
-    }
-    if (status <= 504 && status >= 500) {
-      notification.error({
-        message: `请求错误 ${status}`,
-        description: '服务器异常',
-        duration: 2,
-      });
-      return {};
-    }
-    if (e.code) return {};
-    if (status >= 404 && status < 422) {
-      return {};
-    }
-    return {};
+    return apiErrorHandler(status, e.code);
   });
 }
 
