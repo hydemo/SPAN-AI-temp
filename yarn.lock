@@ -13347,13 +13347,6 @@ open@^9.1.0:
     is-inside-container "^1.0.0"
     is-wsl "^2.2.0"
 
-openai-gpt-token-counter@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.npmmirror.com/openai-gpt-token-counter/-/openai-gpt-token-counter-1.1.0.tgz#d0d0c8f7b86e63862a21f19db79790dc60f6a59c"
-  integrity sha512-3YloTdqK+HaCAgIKdY5L7bAgLO7TWYIsZC/nF4XtRJRL0FkRZ7kbruUGCBgU8PDdYLdARhoqlYKUCwOOfnNUag==
-  dependencies:
-    tiktoken "^1.0.10"
-
 openai@^3.3.0:
   version "3.3.0"
   resolved "https://registry.npmmirror.com/openai/-/openai-3.3.0.tgz#a6408016ad0945738e1febf43f2fccca83a3f532"
@@ -16921,11 +16914,6 @@ through@2, "through@>=2.2.7 <3", through@^2.3.4, through@^2.3.6, through@^2.3.8,
   version "2.3.8"
   resolved "https://registry.npmmirror.com/through/-/through-2.3.8.tgz#0dd4c9ffaabc357960b1b724115d7e0e86a2e1f5"
   integrity sha512-w89qg7PI8wAdvX60bMDP+bFoD5Dvhm9oLheFp5O4a2QF0cSBGsBX4qZmadPMvVqlLJBBci+WqGGOAPvcDeNSVg==
-
-tiktoken@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.npmmirror.com/tiktoken/-/tiktoken-1.0.10.tgz#d5ade07bc19f4424c404646b606e64674b0df5ef"
-  integrity sha512-gF8ndTCNu7WcRFbl1UUWaFIB4CTXmHzS3tRYdyUYF7x3C6YR6Evoao4zhKDmWIwv2PzNbzoQMV8Pxt+17lEDbA==
 
 timers-browserify@^2.0.4:
   version "2.0.12"

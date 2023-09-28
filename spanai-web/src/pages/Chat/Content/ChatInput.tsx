@@ -1,3 +1,4 @@
+import { LoadingOutlined } from '@ant-design/icons';
 import { fetchEventSource } from '@fortaine/fetch-event-source';
 import { useDebounceEffect } from 'ahooks';
 import { Spin } from 'antd';
@@ -8,9 +9,11 @@ import { autoGrowTextArea } from './utils';
 
 import { MessageInfo } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
-import { SendWhiteIcon } from '@/components/icons';
+import { LoadingIcon, SendWhiteIcon } from '@/components/icons';
 import { sendMessages } from '@/services/apiList/chat';
 import { baseURL } from '@/utils/config';
+
+const antIcon = <LoadingOutlined style={{ fontSize: 18 }} spin />;
 
 type Props = {
   chatId: string;
@@ -106,9 +109,7 @@ export const ChatInput = ({
             responseText += delta;
             setInputMessage((inputMessages) => {
               let temp = [...inputMessages];
-              console.log(temp);
               if (temp[1]) {
-                console.log(temp);
                 temp[1].content = responseText;
               } else if (temp[0]) {
                 temp.push({
@@ -126,14 +127,26 @@ export const ChatInput = ({
           console.error('[Request] parse error', text, msg);
         }
       },
-      onclose() {
-        refreshChats();
-        setInputMessage([]);
-        refreshMessages();
+      async onclose() {
         setLoading(false);
+        setTimeout(() => {
+          refreshMessages();
+          refreshChats();
+        }, 1000);
       },
       onerror(e) {
         setLoading(false);
+        setInputMessage((inputMessages) => {
+          let temp = [...inputMessages];
+          temp.push({
+            content: 'API 返回错误，可能是因为 token 已超出限制',
+            role: 'assistant',
+            _id: '',
+            createdAt: Date.now(),
+            type: 'error',
+          });
+          return temp;
+        });
         throw e;
       },
       openWhenHidden: true,
@@ -175,15 +188,6 @@ export const ChatInput = ({
   };
   return (
     <div className="chat-input-panel">
-      <Spin
-        tip="回复中......"
-        size="large"
-        spinning={loading}
-        style={{ top: '-400px' }}
-      >
-        <div />
-      </Spin>
-
       {/* <ChatActions
         showPromptModal={() => setShowPromptModal(true)}
         scrollToBottom={scrollToBottom}
@@ -219,8 +223,8 @@ export const ChatInput = ({
         />
         <IconButton
           loading={loading}
-          icon={<SendWhiteIcon />}
-          text="发送"
+          icon={loading ? <Spin indicator={antIcon} /> : <SendWhiteIcon />}
+          text={loading ? '回复中' : '发送'}
           className="chat-input-send"
           type="primary"
           disabled={loading || Boolean(userInput.length <= 0)}

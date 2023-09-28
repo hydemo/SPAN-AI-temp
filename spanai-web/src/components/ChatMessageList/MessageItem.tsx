@@ -11,7 +11,9 @@ import { MessageInfo } from './types';
 
 type Props = { data: MessageInfo };
 
-export const MessageItem = ({ data: { role, content, createdAt } }: Props) => {
+export const MessageItem = ({
+  data: { role, content, createdAt, type },
+}: Props) => {
   const isUser = role === 'user';
 
   return (
@@ -25,7 +27,15 @@ export const MessageItem = ({ data: { role, content, createdAt } }: Props) => {
     // </div>
     <div className={isUser ? 'chat-message-user' : 'chat-message'}>
       <div className="chat-message-container">
-        <div className="chat-message-item markdown-body">
+        <div
+          className="chat-message-item markdown-body"
+          style={{
+            color:
+              type === 'error'
+                ? 'var(--color-prettylights-syntax-keyword)'
+                : 'inherit',
+          }}
+        >
           <ReactMarkdown
             remarkPlugins={[RemarkMath, RemarkGfm, RemarkBreaks]}
             rehypePlugins={[

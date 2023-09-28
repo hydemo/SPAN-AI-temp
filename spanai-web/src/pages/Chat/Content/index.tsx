@@ -1,5 +1,5 @@
 import { useRequest } from 'ahooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { ChatInput } from './ChatInput';
 import { Header } from './Header';
@@ -18,6 +18,7 @@ type Props = {
 
 export const Content = ({ chatId, refreshChats }: Props) => {
   const { scrollRef, setAutoScroll } = useScrollToBottom();
+  const [uiMessages, setUIMessages] = useState<MessageInfo[]>([]);
   const [inputMessage, setInputMessage] = useState<MessageInfo[]>([]);
   const onChatBodyScroll = (e: HTMLElement) => {
     const isTouchBottom = e.scrollTop + e.clientHeight >= e.scrollHeight - 10;
@@ -25,25 +26,36 @@ export const Content = ({ chatId, refreshChats }: Props) => {
     setAutoScroll(isTouchBottom);
   };
 
-  const { data: messages, refresh: refreshMessages } = useRequest<
+  const { data: apiMessages = [], refresh: refreshMessages } = useRequest<
     MessageInfo[],
     any
   >(
-    () =>
-      getMessages({
+    async () => {
+      const result = await getMessages({
         chatId,
-      }),
+      });
+      setInputMessage([]);
+      return result;
+    },
     {
       refreshDeps: [chatId],
     },
   );
 
+  useEffect(() => {
+    setUIMessages(apiMessages);
+  }, [apiMessages]);
+
+  useEffect(() => {
+    setUIMessages([...apiMessages, ...inputMessage]);
+  }, [inputMessage]);
+
   return (
     <div className="window-content">
       <div className="chat">
         <Header
-          topic={messages?.[0]?.content || '新的聊天'}
-          messages={messages}
+          topic={uiMessages?.[0]?.content || '新的聊天'}
+          messages={uiMessages}
         />
         <div
           className="chat-body"
@@ -54,15 +66,13 @@ export const Content = ({ chatId, refreshChats }: Props) => {
             setAutoScroll(false);
           }}
         >
-          <ChatMessageList
-            messages={messages ? [...messages, ...inputMessage] : inputMessage}
-          />
+          <ChatMessageList messages={uiMessages} />
         </div>
         <ChatInput
           refreshChats={refreshChats}
           refreshMessages={refreshMessages}
           chatId={chatId}
-          messages={messages}
+          messages={uiMessages}
           setInputMessage={setInputMessage}
           setAutoScroll={setAutoScroll}
         />

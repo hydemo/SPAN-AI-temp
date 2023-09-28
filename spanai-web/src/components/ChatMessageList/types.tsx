@@ -3,4 +3,5 @@ export type MessageInfo = {
   content: string;
   role: string;
   createdAt: string | number;
+  type: 'string';
 };
