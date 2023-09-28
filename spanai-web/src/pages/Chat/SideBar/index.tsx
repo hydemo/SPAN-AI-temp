@@ -1,3 +1,6 @@
+import { UploadOutlined } from '@ant-design/icons';
+
+import { UploadFile } from './UploadFile';
 import { useDragSidebar } from './useDragSidebar';
 
 import { ChatList } from '@/components/ChatList';
@@ -37,7 +40,9 @@ export const SideBar = ({
         />
       </div>
       <div className="sidebar-tail">
-        <div className="sidebar-actions"></div>
+        <div className="sidebar-actions">
+          <UploadFile />
+        </div>
         <div>
           <IconButton
             icon={<AddIcon />}
