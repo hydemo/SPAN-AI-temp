@@ -40,21 +40,18 @@ export class SummaryService {
     // and if user has cleared history messages, we should exclude the memory too.
     // get recent messages as much as possible
     const reversedRecentMessages = [];
-    const msg = [];
     for (let i = totalMessageCount - 1; i >= contextStartIndex; i -= 1) {
       reversedRecentMessages.unshift(messages[i]);
       const usageInfo = new GPTTokens({ model, messages });
       const tokenCount = usageInfo.promptUsedTokens;
-      if (tokenCount > 200) {
+      if (tokenCount > 3001) {
         break;
       }
-      reversedRecentMessages.push(msg);
     }
 
     const longTermMemoryPrompts = [{ role: 'system', content: '这是历史聊天总结作为前情提要：' + summary.content }];
     // concat all messages
-    const recentMessages = [...longTermMemoryPrompts, ...reversedRecentMessages.reverse()];
-
+    const recentMessages = [...longTermMemoryPrompts, ...reversedRecentMessages];
     return { messages: recentMessages, summary };
   }
 
@@ -68,9 +65,8 @@ export class SummaryService {
 
     const usageInfo = new GPTTokens({ model, messages });
     const tokenCount = usageInfo.promptUsedTokens;
-    console.log(summarizeIndex, tokenCount, messages);
 
-    if (tokenCount > 200) {
+    if (tokenCount > 1000) {
       const n = toBeSummarizedMsgs.length;
       toBeSummarizedMsgs = toBeSummarizedMsgs.slice(Math.max(0, n - 4));
     }

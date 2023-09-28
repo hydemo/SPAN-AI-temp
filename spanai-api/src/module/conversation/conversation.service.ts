@@ -80,8 +80,8 @@ export class ConversationService {
     }
   }
 
-  async limitCheck(messages: any[], user: IUser) {
-    const userQuestions = await this.conversationModel.find({ user: user._id, role: 'user' });
+  async limitCheck(messages: any[], user: IUser, chatId: string) {
+    const userQuestions = await this.conversationModel.find({ user: user._id, role: 'user', chat: chatId });
     let chatTokens = 0;
     userQuestions.forEach((question) => {
       if (question.promptTokens) {
@@ -103,13 +103,7 @@ export class ConversationService {
     return tokenCount;
   }
 
-  async saveResult(
-    user: IUser,
-    newConversation: CreateConversationDTO,
-    responseContent: string,
-    messages: any,
-    summary: ISummary,
-  ) {
+  async saveResult(user: IUser, newConversation: CreateConversationDTO, responseContent: string, messages: any) {
     const newUserConversation = await this.conversationModel.create(newConversation);
     const newAIRespnose: CreateConversationDTO = {
       ...newConversation,
@@ -120,8 +114,6 @@ export class ConversationService {
     await this.conversationModel.create(newAIRespnose);
     await this.userService.updateToken(user, 1, 2);
     await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
-    const newMessages = [{ role: 'assistant', content: responseContent }];
-    this.summaryService.addSummary(summary, [...messages, ...newMessages], newConversation.model, newConversation.chat);
     return responseContent;
   }
 
@@ -129,13 +121,12 @@ export class ConversationService {
     const questionTime = Date.now();
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
-    const promptTokens = await this.limitCheck(formatMessages, user);
+    const promptTokens = await this.limitCheck(formatMessages, user, message.chatId);
     const messagesWithSummary = await this.summaryService.getMessageWithSummary(
       message.chatId,
       formatMessages,
       user.model || 'gpt-3.5-turbo',
     );
-    console.log(messagesWithSummary, 'sss');
     const response: any = await this.gptService.conversation(messagesWithSummary.messages, user.model, true);
     let responseText = '';
     const newConversation: CreateConversationDTO = {
@@ -151,36 +142,40 @@ export class ConversationService {
       answerTime: 0,
     };
     response.data.on('data', (chunk: any) => {
-      const lines = chunk
-        .toString()
-        .split('\n')
-        .filter((line) => line.trim() !== '');
-      for (const line of lines) {
-        const msg = line.replace(/^data: /, '');
-        console.log(msg, 'msg');
-        if (msg == '[DONE]') {
-          const answerTime = (Date.now() - questionTime) / 1000;
-          newConversation.answerTime = answerTime;
-          const model: any = user.model;
-          const usageInfo = new GPTTokens({
-            model,
-            messages: [{ role: 'assistant', content: responseText }],
-          });
-          const answerTokens = usageInfo.completionUsedTokens;
-          newConversation.totalTokens = promptTokens + answerTokens;
-          this.saveResult(user, newConversation, responseText, formatMessages, messagesWithSummary.summary);
-        } else {
-          const parsed = JSON.parse(msg);
-          if (parsed.choices[0].delta.content) {
-            //解析出来的内容
-            let content = parsed.choices[0].delta.content;
-            if (content.startsWith(':')) {
-              //转义
-              content = '\\\\' + content;
+      try {
+        const lines = chunk
+          .toString()
+          .split('\n')
+          .filter((line) => line.trim() !== '');
+        for (const line of lines) {
+          const msg = line.replace(/^data: /, '');
+          if (msg == '[DONE]') {
+            const answerTime = (Date.now() - questionTime) / 1000;
+            newConversation.answerTime = answerTime;
+            const model: any = user.model;
+            const usageInfo = new GPTTokens({
+              model,
+              messages: [{ role: 'assistant', content: responseText }],
+            });
+            const answerTokens = usageInfo.completionUsedTokens;
+            newConversation.totalTokens = promptTokens + answerTokens;
+            this.saveResult(user, newConversation, responseText, formatMessages);
+            this.summaryService.addSummary(messagesWithSummary.summary, formatMessages, model, responseText);
+          } else {
+            const parsed = JSON.parse(msg);
+            if (parsed.choices[0].delta.content) {
+              //解析出来的内容
+              let content = parsed.choices[0].delta.content;
+              if (content.startsWith(':')) {
+                //转义
+                content = '\\\\' + content;
+              }
+              responseText += content;
             }
-            responseText += content;
           }
         }
+      } catch (error) {
+        throw new ApiException('服务器异常' + error, ApiErrorCode.INTERNAL_ERROR, 500);
       }
     });
     return response;
@@ -236,7 +231,6 @@ export class ConversationService {
         break;
       case 'csv':
         const parser = new JSON2CSV.Parser();
-        console.log(parser, 'ss');
         const csvResult = parser.parse(downLoadResult);
         fs.writeFileSync(`${this.PATH}/${filename}.csv`, csvResult);
       default:

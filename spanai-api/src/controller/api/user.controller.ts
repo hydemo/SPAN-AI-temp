@@ -1,6 +1,23 @@
-import { Body, Controller, Post, Inject, Request, UseGuards, Put, Get } from '@nestjs/common';
+import * as fs from 'fs';
+import { extname, join } from 'path';
+
+import {
+  Body,
+  Controller,
+  Post,
+  Inject,
+  Request,
+  UseGuards,
+  Put,
+  Get,
+  UseInterceptors,
+  UploadedFile,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags, ApiForbiddenResponse, ApiOperation } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiConsumes } from '@nestjs/swagger';
+import moment from 'moment';
+import * as multer from 'multer';
 import { LoginDTO, ResetMyPassDTO } from 'src/module/user/user.dto';
 import { UserService } from 'src/module/user/user.service';
 
@@ -35,5 +52,27 @@ export class ApiUserController {
   @ApiOperation({ summary: '修改密码', description: '修改密码' })
   async resetMyPassword(@Body() reset: ResetMyPassDTO, @Request() req: any) {
     return await this.userService.resetMyPassword(req.user, reset);
+  }
+
+  @Post('/template/upload')
+  @UseGuards(AuthGuard())
+  @ApiConsumes('multipart/form-data')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: multer.diskStorage({
+        destination: join(`temp/upload`),
+        filename: (req, file, cb) => {
+          if (!fs.existsSync(join(`temp/upload/${req.user.username}`))) {
+            fs.mkdirSync(join(`temp/upload/${req.user.username}`));
+          }
+          const extendName = extname(file.originalname);
+          const baseName = file.originalname.replace(extendName, '');
+          cb(null, `${req.user._id}/${baseName}+${moment().format('YYYY-MM-DD-HH-mm-ss')}+${extendName}`);
+        },
+      }),
+    }),
+  )
+  async upload(@UploadedFile() file: any) {
+    return file.filename;
   }
 }

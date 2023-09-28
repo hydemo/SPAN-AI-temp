@@ -43,7 +43,6 @@ export class GPTService {
     if (stream) {
       payload.responseType = 'stream';
     }
-    console.log(payload, messages, 'payload');
     if (isProduction) {
       payload.proxy = {
         host: '127.0.0.1',
