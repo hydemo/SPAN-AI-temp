@@ -16,7 +16,7 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiConsumes } from '@nestjs/swagger';
-import moment from 'moment';
+import * as moment from 'moment';
 import * as multer from 'multer';
 import { LoginDTO, ResetMyPassDTO } from 'src/module/user/user.dto';
 import { UserService } from 'src/module/user/user.service';

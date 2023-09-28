@@ -7,10 +7,9 @@ import { IconButton } from '@/components/IconButton';
 import { baseURL } from '@/utils/config';
 
 type HideLoading = () => void;
+let hideLoading: HideLoading;
 
 export const UploadFile = () => {
-  let hideLoading: HideLoading;
-
   const handleChange = useCallback((info: any) => {
     if (info.file.status === 'done') {
       hideLoading();
