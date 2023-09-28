@@ -67,7 +67,7 @@ export class ApiUserController {
           }
           const extendName = extname(file.originalname);
           const baseName = file.originalname.replace(extendName, '');
-          cb(null, `${req.user._id}/${baseName}+${moment().format('YYYY-MM-DD-HH-mm-ss')}+${extendName}`);
+          cb(null, `${req.user._id}/${baseName}+${moment().format('YYYY-MM-DD-HH-mm-ss')}${extendName}`);
         },
       }),
     }),

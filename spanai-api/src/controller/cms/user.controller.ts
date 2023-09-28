@@ -149,18 +149,5 @@ export class CMSUserController {
     res.setHeader('Access-Control-Expose-Headers', 'Content-Disposition');
     const stream = fs.createReadStream(path);
     stream.pipe(res);
-    stream
-      .on('end', () => {
-        if (fs.existsSync(path)) {
-          fs.unlinkSync(path);
-        }
-        return;
-      })
-      .on('error', (error) => {
-        if (fs.existsSync(path)) {
-          fs.unlinkSync(path);
-        }
-        console.log(error);
-      });
   }
 }
