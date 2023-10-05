@@ -49,6 +49,7 @@ export class GPTService {
         port: 7890,
       };
     }
+    console.log(messages, payload, 'payload');
     return await axios(payload);
   }
 

@@ -122,6 +122,7 @@ export class ConversationService {
     this.expiredCheck(user);
     const formatMessages = await this.getMessages(message.chatId, message.content);
     const promptTokens = await this.limitCheck(formatMessages, user, message.chatId);
+    console.log(promptTokens, 'promptTokens');
     const messagesWithSummary = await this.summaryService.getMessageWithSummary(
       message.chatId,
       formatMessages,

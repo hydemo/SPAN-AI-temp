@@ -67,6 +67,7 @@ export class SummaryService {
     const usageInfo = new GPTTokens({ model, messages });
     const tokenCount = usageInfo.promptUsedTokens;
 
+    console.log(tokenCount, 'tokenCount');
     if (tokenCount > 4000) {
       const n = toBeSummarizedMsgs.length;
       toBeSummarizedMsgs = toBeSummarizedMsgs.slice(Math.max(0, n - 4));
