@@ -22,7 +22,7 @@ export class SummaryService {
   async getMessageWithSummary(chatId: string, messages: Message[], model: any) {
     const summary = await this.summaryModel.findOne({ chat: chatId });
     if (!summary) {
-      const finalMessages = messages.length > 7 ? messages.slice(7) : messages;
+      const finalMessages = messages.length > 7 ? messages.slice(messages.length - 7) : messages;
       return { messages: finalMessages, summary: null };
     }
     const totalMessageCount = messages.length;
