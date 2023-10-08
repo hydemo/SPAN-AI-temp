@@ -50,7 +50,9 @@ export class GPTService {
       };
     }
     console.log(messages, payload, 'payload');
-    return await axios(payload);
+    return await axios(payload).catch((e) => {
+      console.log(e);
+    });
   }
 
   async models() {
