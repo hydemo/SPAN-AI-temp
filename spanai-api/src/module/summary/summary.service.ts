@@ -22,9 +22,9 @@ export class SummaryService {
   async getMessageWithSummary(chatId: string, messages: Message[], model: any) {
     const summary = await this.summaryModel.findOne({ chat: chatId });
     if (!summary) {
-      return { messages, summary: null };
-      // const finalMessages = messages.length > 7 ? messages.slice(messages.length - 7) : messages;
-      // return { messages: finalMessages, summary: null };
+      // return { messages, summary: null };
+      const finalMessages = messages.length > 7 ? messages.slice(messages.length - 7) : messages;
+      return { messages: finalMessages, summary: null };
     }
     const totalMessageCount = messages.length;
 
@@ -44,7 +44,7 @@ export class SummaryService {
     const reversedRecentMessages = [];
     for (let i = totalMessageCount - 1; i >= contextStartIndex; i -= 1) {
       reversedRecentMessages.unshift(messages[i]);
-      const usageInfo = new GPTTokens({ model, messages });
+      const usageInfo = new GPTTokens({ model, messages: reversedRecentMessages });
       const tokenCount = usageInfo.promptUsedTokens;
       if (tokenCount > 4001) {
         break;
@@ -63,29 +63,37 @@ export class SummaryService {
 
   async addSummary(summary: ISummary, messages: Message[], model: any, chat: string) {
     const summarizeIndex = summary ? summary.index : 0;
-    let toBeSummarizedMsgs = messages.slice(summarizeIndex);
+    const toBeSummarizedMsgs = messages.slice(summarizeIndex);
 
     const usageInfo = new GPTTokens({ model, messages });
     const tokenCount = usageInfo.promptUsedTokens;
 
     console.log(tokenCount, 'tokenCount');
-    if (tokenCount > 4000) {
-      const n = toBeSummarizedMsgs.length;
-      toBeSummarizedMsgs = toBeSummarizedMsgs.slice(Math.max(0, n - 4));
+    if (tokenCount < 3000) {
+      return;
     }
 
-    toBeSummarizedMsgs.unshift({
+    if (summary) {
+      toBeSummarizedMsgs.unshift({
+        role: 'system',
+        content: summary.content,
+      });
+    }
+    toBeSummarizedMsgs.push({
       role: 'system',
       content: '简要总结一下对话内容，用作后续的上下文提示 prompt，控制在 200 字以内',
     });
+
     // add memory prompt
 
-    const res = await this.gptService.conversation(messages, model, false);
+    const res = await this.gptService.conversation(toBeSummarizedMsgs, model, false);
     const content = res.data?.choices?.at(0)?.message?.content ?? '';
+    console.log(content, 'content');
     const summaryContent = content;
     if (summary) {
       await this.summaryModel.findById(summary._id, { index: messages.length, context: summaryContent });
     } else {
+      console.log(chat, summaryContent, messages.length, 'sss');
       await this.summaryModel.create({ chat, content: summaryContent, index: messages.length });
     }
   }

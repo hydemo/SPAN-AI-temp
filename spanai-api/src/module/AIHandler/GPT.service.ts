@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
+import { GPTTokens } from 'gpt-tokens';
 import { ConfigService } from 'src/config/config.service';
 
 import { OpenaiPath } from './constant';
@@ -49,14 +50,7 @@ export class GPTService {
         port: 7890,
       };
     }
-    console.log(messages, payload, 'payload');
-    try {
-      const res = await axios(payload);
-      console.log(res, 'res');
-      return res;
-    } catch (error) {
-      console.log(error, 'error');
-    }
+    return await axios(payload);
   }
 
   async models() {

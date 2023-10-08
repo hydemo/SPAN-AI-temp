@@ -112,7 +112,7 @@ export class ConversationService {
       role: 'assistant',
     };
     await this.conversationModel.create(newAIRespnose);
-    await this.userService.updateToken(user, 1, 2);
+    await this.userService.updateToken(user, newConversation.promptTokens, newConversation.totalTokens);
     await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
     return responseContent;
   }
@@ -120,14 +120,14 @@ export class ConversationService {
   async sendMessage(user: IUser, message: SendMessageDTO) {
     const questionTime = Date.now();
     this.expiredCheck(user);
-    const formatMessages = await this.getMessages(message.chatId, message.content);
+    const formatMessages: any = await this.getMessages(message.chatId, message.content);
     const promptTokens = await this.limitCheck(formatMessages, user, message.chatId);
-    console.log(promptTokens, 'promptTokens');
     const messagesWithSummary = await this.summaryService.getMessageWithSummary(
       message.chatId,
       formatMessages,
       user.model || 'gpt-3.5-turbo',
     );
+    console.log(messagesWithSummary, 'messagesWithSummary');
     const response: any = await this.gptService.conversation(messagesWithSummary.messages, user.model, true);
     let responseText = '';
     const newConversation: CreateConversationDTO = {
@@ -154,14 +154,14 @@ export class ConversationService {
             const answerTime = (Date.now() - questionTime) / 1000;
             newConversation.answerTime = answerTime;
             const model: any = user.model;
+            const summaryMessages = [...formatMessages, { content: responseText, role: 'assistant' }];
             const usageInfo = new GPTTokens({
               model,
-              messages: [{ role: 'assistant', content: responseText }],
+              messages: summaryMessages,
             });
-            const answerTokens = usageInfo.completionUsedTokens;
-            newConversation.totalTokens = promptTokens + answerTokens;
+            newConversation.totalTokens = usageInfo.usedTokens;
             this.saveResult(user, newConversation, responseText, formatMessages);
-            this.summaryService.addSummary(messagesWithSummary.summary, formatMessages, model, responseText);
+            this.summaryService.addSummary(messagesWithSummary.summary, summaryMessages, model, message.chatId);
           } else {
             const parsed = JSON.parse(msg);
             if (parsed.choices[0].delta.content) {
