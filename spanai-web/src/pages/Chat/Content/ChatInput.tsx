@@ -157,7 +157,6 @@ export const ChatInput = ({
               }
               return temp;
             });
-            // console.log(responseText);
           }
         } catch (e) {
           console.error('[Request] parse error', text, msg);
