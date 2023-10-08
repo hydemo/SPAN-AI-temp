@@ -72,6 +72,7 @@ export const ChatInput = ({
       return;
     }
 
+    setLoading(true);
     const userUsage = await getUserUsage();
     const checkResult = checkUserUsageLimitError({
       userUsage,
@@ -92,12 +93,12 @@ export const ChatInput = ({
         description: messageMap[checkResult] || checkResult,
         duration: 5,
       });
+      setLoading(false);
       return;
     }
     setInputMessage([
       { content: userInput, role: 'user', _id: '', createdAt: Date.now() },
     ]);
-    setLoading(true);
     setAutoScroll(true);
     // await sendGPTMessages({ userInput, chatId, messages }, setInputMessage);
 
