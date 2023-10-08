@@ -229,7 +229,7 @@ export class ConfigService {
     return this.envConfig.OPENAI_BASEURL;
   }
 
-  get openAIApiKey(): string {
-    return this.envConfig.OPENAI_APIKEY;
+  get openAIApiKeys(): string[] {
+    return this.envConfig.OPENAI_APIKEY.split(',');
   }
 }
