@@ -2,19 +2,24 @@ import moment from 'moment';
 
 import { ChatInfo } from './types';
 
+import { SortRule } from '@/constant';
+
 type Props = {
   chatId: string;
   data: ChatInfo;
+  sortRule?: SortRule;
   onSetSelectedChatId: (chatId: string) => void;
 };
 
 export const ChatItem = ({
   chatId,
-  data: { _id, name = '新的聊天', conversionCount = 0, createdAt },
+  sortRule,
+  data: { _id, name = '新的聊天', conversionCount = 0, createdAt, updatedAt },
   onSetSelectedChatId,
 }: Props) => {
   const selected = chatId === _id;
   // const handleDelete = () => {};
+  const time = sortRule === SortRule.Updated ? updatedAt : createdAt;
 
   return (
     <div
@@ -32,7 +37,7 @@ export const ChatItem = ({
       <div className={'chat-item-info'}>
         <div className={'chat-item-count'}>{conversionCount} 条对话</div>
         <div className={'chat-item-date'}>
-          {moment(createdAt).format('YYYY-MM-DD HH:mm:ss')}
+          {moment(time).format('YYYY-MM-DD HH:mm:ss')}
         </div>
       </div>
 

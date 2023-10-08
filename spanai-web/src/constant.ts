@@ -118,3 +118,8 @@ export enum SubmitKey {
   AltEnter = 'Alt + Enter',
   MetaEnter = 'Meta + Enter',
 }
+
+export enum SortRule {
+  Created = 'created',
+  Updated = 'updated',
+}

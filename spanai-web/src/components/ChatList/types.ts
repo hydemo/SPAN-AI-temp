@@ -3,4 +3,5 @@ export type ChatInfo = {
   name: string;
   count?: number;
   createdAt: string;
+  updatedAt: string;
 };

@@ -1,11 +1,16 @@
 import { UploadOutlined } from '@ant-design/icons';
+import { useLocalStorageState } from 'ahooks';
+import moment from 'moment';
+import { useMemo, useState } from 'react';
 
+import { SortRuleSelect } from './SortRuleSelect';
 import { UploadFile } from './UploadFile';
 import { useDragSidebar } from './useDragSidebar';
 
 import { ChatList } from '@/components/ChatList';
 import { IconButton } from '@/components/IconButton';
 import { AddIcon, DragIcon } from '@/components/icons';
+import { SortRule } from '@/constant';
 import { newChats } from '@/services/apiList/chat';
 type Props = {
   chatId: string;
@@ -20,6 +25,10 @@ export const SideBar = ({
   chatsData,
   refreshChats,
 }: Props) => {
+  const [sortRule, setSortRule] = useLocalStorageState('chat-sort-rule', {
+    defaultValue: SortRule.Created,
+  });
+  console.log(sortRule);
   const shouldNarrow = false;
 
   const { onDragMouseDown } = useDragSidebar();
@@ -29,13 +38,30 @@ export const SideBar = ({
     refreshChats();
   };
 
+  const sortedData = useMemo(() => {
+    if (!chatsData) {
+      return chatsData;
+    }
+    return chatsData.sort((a, b) => {
+      if (sortRule === SortRule.Updated) {
+        return moment(b.updatedAt).valueOf() - moment(a.updatedAt).valueOf();
+      }
+      return moment(b.createdAt).valueOf() - moment(a.createdAt).valueOf();
+    });
+  }, [chatsData, sortRule]);
+
   return (
     <div className="sidebar">
+      <div className="sidebar-header-bar">
+        <SortRuleSelect sortRule={sortRule} onSortRuleChange={setSortRule} />
+      </div>
+
       <div className="sidebar-body">
         <ChatList
           chatId={chatId}
+          sortRule={sortRule}
           // narrow={shouldNarrow}
-          data={chatsData}
+          data={sortedData}
           onSetSelectedChatId={onSetSelectedChatId}
         />
       </div>
