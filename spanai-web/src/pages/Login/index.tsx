@@ -19,8 +19,10 @@ export default () => {
   const [checkbox, setCheckBox] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
 
+  const isLoginDisabled = !Boolean(emailValue && passwordValue && checkbox);
+
   const handleLogin = async () => {
-    if (!emailValue || !passwordValue) {
+    if (isLoginDisabled) {
       return;
     }
 
@@ -92,7 +94,7 @@ export default () => {
           text="登录"
           type="primary"
           onClick={handleLogin}
-          disabled={!Boolean(emailValue && passwordValue && checkbox)}
+          disabled={isLoginDisabled}
         />
       </div>
       <Modal
