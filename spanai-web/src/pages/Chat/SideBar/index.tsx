@@ -28,7 +28,6 @@ export const SideBar = ({
   const [sortRule, setSortRule] = useLocalStorageState('chat-sort-rule', {
     defaultValue: SortRule.Created,
   });
-  console.log(sortRule);
   const shouldNarrow = false;
 
   const { onDragMouseDown } = useDragSidebar();
