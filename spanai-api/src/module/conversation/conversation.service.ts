@@ -12,7 +12,6 @@ import * as XLSX from 'xlsx';
 
 import { GPTService } from '../AIHandler/GPT.service';
 import { ChatService } from '../chat/chat.service';
-import { ISummary } from '../summary/summary.schema';
 import { SummaryService } from '../summary/summary.service';
 import { IUser } from '../user/user.schema';
 import { UserService } from '../user/user.service';
@@ -31,8 +30,7 @@ export class ConversationService {
     @Inject(SummaryService) private readonly summaryService: SummaryService,
   ) {}
 
-  // 获取员工全部信息
-  async list(pagination: any) {
+  genSearchCondition(pagination: any) {
     const condition: any = {};
     const searchCondition = [];
     if (pagination.content) {
@@ -44,9 +42,19 @@ export class ConversationService {
     if (pagination.role) {
       condition.role = pagination.role;
     }
+    if (pagination.questionTimeRange) {
+      const questionTimeRanges = pagination.questionTimeRange.split(',');
+      condition.questionTime = { $gte: questionTimeRanges[0] + ' 00:00:00', $lte: questionTimeRanges[1] + ' 23:59:59' };
+    }
     if (searchCondition.length) {
       condition.$or = searchCondition;
     }
+    return condition;
+  }
+
+  // 获取员工全部信息
+  async list(pagination: any) {
+    const condition = this.genSearchCondition(pagination);
     const data = await this.conversationModel
       .find(condition)
       .sort({ createdAt: -1 })
@@ -127,7 +135,6 @@ export class ConversationService {
       formatMessages,
       user.model || 'gpt-3.5-turbo',
     );
-    console.log(messagesWithSummary, 'messagesWithSummary');
     const response: any = await this.gptService.conversation(messagesWithSummary.messages, user.model, true);
     let responseText = '';
     const newConversation: CreateConversationDTO = {
@@ -187,8 +194,10 @@ export class ConversationService {
     return true;
   }
 
-  async download(type: string) {
-    const result: any = await this.conversationModel.find().populate({ model: 'User', path: 'user' });
+  async download(pagination: any) {
+    const type = pagination.type;
+    const condition = this.genSearchCondition(pagination);
+    const result: any = await this.conversationModel.find(condition).populate({ model: 'User', path: 'user' });
     const answerMap = {};
     result.forEach((item) => {
       if (item.role === 'assistant') {

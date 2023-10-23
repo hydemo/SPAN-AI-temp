@@ -14,8 +14,9 @@ export async function getConversation(options?: { [key: string]: any }) {
   });
 }
 
-export function download(type) {
+export function download(type, params) {
   downloadExcel({
     url: `conversations/download?type=${type}`,
+    params: params
   });
 }

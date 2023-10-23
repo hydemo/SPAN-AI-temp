@@ -20,9 +20,9 @@ export class CMSConversationController {
 
   @Get('/download')
   @ApiOperation({ summary: '下载', description: '下载' })
-  async download(@Query('type') type: string, @Request() req: any, @Response() res: any) {
+  async download(@Query() query: any, @Request() req: any, @Response() res: any) {
     const userAgent = (req.headers['user-agent'] || '').toLowerCase();
-    const filename = await this.conversationService.download(type);
+    const filename = await this.conversationService.download(query);
     const path = `temp/download/${filename}`;
     let disposition;
     if (userAgent.indexOf('msie') >= 0 || userAgent.indexOf('chrome') >= 0) {

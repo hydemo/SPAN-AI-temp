@@ -1,14 +1,15 @@
 import { PageContainer, ProTable } from '@ant-design/pro-components';
 import type { ActionType, ProColumns } from '@ant-design/pro-components';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 
-import { Download } from './Download';
+import { Download, DownloadProps } from './Download';
 
 import { getConversation } from '@/services/apiList/conversation';
 import { getUserList } from '@/services/apiList/userManagement';
 
 export const ConversationList = () => {
   const actionRef = useRef<ActionType>();
+  const [downloadProps, setDownloadProps] = useState<DownloadProps>({});
 
   const getUsers = async ({ username }: { username: string }) => {
     const users = (await getUserList({ username })).data;
@@ -59,9 +60,15 @@ export const ConversationList = () => {
       search: false,
     },
     {
+      title: '提问时间区间',
+      dataIndex: 'questionTimeRange',
+      valueType: 'dateRange',
+      hideInTable: true,
+    },
+    {
       title: '回复时间（秒）',
       dataIndex: 'answerTime',
-      valueType: 'text',
+      valueType: 'date',
       search: false,
     },
     {
@@ -72,17 +79,36 @@ export const ConversationList = () => {
     },
   ];
 
+  const handleRequest = async (params) => {
+    const newDownloadParams = {
+      user: params.user,
+      questionTimeRange: params.questionTimeRange
+        ? params.questionTimeRange.toString()
+        : '',
+      content: params.content,
+    };
+    setDownloadProps(newDownloadParams);
+    return await getConversation({
+      ...params,
+      questionTimeRange: params.questionTimeRange
+        ? params.questionTimeRange.toString()
+        : '',
+    });
+  };
+
   return (
     <PageContainer>
       <ProTable<API.CompanyListItem, API.PageParams>
         actionRef={actionRef}
         rowKey="_id"
-        request={getConversation}
+        request={handleRequest}
         columns={columns}
         search={{
           labelWidth: 120,
         }}
-        toolBarRender={() => [<Download key="download" />]}
+        toolBarRender={() => [
+          <Download key="download" downloadProps={downloadProps} />,
+        ]}
       />
     </PageContainer>
   );

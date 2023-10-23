@@ -5,10 +5,16 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 
 import { download } from '@/services/apiList/conversation';
 
-export const Download = () => {
+export type DownloadProps = {
+  user: string;
+  questionTimeRange: string;
+  content: string;
+};
+
+export const Download = ({ downloadProps }) => {
   const onMenuClick = (event: MenuInfo) => {
     const { key } = event;
-    download(key);
+    download(key, downloadProps);
   };
 
   const menuItems: ItemType[] = [
@@ -30,15 +36,9 @@ export const Download = () => {
     <Menu selectedKeys={[]} onClick={onMenuClick} items={menuItems} />
   );
 
-  const handleDownload = () => {
-    download();
-  };
-
   return (
     <Dropdown overlay={menuHeaderDropdown}>
-      <Button onClick={handleDownload} icon={<DownloadOutlined />}>
-        下载
-      </Button>
+      <Button icon={<DownloadOutlined />}>下载</Button>
     </Dropdown>
   );
 };
