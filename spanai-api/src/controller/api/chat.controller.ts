@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Inject, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Inject, Request, UseGuards, Query } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { ChatService } from 'src/module/chat/chat.service';
@@ -13,8 +13,8 @@ export class ApiChatController {
   @Post('/')
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '新增对话', description: '新增对话' })
-  async create(@Request() req: any) {
-    return await this.chatService.create(req.user._id);
+  async create(@Request() req: any, @Query('name') name: string) {
+    return await this.chatService.create(req.user._id, name);
   }
 
   @Get('/')

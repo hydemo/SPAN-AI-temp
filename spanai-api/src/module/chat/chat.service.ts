@@ -34,8 +34,8 @@ export class ChatService {
     return { data, total };
   }
 
-  async create(user: string) {
-    const newChat = await this.chatModel.create({ user });
+  async create(user: string, name: string) {
+    const newChat = await this.chatModel.create({ user, name });
     return newChat;
   }
 
