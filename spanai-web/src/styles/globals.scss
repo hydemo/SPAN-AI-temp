@@ -359,6 +359,16 @@ body {
   }
 }
 
+@media only screen and (max-width: 600px) {
+  .container {
+    input[type='number'],
+    input[type='text'],
+    input[type='password'] {
+      max-width: 100%;
+    }
+  }
+}
+
 #root {
   height: 100%;
 }
