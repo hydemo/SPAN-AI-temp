@@ -68,7 +68,6 @@ export class SummaryService {
     const usageInfo = new GPTTokens({ model, messages });
     const tokenCount = usageInfo.promptUsedTokens;
 
-    console.log(tokenCount, 'tokenCount');
     if (tokenCount < 3000) {
       return;
     }
@@ -88,12 +87,10 @@ export class SummaryService {
 
     const res = await this.gptService.conversation(toBeSummarizedMsgs, model, false);
     const content = res.data?.choices?.at(0)?.message?.content ?? '';
-    console.log(content, 'content');
     const summaryContent = content;
     if (summary) {
       await this.summaryModel.findById(summary._id, { index: messages.length, context: summaryContent });
     } else {
-      console.log(chat, summaryContent, messages.length, 'sss');
       await this.summaryModel.create({ chat, content: summaryContent, index: messages.length });
     }
   }

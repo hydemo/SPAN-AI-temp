@@ -21,7 +21,6 @@ const startServer = spawn(
 
 startServer.stderr.on('data', (data) => {
   // eslint-disable-next-line
-  console.log(data.toString());
 });
 
 startServer.on('exit', () => {

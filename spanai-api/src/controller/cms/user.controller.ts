@@ -134,7 +134,6 @@ export class CMSUserController {
   ) {
     const userAgent = (req.headers['user-agent'] || '').toLowerCase();
     const path = join(`temp/upload/${userId}/${reportName}`);
-    console.log(path, 'path');
     let disposition;
     if (userAgent.indexOf('msie') >= 0 || userAgent.indexOf('chrome') >= 0) {
       disposition = `attachment; filename=${encodeURIComponent(reportName)}`;

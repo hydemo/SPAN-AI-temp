@@ -1,13 +1,16 @@
 import { request, downloadExcel } from '@/utils/request';
 
-export async function getUserList(options?: { [key: string]: any }) {
+export async function getUserList(
+  options: { [key: string]: any },
+  sorter: any,
+) {
   return request({
     url: 'users',
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
     },
-    params: options,
+    params: { ...options, sorter },
   });
 }
 

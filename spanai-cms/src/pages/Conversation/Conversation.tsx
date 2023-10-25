@@ -68,7 +68,7 @@ export const ConversationList = () => {
     {
       title: '回复时间（秒）',
       dataIndex: 'answerTime',
-      valueType: 'date',
+      valueType: 'string',
       search: false,
     },
     {

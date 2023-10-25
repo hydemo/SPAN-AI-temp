@@ -35,16 +35,19 @@ export const UserList = () => {
       title: '用户名',
       dataIndex: 'username',
       valueType: 'text',
+      sorter: true,
     },
     {
       title: '手机号',
       dataIndex: 'phone',
       valueType: 'text',
+      sorter: true,
     },
     {
       title: '邮箱',
       dataIndex: 'email',
       valueType: 'text',
+      sorter: true,
     },
     {
       title: '支持模型',

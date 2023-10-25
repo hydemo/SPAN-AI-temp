@@ -44,7 +44,6 @@ export default (props: FormProps) => {
 
   const reportList = async () => {
     const data = await getReportList(userId);
-    console.log(data, 'data');
     return { data, total: data.length };
   };
 

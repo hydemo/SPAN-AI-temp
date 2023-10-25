@@ -73,7 +73,6 @@ export class GPTService {
     // use user's api key first
     const openAIApiKey: string = await this.getNextApiKey();
     await this.updateApiKeyUsage(openAIApiKey);
-    console.log(openAIApiKey, 'key');
     headers.Authorization = makeBearer(openAIApiKey);
     return headers;
   }

@@ -14,7 +14,7 @@ type FormProps = {
   onFinish: (user: any) => void;
   visible: boolean;
   type: 'Add' | 'Edit';
-  records: any;
+  record: any;
 };
 
 export default (props: FormProps) => {

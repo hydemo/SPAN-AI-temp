@@ -100,6 +100,7 @@ export class UserService {
 
   // 获取员工全部信息
   async list(pagination: any) {
+    const sorter = pagination.sorter ? JSON.parse(pagination.sorter) : {};
     const condition: any = {
       isDelete: { $ne: true },
     };
@@ -113,9 +114,14 @@ export class UserService {
     if (searchCondition.length) {
       condition.$or = searchCondition;
     }
+    const sorterCondition = {};
+    Object.keys(sorter).forEach((key) => {
+      sorterCondition[key] = sorter[key] === 'ascend' ? 0 : -1;
+    });
+
     const data = await this.userModel
       .find(condition)
-      .sort({ layerId: 1 })
+      .sort(sorterCondition)
       .limit(pagination.pageSize)
       .skip((pagination.current - 1) * pagination.pageSize)
       .select({ password: 0 })
@@ -230,7 +236,6 @@ export class UserService {
     if (exist.length) {
       throw new ApiException('用户已存在', ApiErrorCode.EMAIL_EXIST, 400);
     }
-    console.log(newUsers, 'ss');
     await this.userModel.insertMany(newUsers);
   }
 
