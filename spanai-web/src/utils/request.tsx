@@ -18,13 +18,13 @@ export const apiErrorHandler = (status: number, code?: string) => {
 
     return {};
   }
-  // environment should not be used
+  // // environment should not be used
   if (status === 403) {
-    notification.error({
-      message: `请求错误 ${status}`,
-      description: '无访问权限',
-      duration: 2,
-    });
+    // notification.error({
+    //   message: `请求错误 ${status}`,
+    //   description: '无访问权限',
+    //   duration: 2,
+    // });
     return {};
   }
   if (status <= 504 && status >= 500) {
