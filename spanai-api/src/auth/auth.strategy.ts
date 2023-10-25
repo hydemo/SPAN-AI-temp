@@ -1,6 +1,7 @@
 import { ApiErrorCode } from '@common/enum/api-error-code.enum';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
+import * as moment from 'moment';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { ApiException } from 'src/common/exception/api.exception';
 
@@ -32,6 +33,10 @@ export class AuthStrategy extends PassportStrategy(Strategy) {
     const user = await this.authService.validateUser(payload);
     if (!user) {
       throw new UnauthorizedException();
+    }
+    const now = moment().format('YYYY-MM-DD');
+    if (user.expired && now > user.expired) {
+      throw new ApiException('用户已过期，请联系管理员!', ApiErrorCode.NO_PERMISSION, 401);
     }
     if (user.isDelete || user.isBlock) throw new ApiException('账号已删除', ApiErrorCode.ACCOUNT_DELETED, 406);
     return user;
