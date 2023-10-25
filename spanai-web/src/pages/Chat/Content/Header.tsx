@@ -6,6 +6,7 @@ import {
   LogoutOutlined,
 } from '@ant-design/icons';
 import { ModalForm, ProFormText } from '@ant-design/pro-components';
+import { useResponsive } from 'ahooks';
 import { Dropdown, Menu, message } from 'antd';
 import type { ItemType } from 'antd/lib/menu/hooks/useItems';
 import cookies from 'js-cookie';
@@ -13,6 +14,8 @@ import type { MenuInfo } from 'rc-menu/lib/interface';
 import { useState } from 'react';
 import { history } from 'umi';
 
+import { IconButton } from '@/components/IconButton';
+import { ReturnIcon } from '@/components/icons';
 import { changePass } from '@/services/apiList/user';
 
 type Props = {
@@ -20,8 +23,16 @@ type Props = {
   messages?: any[];
 };
 
-export const Header = ({ topic = '新的聊天', messages }: Props) => {
+export const Header = ({
+  clearSelectedChatId,
+  topic = '新的聊天',
+  messages,
+}: Props) => {
   const [modalVisible, setModalVisible] = useState<boolean>(false);
+
+  const responsive = useResponsive();
+  const isSmallDevice = !responsive.md;
+
   if (!messages) {
     return;
   }
@@ -81,6 +92,18 @@ export const Header = ({ topic = '新的聊天', messages }: Props) => {
   return (
     <div>
       <div className="window-header" data-tauri-drag-region>
+        {isSmallDevice && (
+          <div className="window-actions">
+            <div className={'window-action-button'}>
+              <IconButton
+                icon={<ReturnIcon />}
+                bordered
+                title={'查看消息列表'}
+                onClick={clearSelectedChatId}
+              />
+            </div>
+          </div>
+        )}
         <div className="window-header-title chat-body-title">
           <div
             className="window-header-main-title chat-body-main-title"

@@ -1,4 +1,4 @@
-import { usePrevious, useRequest } from 'ahooks';
+import { usePrevious, useRequest, useResponsive } from 'ahooks';
 import cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { history } from 'umi';
@@ -17,12 +17,23 @@ export default function Chat() {
   const [selectedChatId, setSelectedChatId] = useState('');
   const previousChatsData = usePrevious(chatsData);
 
+  const responsive = useResponsive();
+  const isSmallDevice = !responsive.md;
+
+  const shouldShowSideBar = !Boolean(selectedChatId) && isSmallDevice;
+
   useEffect(() => {
     const token = cookies.get('web_access_token');
     if (!token) {
       return history.push('/login');
     }
-    if (chatsData?.length > (previousChatsData?.length || 0)) {
+
+    const previousChatsDataLength = previousChatsData?.length || 0;
+
+    if (isSmallDevice && previousChatsDataLength === 0) {
+      return;
+    }
+    if (chatsData?.length > previousChatsDataLength) {
       setSelectedChatId(chatsData[0]?._id);
     }
   }, [chatsData, previousChatsData]);
@@ -30,12 +41,17 @@ export default function Chat() {
   return (
     <>
       <SideBar
+        visible={shouldShowSideBar}
         chatId={selectedChatId}
         onSetSelectedChatId={setSelectedChatId}
         chatsData={chatsData}
         refreshChats={refreshChats}
       />
-      <Content chatId={selectedChatId} refreshChats={refreshChats} />
+      <Content
+        chatId={selectedChatId}
+        refreshChats={refreshChats}
+        clearSelectedChatId={() => setSelectedChatId('')}
+      />
     </>
   );
 }

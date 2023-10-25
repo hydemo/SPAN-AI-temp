@@ -14,9 +14,14 @@ import './content.scss';
 type Props = {
   chatId: string;
   refreshChats: () => void;
+  clearSelectedChatId: () => void;
 };
 
-export const Content = ({ chatId, refreshChats }: Props) => {
+export const Content = ({
+  chatId,
+  refreshChats,
+  clearSelectedChatId,
+}: Props) => {
   const { scrollRef, setAutoScroll } = useScrollToBottom();
   const [uiMessages, setUIMessages] = useState<MessageInfo[]>([]);
   const [inputMessage, setInputMessage] = useState<MessageInfo[]>([]);
@@ -56,6 +61,7 @@ export const Content = ({ chatId, refreshChats }: Props) => {
         <Header
           topic={uiMessages?.[0]?.content || '新的聊天'}
           messages={uiMessages}
+          clearSelectedChatId={clearSelectedChatId}
         />
         <div
           className="chat-body"

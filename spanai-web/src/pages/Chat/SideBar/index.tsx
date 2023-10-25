@@ -13,6 +13,7 @@ import { AddIcon, DragIcon } from '@/components/icons';
 import { SortRule } from '@/constant';
 import { newChats } from '@/services/apiList/chat';
 type Props = {
+  visible: boolean;
   chatId: string;
   onSetSelectedChatId: (chatId: string) => void;
   chatsData: any[];
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export const SideBar = ({
+  visible,
   chatId,
   onSetSelectedChatId,
   chatsData,
@@ -50,7 +52,7 @@ export const SideBar = ({
   }, [chatsData, sortRule]);
 
   return (
-    <div className="sidebar">
+    <div className={visible ? 'sidebar sidebar-show' : 'sidebar'}>
       <div className="sidebar-header-bar">
         <SortRuleSelect sortRule={sortRule} onSortRuleChange={setSortRule} />
       </div>
