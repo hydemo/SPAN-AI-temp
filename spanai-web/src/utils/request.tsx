@@ -7,7 +7,30 @@ import { baseURL } from './config';
 
 const getLocale = () => 'zh-CN';
 
-export const apiErrorHandler = (status: number, code?: string) => {
+export const requestErrorHandler = (response: any) => {
+  let code;
+  if (response.data.statusCode && response.data.statusCode > 10000) {
+    code = true;
+  }
+
+  const errortext = code ? response.data.message : '';
+
+  const error: any = new Error(errortext);
+  if (response.status >= 400 && response.status < 422) {
+    notification.error({
+      message: `请求错误 ${response.status}`,
+      description: errortext,
+      duration: 2,
+    });
+  }
+  error.name = response.status;
+  error.response = response;
+  error.code = code;
+  throw error;
+};
+
+export const requestCatchErrorHandler = (error: any) => {
+  const { status, code } = error;
   if (status === 401) {
     cookies.remove('web_access_token');
     // @HACK
@@ -81,33 +104,11 @@ export async function request(options: any) {
       return {};
     },
     (e: any) => {
-      const { response } = e;
-      let code;
-      if (response.data.statusCode && response.data.statusCode > 10000) {
-        code = true;
-      }
-
-      const errortext = code ? response.data.message : '';
-
-      const error: any = new Error(errortext);
-      if (response.status >= 400 && response.status < 422) {
-        notification.error({
-          message: `请求错误 ${response.status}`,
-          description: errortext,
-          duration: 2,
-        });
-      }
-      error.name = response.status;
-      error.response = response;
-      error.code = code;
-      throw error;
+      requestErrorHandler(e.response);
     },
   );
 
-  return axiosReq(options).catch((e: any) => {
-    const status = e.name;
-    return apiErrorHandler(status, e.code);
-  });
+  return axiosReq(options).catch((e: any) => requestCatchErrorHandler(e));
 }
 
 export async function downloadExcel(options: any) {

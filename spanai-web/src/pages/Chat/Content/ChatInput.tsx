@@ -17,7 +17,7 @@ import {
   checkUserUsageLimitError,
 } from '@/utils/checkUserUsageLimitError';
 import { baseURL } from '@/utils/config';
-import { apiErrorHandler } from '@/utils/request';
+import { requestCatchErrorHandler, requestErrorHandler } from '@/utils/request';
 
 const antIcon = <LoadingOutlined style={{ fontSize: 18 }} spin />;
 
@@ -131,7 +131,12 @@ export const ChatInput = ({
         if (response.ok) {
           return; // everything's good
         }
-        apiErrorHandler(response.status);
+        response.data = await response.json();
+        try {
+          requestErrorHandler(response);
+        } catch (error) {
+          requestCatchErrorHandler(error);
+        }
       },
       onmessage(msg) {
         if (msg.data === '[DONE]') {
