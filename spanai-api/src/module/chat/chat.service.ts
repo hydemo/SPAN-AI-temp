@@ -35,16 +35,12 @@ export class ChatService {
   }
 
   async create(user: string) {
-    await this.chatModel.create({ user });
-    return true;
+    const newChat = await this.chatModel.create({ user });
+    return newChat;
   }
 
   async getChatsByUser(user: string) {
     const chats = await this.chatModel.find({ user });
-    if (!chats.length) {
-      const newChat = await this.chatModel.create({ user });
-      return [newChat];
-    }
     return chats;
   }
 
