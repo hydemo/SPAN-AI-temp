@@ -1,8 +1,10 @@
-import { Button, Modal, Typography } from 'antd';
+import { Button, Modal, Typography, Statistic } from 'antd';
 import cookies from 'js-cookie';
 import { parse } from 'query-string';
 import { useState } from 'react';
 import { history } from 'umi';
+
+const { Countdown } = Statistic;
 
 const { Title, Paragraph, Text } = Typography;
 
@@ -17,6 +19,7 @@ export default () => {
   const [emailValue, setEmailValue] = useState('');
   const [passwordValue, setPasswordValue] = useState('');
   const [checkbox, setCheckBox] = useState(false);
+  const [lock, setLock] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   const isLoginDisabled = !Boolean(emailValue && passwordValue && checkbox);
@@ -154,11 +157,29 @@ export default () => {
             style={{
               backgroundColor: 'var(--primary)',
             }}
+            disabled={lock}
             type="primary"
             className="auth-agreement-popup-button"
-            onClick={() => setModalVisible(false)}
+            onClick={() => {
+              setModalVisible(false);
+              setLock(true);
+            }}
           >
-            同意
+            {lock ? (
+              <Countdown
+                value={Date.now() + 5000}
+                format="s秒后同意"
+                onFinish={() => setLock(false)}
+                valueStyle={{
+                  fontSize: 16,
+                  color: '#87d068',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              />
+            ) : (
+              '同意'
+            )}
           </Button>
         </div>
       </Modal>
