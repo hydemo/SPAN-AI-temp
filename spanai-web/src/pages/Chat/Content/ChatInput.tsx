@@ -5,12 +5,14 @@ import { Spin, notification } from 'antd';
 import cookies from 'js-cookie';
 import { useRef, useState } from 'react';
 
+import { Conversation } from '../../../../../spanai-api/src/module/conversation/conversation.schema';
+
 import { autoGrowTextArea } from './utils';
 
 import { MessageInfo } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
 import { LoadingIcon, SendWhiteIcon } from '@/components/icons';
-import { sendMessages } from '@/services/apiList/chat';
+import { newChats, sendMessages } from '@/services/apiList/chat';
 import { getUserUsage } from '@/services/apiList/user';
 import {
   LimitError,
@@ -23,11 +25,12 @@ const antIcon = <LoadingOutlined style={{ fontSize: 18 }} spin />;
 
 type Props = {
   chatId: string;
-  messages?: MessageInfo[];
+  messages: MessageInfo[];
   refreshChats: () => void;
   refreshMessages: () => void;
   setAutoScroll: (value: boolean) => void;
   setInputMessage: (message: MessageInfo[]) => void;
+  onSetSelectedChatId: (id: string) => void;
 };
 
 const sendGPTMessages = (
@@ -43,6 +46,7 @@ export const ChatInput = ({
   setAutoScroll,
   setInputMessage,
   inputMessage,
+  onSetSelectedChatId,
 }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const [userInput, setUserInput] = useState('');
@@ -70,6 +74,14 @@ export const ChatInput = ({
     setUserInput('');
     if (userInput.length === 0 || loading) {
       return;
+    }
+
+    let newConversationId: string = '';
+    if (!chatId) {
+      const { _id } = await newChats({
+        name: userInput,
+      });
+      newConversationId = _id;
     }
 
     setLoading(true);
@@ -103,12 +115,13 @@ export const ChatInput = ({
     // await sendGPTMessages({ userInput, chatId, messages }, setInputMessage);
 
     let responseText = '';
+    const requestChatId = chatId || newConversationId;
 
     const requestPayload = {
       content: userInput,
       model: 'gpt-3.5-turbo',
-      chatId,
-      parent: messages?.[messages?.length - 1]?._id || chatId,
+      chatId: requestChatId,
+      parent: messages?.[messages?.length - 1]?._id || requestChatId,
     };
 
     const chatPath = baseURL + '/conversations';
@@ -170,7 +183,11 @@ export const ChatInput = ({
       async onclose() {
         setLoading(false);
         setTimeout(() => {
-          refreshMessages();
+          if (!chatId) {
+            onSetSelectedChatId(requestChatId);
+          } else {
+            refreshMessages();
+          }
           refreshChats();
         }, 1000);
       },

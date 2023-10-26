@@ -16,13 +16,14 @@ export async function getChats() {
   });
 }
 
-export async function newChats() {
+export async function newChats(data: { name: string }) {
   return request({
     url: 'chats',
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
     },
+    data,
   });
 }
 

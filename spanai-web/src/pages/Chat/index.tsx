@@ -20,7 +20,9 @@ export default function Chat() {
   const responsive = useResponsive();
   const isSmallDevice = !responsive.md;
 
-  const shouldShowSideBar = !Boolean(selectedChatId) && isSmallDevice;
+  const [mobileSideBarVisible, setMobileSideBarVisible] = useState(false);
+
+  const shouldShowSideBar = mobileSideBarVisible && isSmallDevice;
 
   useEffect(() => {
     const token = cookies.get('web_access_token');
@@ -33,9 +35,9 @@ export default function Chat() {
     if (isSmallDevice && previousChatsDataLength === 0) {
       return;
     }
-    if (chatsData?.length > previousChatsDataLength) {
-      setSelectedChatId(chatsData[0]?._id);
-    }
+    // if (chatsData?.length > previousChatsDataLength) {
+    //   setSelectedChatId(chatsData[0]?._id);
+    // }
   }, [chatsData, previousChatsData]);
 
   return (
@@ -43,14 +45,16 @@ export default function Chat() {
       <SideBar
         visible={shouldShowSideBar}
         chatId={selectedChatId}
-        onSetSelectedChatId={setSelectedChatId}
         chatsData={chatsData}
         refreshChats={refreshChats}
+        onSetSelectedChatId={setSelectedChatId}
+        onSetMobileSideBarVisible={setMobileSideBarVisible}
       />
       <Content
         chatId={selectedChatId}
         refreshChats={refreshChats}
-        clearSelectedChatId={() => setSelectedChatId('')}
+        onSetSelectedChatId={setSelectedChatId}
+        onShowMobileSideBar={() => setMobileSideBarVisible(true)}
       />
     </>
   );
