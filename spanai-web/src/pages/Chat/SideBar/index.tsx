@@ -36,9 +36,13 @@ export const SideBar = ({
 
   const { onDragMouseDown } = useDragSidebar();
 
-  const handleCreateNewChat = async () => {
-    onSetSelectedChatId('');
+  const handleSetSelectedChatId = (id: string) => {
+    onSetSelectedChatId(id);
     onSetMobileSideBarVisible(false);
+  };
+
+  const handleCreateNewChat = async () => {
+    handleSetSelectedChatId('');
   };
 
   const sortedData = useMemo(() => {
@@ -65,7 +69,7 @@ export const SideBar = ({
           sortRule={sortRule}
           // narrow={shouldNarrow}
           data={sortedData}
-          onSetSelectedChatId={onSetSelectedChatId}
+          onSetSelectedChatId={handleSetSelectedChatId}
         />
       </div>
       <div className="sidebar-tail">
