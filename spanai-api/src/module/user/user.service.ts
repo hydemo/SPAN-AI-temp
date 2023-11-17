@@ -210,7 +210,7 @@ export class UserService {
       .map((item) => {
         const password = this.cryptoUtil.encryptPassword(md5(item['初始密码'].toString() || '1234'));
         const model = item['模型'] && item['模型'] === 'gpt-4' ? 'gpt-4' : 'gpt-3.5-turbo';
-        return {
+        const newUser = {
           username: item['用户名'],
           email: item['电子邮箱'],
           phone: item['手机号'],
@@ -221,11 +221,15 @@ export class UserService {
           singleChatToken: item['单个聊天最大token数'] ? parseInt(item['单个聊天最大token数']) : 0,
           questionCount: item['问题数'] ? parseInt(item['问题数']) : 0,
         };
+        if (item['手机号']) {
+          newUser.phone = item['手机号'];
+        }
+        return newUser;
       })
       .filter((v) => v);
     const usernames = newUsers.map((item) => item.username);
     const emails = newUsers.map((item) => item.email);
-    const phones = newUsers.map((item) => item.phone);
+    const phones = newUsers.map((item) => item.phone).filter((v) => v);
     const exist = await this.userModel.find({
       $or: [
         { username: { $in: usernames }, isDelete: { $ne: true } },
