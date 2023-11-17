@@ -81,7 +81,7 @@ export class GPTService {
     const requestPayload = {
       messages,
       stream,
-      model: model ? model : 'gpt-3.5-turbo',
+      model: model && model === 'gpt-4' ? 'gpt-4-1106-preview' : 'gpt-3.5-turbo',
       temperature: 0.5,
       presence_penalty: 0,
       frequency_penalty: 0,
@@ -106,10 +106,11 @@ export class GPTService {
   }
 
   async models() {
+    const headers = await this.getHeaders();
     const res = await axios({
       url: `${this.config.openAIBaseUrl}/${OpenaiPath.ListModelPath}`,
       method: 'GET',
-      headers: this.getHeaders(),
+      headers: headers,
       proxy: {
         host: '127.0.0.1',
         port: 7890,
