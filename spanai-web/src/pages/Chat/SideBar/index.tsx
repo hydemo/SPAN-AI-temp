@@ -1,7 +1,6 @@
-import { UploadOutlined } from '@ant-design/icons';
-import { useLocalStorageState } from 'ahooks';
+import { useLocalStorageState, useResponsive } from 'ahooks';
 import moment from 'moment';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 
 import { SortRuleSelect } from './SortRuleSelect';
 import { UploadFile } from './UploadFile';
@@ -11,32 +10,39 @@ import { ChatList } from '@/components/ChatList';
 import { IconButton } from '@/components/IconButton';
 import { AddIcon, DragIcon } from '@/components/icons';
 import { SortRule } from '@/constant';
-import { newChats } from '@/services/apiList/chat';
+
 type Props = {
   visible: boolean;
   chatId: string;
-  onSetSelectedChatId: (chatId: string) => void;
   chatsData: any[];
   refreshChats: () => void;
+  onSetSelectedChatId: (chatId: string) => void;
+  onSetMobileSideBarVisible: (value: boolean) => void;
 };
 
 export const SideBar = ({
   visible,
   chatId,
-  onSetSelectedChatId,
   chatsData,
-  refreshChats,
+  onSetSelectedChatId,
+  onSetMobileSideBarVisible,
 }: Props) => {
   const [sortRule, setSortRule] = useLocalStorageState('chat-sort-rule', {
     defaultValue: SortRule.Created,
   });
+  const responsive = useResponsive();
+  const isSmallDevice = !responsive.md;
   const shouldNarrow = false;
 
   const { onDragMouseDown } = useDragSidebar();
 
+  const handleSetSelectedChatId = (id: string) => {
+    onSetSelectedChatId(id);
+    onSetMobileSideBarVisible(false);
+  };
+
   const handleCreateNewChat = async () => {
-    await newChats();
-    refreshChats();
+    handleSetSelectedChatId('');
   };
 
   const sortedData = useMemo(() => {
@@ -63,13 +69,15 @@ export const SideBar = ({
           sortRule={sortRule}
           // narrow={shouldNarrow}
           data={sortedData}
-          onSetSelectedChatId={onSetSelectedChatId}
+          onSetSelectedChatId={handleSetSelectedChatId}
         />
       </div>
       <div className="sidebar-tail">
-        <div className="sidebar-actions">
-          <UploadFile />
-        </div>
+        {!isSmallDevice && (
+          <div className="sidebar-actions">
+            <UploadFile />
+          </div>
+        )}
         <div>
           <IconButton
             icon={<AddIcon />}

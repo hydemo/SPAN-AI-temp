@@ -19,12 +19,13 @@ import { ReturnIcon } from '@/components/icons';
 import { changePass } from '@/services/apiList/user';
 
 type Props = {
+  onShowMobileSideBar: () => void;
   topic: string;
   messages?: any[];
 };
 
 export const Header = ({
-  clearSelectedChatId,
+  onShowMobileSideBar,
   topic = '新的聊天',
   messages,
 }: Props) => {
@@ -99,7 +100,7 @@ export const Header = ({
                 icon={<ReturnIcon />}
                 bordered
                 title={'查看消息列表'}
-                onClick={clearSelectedChatId}
+                onClick={() => onShowMobileSideBar()}
               />
             </div>
           </div>
