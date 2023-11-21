@@ -1,6 +1,7 @@
 import { Controller, Get, Post, Inject, Request, UseGuards, Body, Query, Response } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ChatService } from 'src/module/chat/chat.service';
 import { SendMessageDTO } from 'src/module/conversation/conversation.dto';
 import { ConversationService } from 'src/module/conversation/conversation.service';
 
@@ -9,13 +10,20 @@ import { ConversationService } from 'src/module/conversation/conversation.servic
 @Controller('api/conversations')
 @ApiBearerAuth()
 export class ApiConversationController {
-  constructor(@Inject(ConversationService) private conversationService: ConversationService) {}
+  constructor(
+    @Inject(ConversationService) private conversationService: ConversationService,
+    private chatService: ChatService,
+  ) {}
 
   @Post('/')
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '发送消息', description: '发送消息' })
   async create(@Request() req: any, @Body() message: SendMessageDTO, @Response() res: any) {
-    const response: any = await this.conversationService.sendMessage(req.user, message);
+    const chat = await this.chatService.getChatsById(message.chatId);
+    if (chat.type === 'image') {
+      return await this.conversationService.sendImageMessage(req.user, message);
+    }
+    const response: any = await this.conversationService.sendConversationMessage(req.user, message);
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Connection', 'keep-alive');
