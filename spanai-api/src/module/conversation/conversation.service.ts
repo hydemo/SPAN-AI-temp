@@ -120,8 +120,10 @@ export class ConversationService {
       role: 'assistant',
     };
     await this.conversationModel.create(newAIRespnose);
-    await this.userService.updateToken(user, newConversation.promptTokens, newConversation.totalTokens);
-    await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
+    if (newConversation.type === 'conversation') {
+      await this.userService.updateToken(user, newConversation.promptTokens, newConversation.totalTokens);
+      await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
+    }
     return responseContent;
   }
 
@@ -147,6 +149,7 @@ export class ConversationService {
       promptTokens,
       totalTokens: 0,
       questionTime,
+      type: 'conversation',
       answerTime: 0,
     };
     response.data.on('data', (chunk: any) => {
@@ -190,23 +193,22 @@ export class ConversationService {
   }
 
   async sendImageMessage(user: IUser, message: SendMessageDTO) {
-    return await this.gptService.generateImage(message.content);
-  }
-
-  async sendMessage(user: IUser, message: SendMessageDTO) {
-    const chat = await this.chatService.getChatsById(message.chatId);
-    if (!chat) {
-      throw new ApiException('找不到聊天', ApiErrorCode.NO_EXIST, 404);
-    }
-    const type = chat.type ? chat.type : 'conversation';
-    switch (type) {
-      case 'conversation':
-        return await this.sendConversationMessage(user, message);
-      case 'image':
-        return await this.sendImageMessage(user, message);
-      default:
-        break;
-    }
+    const questionTime = Date.now();
+    const res = await this.gptService.generateImage(message.content);
+    const newConversation: CreateConversationDTO = {
+      user: user._id,
+      chat: message.chatId,
+      content: message.content,
+      model: user.model,
+      parent: message.parent ? message.parent : message.chatId,
+      role: 'user',
+      promptTokens: 0,
+      totalTokens: 0,
+      questionTime,
+      answerTime: (Date.now() - questionTime) / 1000,
+      type: 'conversation',
+    };
+    await this.saveResult(user, newConversation, res.url, []);
   }
 
   async update(id: string, conversation: UpdateConversationDTO) {

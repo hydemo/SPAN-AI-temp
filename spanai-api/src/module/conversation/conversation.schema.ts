@@ -29,6 +29,9 @@ export class Conversation {
   // prompt token数量
   @Prop()
   promptTokens: number;
+  // 类型：conversion image code
+  @Prop({ default: 'conversation' })
+  type: string;
   // 总token数量
   @Prop()
   totalTokens: number;

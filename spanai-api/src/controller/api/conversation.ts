@@ -21,7 +21,9 @@ export class ApiConversationController {
   async create(@Request() req: any, @Body() message: SendMessageDTO, @Response() res: any) {
     const chat = await this.chatService.getChatsById(message.chatId);
     if (chat.type === 'image') {
-      return await this.conversationService.sendImageMessage(req.user, message);
+      const data = await this.conversationService.sendImageMessage(req.user, message);
+      res.data(data);
+      res.end;
     }
     const response: any = await this.conversationService.sendConversationMessage(req.user, message);
     res.setHeader('Cache-Control', 'no-cache');

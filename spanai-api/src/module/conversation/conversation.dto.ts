@@ -52,6 +52,11 @@ export class CreateConversationDTO {
   @Type(() => Number)
   @ApiProperty({ description: '回复时间' })
   answerTime?: number;
+
+  @IsString()
+  @Type(() => Number)
+  @ApiProperty({ description: '类型' })
+  type: string;
 }
 
 export class UpdateConversationDTO {
