@@ -105,6 +105,28 @@ export class GPTService {
     return await axios(payload);
   }
 
+  async generateImage(prompt: string) {
+    const requestPayload = {
+      prompt,
+      n: 1,
+      size: '512x512',
+    };
+    const payload: any = {
+      url: `${this.config.openAIBaseUrl}/${OpenaiPath.GenerateImagePath}`,
+      method: 'POST',
+      data: requestPayload,
+      headers: await this.getHeaders(),
+    };
+    if (isProduction) {
+      payload.proxy = {
+        host: '127.0.0.1',
+        port: 7890,
+      };
+    }
+    const res = await axios(payload);
+    return res.data?.data[0];
+  }
+
   async models() {
     const headers = await this.getHeaders();
     const res = await axios({

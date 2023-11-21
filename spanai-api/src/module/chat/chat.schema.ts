@@ -11,6 +11,9 @@ export class Chat {
   // 密码
   @Prop()
   name: string;
+  // 类型：conversion image code
+  @Prop({ default: 'conversation' })
+  type: string;
   // 密码
   @Prop({ default: 0 })
   conversionCount: number;

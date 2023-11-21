@@ -54,6 +54,7 @@ export class ConversationService {
 
   // 获取员工全部信息
   async list(pagination: any) {
+    return await this.gptService.generateImage('帮我画一只猫！');
     const condition = this.genSearchCondition(pagination);
     const data = await this.conversationModel
       .find(condition)
@@ -125,7 +126,7 @@ export class ConversationService {
     return responseContent;
   }
 
-  async sendMessage(user: IUser, message: SendMessageDTO) {
+  async sendConversationMessage(user: IUser, message: SendMessageDTO) {
     const questionTime = Date.now();
     this.expiredCheck(user);
     const formatMessages: any = await this.getMessages(message.chatId, message.content);
@@ -187,6 +188,26 @@ export class ConversationService {
       }
     });
     return response;
+  }
+
+  async sendImageMessage(user: IUser, message: SendMessageDTO) {
+    return await this.gptService.generateImage(message.content);
+  }
+
+  async sendMessage(user: IUser, message: SendMessageDTO) {
+    const chat = await this.chatService.getChatsById(message.chatId);
+    if (!chat) {
+      throw new ApiException('找不到聊天', ApiErrorCode.NO_EXIST, 404);
+    }
+    const type = chat.type ? chat.type : 'conversation';
+    switch (type) {
+      case 'conversation':
+        return await this.sendConversationMessage(user, message);
+      case 'image':
+        return await this.sendImageMessage(user, message);
+      default:
+        break;
+    }
   }
 
   async update(id: string, conversation: UpdateConversationDTO) {
