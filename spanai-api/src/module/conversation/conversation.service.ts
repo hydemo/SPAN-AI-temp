@@ -206,7 +206,7 @@ export class ConversationService {
       totalTokens: 0,
       questionTime,
       answerTime: (Date.now() - questionTime) / 1000,
-      type: 'conversation',
+      type: 'image',
     };
     await this.saveResult(user, newConversation, res.url, []);
     return res;
