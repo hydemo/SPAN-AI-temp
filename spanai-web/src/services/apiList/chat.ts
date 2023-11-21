@@ -8,7 +8,7 @@ export async function getChats(type?: ChatType) {
   if (!token) {
     return [];
   }
-  const res = request({
+  const res = await request({
     url: 'chats',
     method: 'GET',
     headers: {
