@@ -123,3 +123,8 @@ export enum SortRule {
   Created = 'created',
   Updated = 'updated',
 }
+
+export enum ChatType {
+  Conversation = 'conversation',
+  Image = 'image',
+}

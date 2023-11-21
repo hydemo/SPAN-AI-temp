@@ -3,4 +3,10 @@ export type MessageInfo = {
   content: string;
   role: string;
   createdAt: string | number;
+  type: MessageType;
 };
+
+export enum MessageType {
+  Conversation = 'conversation',
+  Image = 'image',
+}

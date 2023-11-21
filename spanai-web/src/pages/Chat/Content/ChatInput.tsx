@@ -5,14 +5,13 @@ import { Spin, notification } from 'antd';
 import cookies from 'js-cookie';
 import { useRef, useState } from 'react';
 
-import { Conversation } from '../../../../../spanai-api/src/module/conversation/conversation.schema';
-
 import { autoGrowTextArea } from './utils';
 
-import { MessageInfo } from '@/components/ChatMessageList/types';
+import { MessageInfo, MessageType } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
-import { LoadingIcon, SendWhiteIcon } from '@/components/icons';
-import { newChats, sendMessages } from '@/services/apiList/chat';
+import { SendWhiteIcon } from '@/components/icons';
+import { ChatType } from '@/constant';
+import { newChats, sendImageMessages } from '@/services/apiList/chat';
 import { getUserUsage } from '@/services/apiList/user';
 import {
   LimitError,
@@ -25,6 +24,7 @@ const antIcon = <LoadingOutlined style={{ fontSize: 18 }} spin />;
 
 type Props = {
   chatId: string;
+  chatType?: ChatType;
   messages: MessageInfo[];
   refreshChats: () => void;
   refreshMessages: () => void;
@@ -33,13 +33,9 @@ type Props = {
   onSetSelectedChatId: (id: string) => void;
 };
 
-const sendGPTMessages = (
-  { userInput, chatId, messages },
-  setInputMessage,
-) => {};
-
 export const ChatInput = ({
   chatId,
+  chatType,
   messages,
   refreshChats,
   refreshMessages,
@@ -70,6 +66,27 @@ export const ChatInput = ({
     setUserInput(text);
   };
 
+  const onMessageSuccess = (requestChatId) => {
+    setLoading(false);
+    setTimeout(() => {
+      if (!chatId) {
+        onSetSelectedChatId(requestChatId);
+      } else {
+        refreshMessages();
+      }
+      refreshChats();
+    }, 1000);
+  };
+
+  const sendImageFlow = async (requestPayload: any) => {
+    try {
+      const res = await sendImageMessages(requestPayload);
+      onMessageSuccess(requestPayload.requestChatId);
+    } catch (error) {
+      setLoading(false);
+    }
+  };
+
   const doSubmit = async (userInput: string) => {
     setUserInput('');
     if (userInput.length === 0 || loading) {
@@ -80,6 +97,7 @@ export const ChatInput = ({
     if (!chatId) {
       const { _id } = await newChats({
         name: userInput,
+        type: chatType,
       });
       newConversationId = _id;
     }
@@ -109,7 +127,13 @@ export const ChatInput = ({
       return;
     }
     setInputMessage([
-      { content: userInput, role: 'user', _id: '', createdAt: Date.now() },
+      {
+        content: userInput,
+        role: 'user',
+        _id: '',
+        createdAt: Date.now(),
+        type: chatType || (MessageType.Conversation as any),
+      },
     ]);
     setAutoScroll(true);
     // await sendGPTMessages({ userInput, chatId, messages }, setInputMessage);
@@ -123,6 +147,10 @@ export const ChatInput = ({
       chatId: requestChatId,
       parent: messages?.[messages?.length - 1]?._id || requestChatId,
     };
+
+    if (chatType === ChatType.Image) {
+      return sendImageFlow(requestPayload);
+    }
 
     const chatPath = baseURL + '/conversations';
     const controller = new AbortController();
@@ -181,15 +209,7 @@ export const ChatInput = ({
         }
       },
       async onclose() {
-        setLoading(false);
-        setTimeout(() => {
-          if (!chatId) {
-            onSetSelectedChatId(requestChatId);
-          } else {
-            refreshMessages();
-          }
-          refreshChats();
-        }, 1000);
+        onMessageSuccess(requestChatId);
       },
       onerror(e) {
         setLoading(false);
@@ -227,6 +247,7 @@ export const ChatInput = ({
           createdAt: Date.now(),
           content: userInput,
           _id: '',
+          type: chatType || (MessageType.Conversation as any),
         },
       ]);
       e.preventDefault();

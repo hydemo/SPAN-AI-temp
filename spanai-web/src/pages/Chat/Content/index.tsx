@@ -7,12 +7,14 @@ import { useScrollToBottom } from './useScrollToBottom';
 
 import { ChatMessageList } from '@/components/ChatMessageList';
 import { MessageInfo } from '@/components/ChatMessageList/types';
+import { ChatType } from '@/constant';
 import { getMessages } from '@/services/apiList/chat';
 
 import './content.scss';
 
 type Props = {
   chatId: string;
+  chatType?: ChatType;
   refreshChats: () => void;
   onSetSelectedChatId: (id: string) => void;
   onShowMobileSideBar: () => void;
@@ -20,6 +22,7 @@ type Props = {
 
 export const Content = ({
   chatId,
+  chatType,
   refreshChats,
   onSetSelectedChatId,
   onShowMobileSideBar,
@@ -80,6 +83,7 @@ export const Content = ({
           refreshChats={refreshChats}
           refreshMessages={refreshMessages}
           chatId={chatId}
+          chatType={chatType}
           messages={uiMessages}
           setInputMessage={setInputMessage}
           setAutoScroll={setAutoScroll}

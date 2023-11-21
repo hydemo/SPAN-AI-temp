@@ -1,8 +1,9 @@
 import cookies from 'js-cookie';
 
+import { ChatType } from '@/constant';
 import { request } from '@/utils/request';
 
-export async function getChats() {
+export async function getChats(type: ChatType) {
   const token = cookies.get('web_access_token');
   if (!token) {
     return [];
@@ -13,10 +14,13 @@ export async function getChats() {
     headers: {
       'Content-Type': 'application/json',
     },
+    params: {
+      type,
+    },
   });
 }
 
-export async function newChats(data: { name: string }) {
+export async function newChats(data: { name: string; type?: ChatType }) {
   return request({
     url: 'chats',
     method: 'POST',
@@ -60,5 +64,16 @@ export async function sendMessages(data: SendMessageData) {
     },
     data,
     responseType: 'stream',
+  });
+}
+
+export async function sendImageMessages(data: SendMessageData) {
+  return request({
+    url: 'conversations',
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data,
   });
 }

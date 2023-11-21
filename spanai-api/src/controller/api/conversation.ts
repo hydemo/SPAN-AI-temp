@@ -22,8 +22,9 @@ export class ApiConversationController {
     const chat = await this.chatService.getChatsById(message.chatId);
     if (chat.type === 'image') {
       const data = await this.conversationService.sendImageMessage(req.user, message);
-      res.data(data);
+      res.send(data);
       res.end();
+      return;
     }
     const response: any = await this.conversationService.sendConversationMessage(req.user, message);
     res.setHeader('Cache-Control', 'no-cache');
