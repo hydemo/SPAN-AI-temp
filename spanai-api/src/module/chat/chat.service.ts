@@ -43,8 +43,12 @@ export class ChatService {
     return newChat;
   }
 
-  async getChatsByUser(user: string) {
-    const chats = await this.chatModel.find({ user });
+  async getChatsByUser(user: string, type: string) {
+    const condition: any = { user };
+    if (type !== 'conversation') {
+      condition.type = type;
+    }
+    const chats = await this.chatModel.find(condition);
     return chats;
   }
 
