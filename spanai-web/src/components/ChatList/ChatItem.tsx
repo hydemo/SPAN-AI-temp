@@ -1,8 +1,10 @@
+import { PictureOutlined, MessageOutlined } from '@ant-design/icons';
+import { Space } from 'antd';
 import moment from 'moment';
 
 import { ChatInfo } from './types';
 
-import { SortRule } from '@/constant';
+import { ChatType, SortRule } from '@/constant';
 
 type Props = {
   chatId: string;
@@ -14,7 +16,14 @@ type Props = {
 export const ChatItem = ({
   chatId,
   sortRule,
-  data: { _id, name = '新的聊天', conversionCount = 0, createdAt, updatedAt },
+  data: {
+    _id,
+    name = '新的聊天',
+    conversionCount = 0,
+    createdAt,
+    updatedAt,
+    type,
+  },
   onSetSelectedChatId,
 }: Props) => {
   const selected = chatId === _id;
@@ -33,7 +42,16 @@ export const ChatItem = ({
       // {...provided.dragHandleProps}
       // title={}
     >
-      <div className={'chat-item-title'}>{name}</div>
+      <div className={'chat-item-title'}>
+        <Space>
+          {type === ChatType.Conversation ? (
+            <MessageOutlined />
+          ) : (
+            <PictureOutlined />
+          )}
+          {name}
+        </Space>
+      </div>
       <div className={'chat-item-info'}>
         <div className={'chat-item-count'}>{conversionCount} 条对话</div>
         <div className={'chat-item-date'}>

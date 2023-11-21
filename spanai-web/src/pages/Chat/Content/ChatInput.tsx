@@ -80,8 +80,8 @@ export const ChatInput = ({
 
   const sendImageFlow = async (requestPayload: any) => {
     try {
-      const res = await sendImageMessages(requestPayload);
-      onMessageSuccess(requestPayload.requestChatId);
+      await sendImageMessages(requestPayload);
+      onMessageSuccess(requestPayload.chatId);
     } catch (error) {
       setLoading(false);
     }
