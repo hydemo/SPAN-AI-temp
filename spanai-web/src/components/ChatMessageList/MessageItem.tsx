@@ -7,7 +7,8 @@ import RemarkBreaks from 'remark-breaks';
 import RemarkGfm from 'remark-gfm';
 import RemarkMath from 'remark-math';
 
-import { MessageInfo } from './types';
+import { ImageMessageItem } from './ImageMessageItem';
+import { MessageInfo, MessageType } from './types';
 
 type Props = { data: MessageInfo };
 
@@ -15,6 +16,10 @@ export const MessageItem = ({
   data: { role, content, createdAt, type },
 }: Props) => {
   const isUser = role === 'user';
+
+  if (!isUser && type === MessageType.Image) {
+    return <ImageMessageItem content={content} />;
+  }
 
   return (
     // <div className={isUser ? 'chat-message-user' : 'chat-message'}>

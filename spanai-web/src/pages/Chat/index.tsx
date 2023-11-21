@@ -1,4 +1,9 @@
-import { usePrevious, useRequest, useResponsive } from 'ahooks';
+import {
+  useLocalStorageState,
+  usePrevious,
+  useRequest,
+  useResponsive,
+} from 'ahooks';
 import cookies from 'js-cookie';
 import { useEffect, useState } from 'react';
 import { history } from 'umi';
@@ -6,13 +11,23 @@ import { history } from 'umi';
 import { Content } from './Content';
 import { SideBar } from './SideBar';
 
+import { ChatType } from '@/constant';
 import { getChats } from '@/services/apiList/chat';
 
 export default function Chat() {
-  const { data: chatsData, refresh: refreshChats } = useRequest(async () => {
-    const result = await getChats();
-    return result?.reverse();
+  const [chatType, setChatType] = useLocalStorageState('chat-type', {
+    defaultValue: ChatType.Conversation,
   });
+
+  const { data: chatsData, refresh: refreshChats } = useRequest(
+    async () => {
+      const result = await getChats(chatType);
+      return result?.reverse();
+    },
+    {
+      refreshDeps: [chatType],
+    },
+  );
 
   const [selectedChatId, setSelectedChatId] = useState('');
   const previousChatsData = usePrevious(chatsData);
@@ -45,6 +60,8 @@ export default function Chat() {
       <SideBar
         visible={shouldShowSideBar}
         chatId={selectedChatId}
+        chatType={chatType}
+        onChangeChatType={setChatType}
         chatsData={chatsData}
         refreshChats={refreshChats}
         onSetSelectedChatId={setSelectedChatId}
@@ -52,6 +69,7 @@ export default function Chat() {
       />
       <Content
         chatId={selectedChatId}
+        chatType={chatType}
         refreshChats={refreshChats}
         onSetSelectedChatId={setSelectedChatId}
         onShowMobileSideBar={() => setMobileSideBarVisible(true)}

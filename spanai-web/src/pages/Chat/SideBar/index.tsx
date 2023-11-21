@@ -2,6 +2,7 @@ import { useLocalStorageState, useResponsive } from 'ahooks';
 import moment from 'moment';
 import { useMemo } from 'react';
 
+import { ChatTypeSelect } from './ChatTypeSelect';
 import { SortRuleSelect } from './SortRuleSelect';
 import { UploadFile } from './UploadFile';
 import { useDragSidebar } from './useDragSidebar';
@@ -9,12 +10,14 @@ import { useDragSidebar } from './useDragSidebar';
 import { ChatList } from '@/components/ChatList';
 import { IconButton } from '@/components/IconButton';
 import { AddIcon, DragIcon } from '@/components/icons';
-import { SortRule } from '@/constant';
+import { ChatType, SortRule } from '@/constant';
 
 type Props = {
   visible: boolean;
   chatId: string;
   chatsData: any[];
+  chatType?: ChatType;
+  onChangeChatType: (chatType: ChatType) => void;
   refreshChats: () => void;
   onSetSelectedChatId: (chatId: string) => void;
   onSetMobileSideBarVisible: (value: boolean) => void;
@@ -24,8 +27,10 @@ export const SideBar = ({
   visible,
   chatId,
   chatsData,
+  chatType,
   onSetSelectedChatId,
   onSetMobileSideBarVisible,
+  onChangeChatType,
 }: Props) => {
   const [sortRule, setSortRule] = useLocalStorageState('chat-sort-rule', {
     defaultValue: SortRule.Created,
@@ -59,6 +64,12 @@ export const SideBar = ({
 
   return (
     <div className={visible ? 'sidebar sidebar-show' : 'sidebar'}>
+      <div className="sidebar-header-bar">
+        <ChatTypeSelect
+          chatType={chatType}
+          onChatTypeChange={onChangeChatType}
+        />
+      </div>
       <div className="sidebar-header-bar">
         <SortRuleSelect sortRule={sortRule} onSortRuleChange={setSortRule} />
       </div>
