@@ -47,6 +47,8 @@ export class ChatService {
     const condition: any = { user };
     if (type !== 'conversation') {
       condition.type = type;
+    } else {
+      condition.type = { $ne: ['image', 'code'] };
     }
     const chats = await this.chatModel.find(condition);
     return chats;
