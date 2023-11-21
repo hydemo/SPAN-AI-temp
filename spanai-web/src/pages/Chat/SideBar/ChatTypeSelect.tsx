@@ -1,4 +1,4 @@
-import { FileImageOutlined, MessageOutlined } from '@ant-design/icons';
+import { PictureOutlined, MessageOutlined } from '@ant-design/icons';
 import { Space, Radio } from 'antd';
 
 import { ChatType } from '@/constant';
@@ -25,7 +25,7 @@ export const ChatTypeSelect = ({ chatType, onChatTypeChange }: Props) => {
           </Radio.Button>
           <Radio.Button value={ChatType.Image}>
             <Space>
-              <FileImageOutlined />
+              <PictureOutlined />
               图片
             </Space>
           </Radio.Button>

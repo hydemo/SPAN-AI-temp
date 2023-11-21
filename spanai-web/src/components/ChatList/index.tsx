@@ -1,7 +1,7 @@
 import { ChatItem } from './ChatItem';
 import { ChatInfo } from './types';
 
-import { SortRule } from '@/constant';
+import { ChatType, SortRule } from '@/constant';
 
 type Props = {
   narrow?: boolean;
@@ -13,6 +13,7 @@ type Props = {
 
 export const ChatList = ({
   chatId,
+  chatType,
   data,
   sortRule,
   onSetSelectedChatId,
