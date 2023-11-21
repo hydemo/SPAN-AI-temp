@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsMongoId, IsString } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class CreateChatDTO {
-  @IsMongoId()
+  @IsString()
   @Type(() => String)
   @ApiProperty({ description: '聊天名称' })
   readonly name: string;
