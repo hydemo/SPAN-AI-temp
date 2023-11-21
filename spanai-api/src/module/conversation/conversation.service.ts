@@ -122,8 +122,8 @@ export class ConversationService {
     await this.conversationModel.create(newAIRespnose);
     if (newConversation.type === 'conversation') {
       await this.userService.updateToken(user, newConversation.promptTokens, newConversation.totalTokens);
-      await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
     }
+    await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
     return responseContent;
   }
 
