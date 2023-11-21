@@ -3,7 +3,7 @@ import cookies from 'js-cookie';
 import { ChatType } from '@/constant';
 import { request } from '@/utils/request';
 
-export async function getChats(type: ChatType) {
+export async function getChats(type?: ChatType) {
   const token = cookies.get('web_access_token');
   if (!token) {
     return [];

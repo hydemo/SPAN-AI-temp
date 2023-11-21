@@ -70,9 +70,9 @@ export const SideBar = ({
           onChatTypeChange={onChangeChatType}
         />
       </div>
-      <div className="sidebar-header-bar">
+      {/* <div className="sidebar-header-bar">
         <SortRuleSelect sortRule={sortRule} onSortRuleChange={setSortRule} />
-      </div>
+      </div> */}
 
       <div className="sidebar-body">
         <ChatList

@@ -55,13 +55,18 @@ export default function Chat() {
     // }
   }, [chatsData, previousChatsData]);
 
+  const handleChangeChatType = (type: ChatType) => {
+    setChatType(type);
+    setSelectedChatId('');
+  };
+
   return (
     <>
       <SideBar
         visible={shouldShowSideBar}
         chatId={selectedChatId}
         chatType={chatType}
-        onChangeChatType={setChatType}
+        onChangeChatType={handleChangeChatType}
         chatsData={chatsData}
         refreshChats={refreshChats}
         onSetSelectedChatId={setSelectedChatId}

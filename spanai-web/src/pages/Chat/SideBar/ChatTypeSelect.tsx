@@ -16,7 +16,6 @@ export const ChatTypeSelect = ({ chatType, onChatTypeChange }: Props) => {
   return (
     <>
       <Space>
-        类型
         <Radio.Group value={chatType} onChange={handleChange}>
           <Radio.Button value={ChatType.Conversation}>
             <Space>

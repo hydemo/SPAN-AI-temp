@@ -186,7 +186,7 @@ export class ConversationService {
           }
         }
       } catch (error) {
-        throw new ApiException('服务器异常' + error, ApiErrorCode.INTERNAL_ERROR, 500);
+        // throw new ApiException('服务器异常' + error, ApiErrorCode.INTERNAL_ERROR, 500);
       }
     });
     return response;
