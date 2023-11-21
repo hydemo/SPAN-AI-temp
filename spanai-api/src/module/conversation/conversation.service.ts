@@ -193,6 +193,7 @@ export class ConversationService {
   }
 
   async sendImageMessage(user: IUser, message: SendMessageDTO) {
+    const messages = await this.getMessages(message.chatId, message.content);
     const questionTime = Date.now();
     const res = await this.gptService.generateImage(message.content);
     const newConversation: CreateConversationDTO = {
@@ -208,7 +209,7 @@ export class ConversationService {
       answerTime: (Date.now() - questionTime) / 1000,
       type: 'image',
     };
-    await this.saveResult(user, newConversation, res.url, []);
+    await this.saveResult(user, newConversation, res.url, messages);
     return res;
   }
 
