@@ -209,6 +209,7 @@ export class ConversationService {
       type: 'conversation',
     };
     await this.saveResult(user, newConversation, res.url, []);
+    return res;
   }
 
   async update(id: string, conversation: UpdateConversationDTO) {
