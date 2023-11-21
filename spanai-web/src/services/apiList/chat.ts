@@ -8,7 +8,7 @@ export async function getChats(type?: ChatType) {
   if (!token) {
     return [];
   }
-  return request({
+  const res = request({
     url: 'chats',
     method: 'GET',
     headers: {
@@ -18,6 +18,7 @@ export async function getChats(type?: ChatType) {
       type,
     },
   });
+  return Array.isArray(res) ? res : [];
 }
 
 export async function newChats(data: { name: string; type?: ChatType }) {
@@ -36,7 +37,7 @@ export async function getMessages(params: { chatId: string }) {
   if (!token) {
     return [];
   }
-  return request({
+  const res = await request({
     url: 'conversations',
     method: 'GET',
     headers: {
@@ -44,6 +45,7 @@ export async function getMessages(params: { chatId: string }) {
     },
     params,
   });
+  return Array.isArray(res) ? res : [];
 }
 
 type SendMessageData = {

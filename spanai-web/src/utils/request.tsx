@@ -30,7 +30,7 @@ export const requestErrorHandler = (response: any) => {
 };
 
 export const requestCatchErrorHandler = (error: any) => {
-  const { status, code } = error;
+  const { name: status, code } = error;
   if (status === 401) {
     cookies.remove('web_access_token');
     // @HACK
