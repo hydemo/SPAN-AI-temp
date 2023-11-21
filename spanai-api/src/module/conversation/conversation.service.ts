@@ -54,7 +54,6 @@ export class ConversationService {
 
   // 获取员工全部信息
   async list(pagination: any) {
-    return await this.gptService.generateImage('帮我画一只猫！');
     const condition = this.genSearchCondition(pagination);
     const data = await this.conversationModel
       .find(condition)
