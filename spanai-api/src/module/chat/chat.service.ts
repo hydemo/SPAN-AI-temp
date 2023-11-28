@@ -24,6 +24,8 @@ export class ChatService {
     }
     if (pagination.type !== 'conversation') {
       condition.type = pagination.type;
+    } else {
+      condition.type = { $nin: ['image', 'code'] };
     }
     const data = await this.chatModel
       .find(condition)

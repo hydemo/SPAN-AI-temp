@@ -18,6 +18,16 @@ export const ChatList = () => {
       valueType: 'text',
     },
     {
+      title: '类型',
+      dataIndex: 'type',
+      valueType: 'select',
+      valueEnum: {
+        conversation: '聊天',
+        image: '图片',
+      },
+      render: (_, re) => (!re.type ? '聊天' : _),
+    },
+    {
       title: '创建时间',
       dataIndex: 'createdAt',
       valueType: 'date',
