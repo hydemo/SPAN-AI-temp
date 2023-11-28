@@ -22,7 +22,7 @@ export class ChatService {
     if (searchCondition.length) {
       condition.$or = searchCondition;
     }
-    if (pagination.type !== 'conversation') {
+    if (pagination.type && pagination.type !== 'conversation') {
       condition.type = pagination.type;
     } else {
       condition.type = { $nin: ['image', 'code'] };
@@ -32,7 +32,6 @@ export class ChatService {
       .sort({ createdAt: -1 })
       .limit(pagination.pageSize)
       .skip((pagination.current - 1) * pagination.pageSize)
-      .select({ password: 0 })
       .populate({ path: 'user', model: 'User' })
       .lean()
       .exec();

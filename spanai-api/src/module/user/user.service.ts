@@ -111,6 +111,9 @@ export class UserService {
     if (pagination.username) {
       searchCondition.push({ username: new RegExp(pagination.username, 'i') });
     }
+    if (pagination.phone) {
+      searchCondition.push({ phone: new RegExp(pagination.phone, 'i') });
+    }
     if (searchCondition.length) {
       condition.$or = searchCondition;
     }
