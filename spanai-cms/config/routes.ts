@@ -49,6 +49,38 @@
     ],
   },
   {
+    path: '/assistant',
+    name: '助理管理',
+    icon: 'setting',
+    routes: [
+      {
+        path: '/assistant',
+        redirect: '/assistant/file',
+      },
+      {
+        path: '/assistant/file',
+        name: '文件列表',
+        icon: 'file',
+        component: './GPTFile/GPTFile',
+      },
+      {
+        path: '/assistant/assistant',
+        name: '助理列表',
+        icon: 'smile',
+        component: './Assistant/Assistant',
+      },
+      {
+        path: '/assistant/userAssistant',
+        name: '用户助理',
+        icon: 'smile',
+        component: './UserAssistant/UserAssistant',
+      },
+      {
+        component: './404',
+      },
+    ],
+  },
+  {
     path: '/userManagement',
     name: '系统管理',
     icon: 'setting',

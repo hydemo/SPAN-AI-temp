@@ -64,6 +64,7 @@
     "gpt-tokens": "^1.1.2",
     "joi": "^17.6.3",
     "json2csv": "^6.0.0-alpha.2",
+    "langchain": "^0.0.201",
     "md5": "^2.3.0",
     "moment": "^2.29.4",
     "mongoose": "^6.6.5",

@@ -62,6 +62,12 @@ export class GPTService {
     }
   }
 
+  async getApiKey() {
+    const openAIApiKey: string = await this.getNextApiKey();
+    await this.updateApiKeyUsage(openAIApiKey);
+    return openAIApiKey;
+  }
+
   async getHeaders() {
     const headers: Record<string, string> = {
       'Content-Type': 'application/json',
@@ -71,8 +77,7 @@ export class GPTService {
     const makeBearer = (token: string) => `Bearer ${token}`;
 
     // use user's api key first
-    const openAIApiKey: string = await this.getNextApiKey();
-    await this.updateApiKeyUsage(openAIApiKey);
+    const openAIApiKey = await this.getApiKey();
     headers.Authorization = makeBearer(openAIApiKey);
     return headers;
   }
