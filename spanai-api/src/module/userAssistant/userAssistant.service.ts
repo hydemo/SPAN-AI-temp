@@ -41,13 +41,20 @@ export class UserAssistantsService {
   }
 
   async listByUser(user: string) {
-    return await this.userAssistantModel
+    const assistants: any = await this.userAssistantModel
       .find({ user })
       .sort({ createdAt: -1 })
       .populate({ path: 'user', model: 'User' })
       .populate({ path: 'assistant', model: 'Assistant' })
       .lean()
       .exec();
+    return assistants.map((item) => ({
+      type: 'assistant',
+      name: item.assistant.name,
+      createdAt: item.createdAt,
+      _id: item._id,
+      user: item.user,
+    }));
   }
 
   async conversation(assistantMessage: AssistantMessageDTO) {
