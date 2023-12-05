@@ -6,6 +6,7 @@ import { RedisModule } from 'nest-redis';
 import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { ApiAssistantsController } from './controller/api/assistant.controller';
 import { ApiChatController } from './controller/api/chat.controller';
 import { ApiConversationController } from './controller/api/conversation';
 import { ApiUserController } from './controller/api/user.controller';
@@ -63,6 +64,7 @@ import { EmailUtil } from './utils/email.util';
     ApiUserController,
     ApiChatController,
     ApiConversationController,
+    ApiAssistantsController,
   ],
 })
 export class AppModule {}
