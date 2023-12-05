@@ -9,6 +9,10 @@ import { UserAssistantsService } from './userAssistant.service';
 @Module({
   providers: [UserAssistantsService],
   exports: [UserAssistantsService],
-  imports: [AIHandlerModule, MongooseModule.forFeature([{ name: UserAssistants.name, schema: UserAssistantsSchema }])],
+  imports: [
+    AIHandlerModule,
+    AIHandlerModule,
+    MongooseModule.forFeature([{ name: UserAssistants.name, schema: UserAssistantsSchema }]),
+  ],
 })
 export class UserAssistantsModule {}
