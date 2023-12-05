@@ -89,14 +89,16 @@ export const SideBar = ({
             <UploadFile />
           </div>
         )}
-        <div>
-          <IconButton
-            icon={<AddIcon />}
-            text={shouldNarrow ? undefined : '新的聊天'}
-            shadow
-            onClick={handleCreateNewChat}
-          />
-        </div>
+        {chatType !== ChatType.Assistants && (
+          <div>
+            <IconButton
+              icon={<AddIcon />}
+              text={shouldNarrow ? undefined : '新的聊天'}
+              shadow
+              onClick={handleCreateNewChat}
+            />
+          </div>
+        )}
       </div>
       <div
         className={'sidebar-drag'}

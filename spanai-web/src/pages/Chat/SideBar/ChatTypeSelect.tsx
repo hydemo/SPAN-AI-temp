@@ -1,4 +1,8 @@
-import { PictureOutlined, MessageOutlined } from '@ant-design/icons';
+import {
+  PictureOutlined,
+  MessageOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Space, Radio } from 'antd';
 
 import { ChatType } from '@/constant';
@@ -27,6 +31,12 @@ export const ChatTypeSelect = ({ chatType, onChatTypeChange }: Props) => {
             <Space>
               <PictureOutlined />
               图片
+            </Space>
+          </Radio.Button>
+          <Radio.Button value={ChatType.Assistants}>
+            <Space>
+              <UserOutlined />
+              助理
             </Space>
           </Radio.Button>
         </Radio.Group>

@@ -12,6 +12,7 @@ import { Content } from './Content';
 import { SideBar } from './SideBar';
 
 import { ChatType } from '@/constant';
+import { getAssistants } from '@/services/apiList/assistants';
 import { getChats } from '@/services/apiList/chat';
 
 export default function Chat() {
@@ -21,6 +22,9 @@ export default function Chat() {
 
   const { data: chatsData, refresh: refreshChats } = useRequest(
     async () => {
+      if (chatType === ChatType.Assistants) {
+        return await getAssistants();
+      }
       const result = await getChats(chatType);
       return result?.reverse();
     },

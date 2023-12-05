@@ -127,4 +127,5 @@ export enum SortRule {
 export enum ChatType {
   Conversation = 'conversation',
   Image = 'image',
+  Assistants = 'Assistants',
 }

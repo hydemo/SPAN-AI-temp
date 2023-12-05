@@ -11,6 +11,7 @@ import { MessageInfo, MessageType } from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
 import { SendWhiteIcon } from '@/components/icons';
 import { ChatType } from '@/constant';
+import { sendAssistantMessage } from '@/services/apiList/assistants';
 import { newChats, sendImageMessages } from '@/services/apiList/chat';
 import { getUserUsage } from '@/services/apiList/user';
 import {
@@ -148,6 +149,12 @@ export const ChatInput = ({
       parent: messages?.[messages?.length - 1]?._id || requestChatId,
     };
 
+    if (chatType === ChatType.Assistants) {
+      return sendAssistantMessage({
+        assistant: requestChatId,
+        content: userInput,
+      });
+    }
     if (chatType === ChatType.Image) {
       return sendImageFlow(requestPayload);
     }
