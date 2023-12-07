@@ -68,7 +68,10 @@ export class ConversationService {
     return { data, total };
   }
 
-  async getMessageByChat(chatId: string) {
+  async getMessageByChat(chatId: string, type?: string) {
+    if (type === 'assistant') {
+      return await this.conversationModel.find({ assistant: chatId });
+    }
     return await this.conversationModel.find({ chat: chatId });
   }
 
@@ -109,6 +112,10 @@ export class ConversationService {
       throw new ApiException('单个聊天窗口超出token数限制，请联系管理员!', ApiErrorCode.NO_PERMISSION, 403);
     }
     return tokenCount;
+  }
+
+  async createConversation(newConversation: CreateConversationDTO) {
+    return await this.conversationModel.create(newConversation);
   }
 
   async saveResult(user: IUser, newConversation: CreateConversationDTO, responseContent: string, messages: any) {

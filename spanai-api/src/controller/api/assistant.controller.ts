@@ -19,7 +19,7 @@ export class ApiAssistantsController {
 
   @Post('/conversation')
   @ApiOperation({ summary: '聊天', description: '聊天' })
-  async add(@Body() assistant: AssistantMessageDTO) {
-    return await this.userAssistantsService.conversation(assistant);
+  async add(@Request() req: any, @Body() assistant: AssistantMessageDTO) {
+    return await this.userAssistantsService.conversation(req.user, assistant);
   }
 }

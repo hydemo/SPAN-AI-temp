@@ -11,6 +11,9 @@ export class Conversation {
   // 聊天窗口
   @Prop()
   chat: string;
+  // 聊天窗口
+  @Prop()
+  assistant: string;
   // 对话内容
   @Prop()
   content: string;

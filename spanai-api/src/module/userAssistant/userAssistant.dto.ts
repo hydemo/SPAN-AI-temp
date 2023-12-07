@@ -24,4 +24,9 @@ export class AssistantMessageDTO {
   @Type(() => String)
   @ApiProperty({ description: '消息' })
   readonly content: string;
+
+  @IsMongoId()
+  @Type(() => String)
+  @ApiProperty({ description: '助理id' })
+  readonly parent?: string;
 }

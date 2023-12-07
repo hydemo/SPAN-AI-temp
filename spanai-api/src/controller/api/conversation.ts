@@ -36,7 +36,7 @@ export class ApiConversationController {
   @Get('/')
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '消息列表', description: '消息列表' })
-  async list(@Query('chatId') chatId: string) {
-    return await this.conversationService.getMessageByChat(chatId);
+  async list(@Query('chatId') chatId: string, @Query('type') type: string) {
+    return await this.conversationService.getMessageByChat(chatId, type);
   }
 }

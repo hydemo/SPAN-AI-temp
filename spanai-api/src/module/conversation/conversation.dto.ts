@@ -11,7 +11,12 @@ export class CreateConversationDTO {
   @IsMongoId()
   @Type(() => String)
   @ApiProperty({ description: '聊天窗口' })
-  readonly chat: string;
+  readonly chat?: string;
+
+  @IsMongoId()
+  @Type(() => String)
+  @ApiProperty({ description: '助理Id' })
+  readonly assistant?: string;
 
   @IsString()
   @Type(() => String)

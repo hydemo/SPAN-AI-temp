@@ -11,6 +11,9 @@ export class UserAssistants {
   // 助理
   @Prop()
   assistant: string;
+  // 密码
+  @Prop({ default: 0 })
+  conversationCount: number;
 }
 
 export const UserAssistantsSchema = SchemaFactory.createForClass(UserAssistants);
