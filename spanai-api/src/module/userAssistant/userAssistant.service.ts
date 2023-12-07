@@ -72,6 +72,6 @@ export class UserAssistantsService {
       content: assistantMessage.content,
     });
     console.log(assistantResponse[0].content, 'ss');
-    return assistantResponse[0].content;
+    return assistantResponse[0]?.content[0]?.text?.value;
   }
 }
