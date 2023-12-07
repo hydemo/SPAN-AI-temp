@@ -79,6 +79,9 @@ export default function Chat() {
       <Content
         chatId={selectedChatId}
         chatType={chatType}
+        chatName={
+          chatsData?.find((item: any) => item._id === selectedChatId)?.name
+        }
         refreshChats={refreshChats}
         onSetSelectedChatId={setSelectedChatId}
         onShowMobileSideBar={() => setMobileSideBarVisible(true)}

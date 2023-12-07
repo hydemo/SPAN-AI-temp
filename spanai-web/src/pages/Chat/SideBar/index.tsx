@@ -1,8 +1,9 @@
 import { useLocalStorageState, useResponsive } from 'ahooks';
 import moment from 'moment';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { ChatTypeSelect } from './ChatTypeSelect';
+import { CreateNewAssistantModal } from './CreateNewAssistantModal';
 import { SortRuleSelect } from './SortRuleSelect';
 import { UploadFile } from './UploadFile';
 import { useDragSidebar } from './useDragSidebar';
@@ -31,15 +32,16 @@ export const SideBar = ({
   onSetSelectedChatId,
   onSetMobileSideBarVisible,
   onChangeChatType,
+  refreshChats,
 }: Props) => {
   const [sortRule, setSortRule] = useLocalStorageState('chat-sort-rule', {
     defaultValue: SortRule.Created,
   });
   const responsive = useResponsive();
   const isSmallDevice = !responsive.md;
-  const shouldNarrow = false;
 
   const { onDragMouseDown } = useDragSidebar();
+  const [isCreateModalOpen, setCreateModalOpen] = useState(false);
 
   const handleSetSelectedChatId = (id: string) => {
     onSetSelectedChatId(id);
@@ -48,6 +50,10 @@ export const SideBar = ({
 
   const handleCreateNewChat = async () => {
     handleSetSelectedChatId('');
+  };
+
+  const handleCreateNewAssistant = () => {
+    setCreateModalOpen(true);
   };
 
   const sortedData = useMemo(() => {
@@ -89,15 +95,22 @@ export const SideBar = ({
             <UploadFile />
           </div>
         )}
-        {chatType !== ChatType.Assistant && (
-          <div>
+        {chatType === ChatType.Assistant ? (
+          !isSmallDevice && (
             <IconButton
               icon={<AddIcon />}
-              text={shouldNarrow ? undefined : '新的聊天'}
+              text="新的助理"
               shadow
-              onClick={handleCreateNewChat}
+              onClick={handleCreateNewAssistant}
             />
-          </div>
+          )
+        ) : (
+          <IconButton
+            icon={<AddIcon />}
+            text="新的聊天"
+            shadow
+            onClick={handleCreateNewChat}
+          />
         )}
       </div>
       <div
@@ -106,6 +119,12 @@ export const SideBar = ({
       >
         <DragIcon />
       </div>
+      <CreateNewAssistantModal
+        open={isCreateModalOpen}
+        onOpenChange={setCreateModalOpen}
+        refreshChats={refreshChats}
+        onSetSelectedChatId={onSetSelectedChatId}
+      />
     </div>
   );
 };

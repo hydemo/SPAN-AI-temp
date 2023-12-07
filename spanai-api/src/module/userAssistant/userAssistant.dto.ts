@@ -34,9 +34,9 @@ export class AssistantMessageDTO {
 }
 
 export class CreateUserAssistantsByUserDTO {
-  @IsString({ each: true })
-  @Type(() => String)
-  @ApiProperty({ description: '文件集' })
+  // @IsString({ each: true })
+  // @Type(() => String)
+  // @ApiProperty({ description: '文件集' })
   readonly files: CreateGPTFileDTO[];
 
   @IsString()

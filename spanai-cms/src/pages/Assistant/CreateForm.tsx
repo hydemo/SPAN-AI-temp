@@ -2,6 +2,7 @@ import {
   ModalForm,
   ProFormText,
   ProFormSelect,
+  ProFormTextArea,
 } from '@ant-design/pro-components';
 
 import { getGptFiles } from '@/services/apiList/gptFiles';
@@ -37,7 +38,7 @@ export default (props: FormProps) => {
           },
         ]}
       />
-      <ProFormText
+      <ProFormTextArea
         name="instructions"
         label="简介"
         placeholder="简介"

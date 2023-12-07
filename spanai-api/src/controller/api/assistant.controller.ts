@@ -23,7 +23,7 @@ export class ApiAssistantsController {
 
   @Post('/')
   @ApiOperation({ summary: '创建助手', description: '创建助手' })
-  async create(@Request() req: any, @Body() assistant: CreateUserAssistantsByUserDTO) {
+  async create(@Request() req: any, @Body() assistant: any) {
     return await this.userAssistantsService.createUserAssistants(req.user, assistant);
   }
 

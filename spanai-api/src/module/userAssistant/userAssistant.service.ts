@@ -136,10 +136,10 @@ export class UserAssistantsService {
       // 'gpt-4-1106-preview',
       instructions: createUserAssistants.instructions,
       name: createUserAssistants.name,
-      tools: createUserAssistants.tools.map((tool) => ({ type: tool })),
+      tools: createUserAssistants.tools,
       files: [],
     };
     const assistant = await this.assistantService.createAssistantWithFiles(newAssistant, gptFiles);
-    await this.userAssistantModel.create({ user: user._id, assistant: assistant._id });
+    return await this.userAssistantModel.create({ user: user._id, assistant: assistant._id });
   }
 }

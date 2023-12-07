@@ -15,6 +15,7 @@ import './content.scss';
 
 type Props = {
   chatId: string;
+  chatName: string;
   chatType?: ChatType;
   refreshChats: () => void;
   onSetSelectedChatId: (id: string) => void;
@@ -24,6 +25,7 @@ type Props = {
 export const Content = ({
   chatId,
   chatType,
+  chatName,
   refreshChats,
   onSetSelectedChatId,
   onShowMobileSideBar,
@@ -70,7 +72,7 @@ export const Content = ({
         <Header
           chatId={chatId}
           chatType={chatType}
-          topic={uiMessages?.[0]?.content || '新的聊天'}
+          topic={chatName || uiMessages?.[0]?.content || '新的聊天'}
           messages={uiMessages}
           onShowMobileSideBar={onShowMobileSideBar}
         />

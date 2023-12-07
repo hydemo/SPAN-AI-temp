@@ -6,6 +6,8 @@ import {
 
 import { getAdminToken } from '../../utils/authority';
 
+import { baseURL } from '@/utils/config';
+
 type FormProps = {
   onCancel: () => void;
   onFinish: (values: any) => void;
@@ -41,7 +43,7 @@ export default (props: FormProps) => {
       <ProFormUploadButton
         label="文件"
         name="filename"
-        action="http://127.0.0.1:8001/admin/gptFiles/upload"
+        action={`${baseURL}/gptFiles/upload`}
         max={1}
         fieldProps={{
           headers: {
