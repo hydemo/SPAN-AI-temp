@@ -33,7 +33,7 @@ export const ChatTypeSelect = ({ chatType, onChatTypeChange }: Props) => {
               图片
             </Space>
           </Radio.Button>
-          <Radio.Button value={ChatType.Assistants}>
+          <Radio.Button value={ChatType.Assistant}>
             <Space>
               <UserOutlined />
               助理

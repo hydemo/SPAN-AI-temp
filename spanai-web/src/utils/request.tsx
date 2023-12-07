@@ -68,7 +68,7 @@ export const requestCatchErrorHandler = (error: any) => {
 export async function request(options: any) {
   const { headers, extendUrl, responseType } = options;
   const axiosReq: any = axios.create({
-    timeout: 30000,
+    timeout: 120000,
     baseURL: extendUrl || baseURL,
   });
 

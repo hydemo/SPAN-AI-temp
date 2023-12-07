@@ -1,18 +1,26 @@
-import { LoadingOutlined } from '@ant-design/icons';
 import { fetchEventSource } from '@fortaine/fetch-event-source';
 import { useDebounceEffect } from 'ahooks';
-import { Spin, notification } from 'antd';
+import { notification } from 'antd';
 import cookies from 'js-cookie';
 import { useRef, useState } from 'react';
 
 import { autoGrowTextArea } from './utils';
 
-import { MessageInfo, MessageType } from '@/components/ChatMessageList/types';
+import {
+  MessageInfo,
+  MessageRole,
+  MessageType,
+} from '@/components/ChatMessageList/types';
 import { IconButton } from '@/components/IconButton';
 import { SendWhiteIcon } from '@/components/icons';
+import { LoadingSpin } from '@/components/LoadingSpin';
 import { ChatType } from '@/constant';
 import { sendAssistantMessage } from '@/services/apiList/assistants';
-import { newChats, sendImageMessages } from '@/services/apiList/chat';
+import {
+  SendMessageData,
+  newChats,
+  sendImageMessages,
+} from '@/services/apiList/chat';
 import { getUserUsage } from '@/services/apiList/user';
 import {
   LimitError,
@@ -20,8 +28,6 @@ import {
 } from '@/utils/checkUserUsageLimitError';
 import { baseURL } from '@/utils/config';
 import { requestCatchErrorHandler, requestErrorHandler } from '@/utils/request';
-
-const antIcon = <LoadingOutlined style={{ fontSize: 18 }} spin />;
 
 type Props = {
   chatId: string;
@@ -42,7 +48,6 @@ export const ChatInput = ({
   refreshMessages,
   setAutoScroll,
   setInputMessage,
-  inputMessage,
   onSetSelectedChatId,
 }: Props) => {
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -67,8 +72,7 @@ export const ChatInput = ({
     setUserInput(text);
   };
 
-  const onMessageSuccess = (requestChatId) => {
-    setLoading(false);
+  const onMessageSuccess = (requestChatId: string) => {
     setTimeout(() => {
       if (!chatId) {
         onSetSelectedChatId(requestChatId);
@@ -79,11 +83,24 @@ export const ChatInput = ({
     }, 1000);
   };
 
-  const sendImageFlow = async (requestPayload: any) => {
+  const sendAssistantsMessage = async (requestPayload: SendMessageData) => {
+    const { chatId, content } = requestPayload;
+    try {
+      await sendAssistantMessage({
+        assistant: chatId,
+        content,
+      });
+      onMessageSuccess(chatId);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const sendImageFlow = async (requestPayload: SendMessageData) => {
     try {
       await sendImageMessages(requestPayload);
       onMessageSuccess(requestPayload.chatId);
-    } catch (error) {
+    } finally {
       setLoading(false);
     }
   };
@@ -130,10 +147,17 @@ export const ChatInput = ({
     setInputMessage([
       {
         content: userInput,
-        role: 'user',
-        _id: '',
+        role: MessageRole.User,
+        _id: '1',
         createdAt: Date.now(),
         type: chatType || (MessageType.Conversation as any),
+      },
+      {
+        content: '回复中...',
+        role: MessageRole.Assistant,
+        _id: '2',
+        createdAt: '',
+        type: MessageType.Loading,
       },
     ]);
     setAutoScroll(true);
@@ -142,18 +166,15 @@ export const ChatInput = ({
     let responseText = '';
     const requestChatId = chatId || newConversationId;
 
-    const requestPayload = {
+    const requestPayload: SendMessageData = {
       content: userInput,
       model: 'gpt-3.5-turbo',
       chatId: requestChatId,
       parent: messages?.[messages?.length - 1]?._id || requestChatId,
     };
 
-    if (chatType === ChatType.Assistants) {
-      return sendAssistantMessage({
-        assistant: requestChatId,
-        content: userInput,
-      });
+    if (chatType === ChatType.Assistant) {
+      return sendAssistantsMessage(requestPayload);
     }
     if (chatType === ChatType.Image) {
       return sendImageFlow(requestPayload);
@@ -196,16 +217,19 @@ export const ChatInput = ({
           const delta = json.choices[0].delta.content;
           if (delta) {
             responseText += delta;
-            setInputMessage((inputMessages) => {
+            setInputMessage((inputMessages: MessageInfo[]) => {
               let temp = [...inputMessages];
               if (temp[1]) {
+                temp[1].role = MessageRole.Assistant;
                 temp[1].content = responseText;
+                temp[1].type = MessageType.Conversation;
               } else if (temp[0]) {
                 temp.push({
                   content: responseText,
-                  role: 'assistant',
-                  _id: '',
-                  createdAt: Date.now(),
+                  role: MessageRole.Assistant,
+                  _id: '2',
+                  type: MessageType.Conversation,
+                  createdAt: '',
                 });
               }
               return temp;
@@ -217,6 +241,7 @@ export const ChatInput = ({
       },
       async onclose() {
         onMessageSuccess(requestChatId);
+        setLoading(false);
       },
       onerror(e) {
         setLoading(false);
@@ -246,17 +271,7 @@ export const ChatInput = ({
       !e.shiftKey &&
       userInput.length > 0
     ) {
-      setUserInput('');
       doSubmit(userInput);
-      setInputMessage([
-        {
-          role: 'user',
-          createdAt: Date.now(),
-          content: userInput,
-          _id: '',
-          type: chatType || (MessageType.Conversation as any),
-        },
-      ]);
       e.preventDefault();
     }
   };
@@ -297,7 +312,7 @@ export const ChatInput = ({
         />
         <IconButton
           loading={loading}
-          icon={loading ? <Spin indicator={antIcon} /> : <SendWhiteIcon />}
+          icon={loading ? <LoadingSpin /> : <SendWhiteIcon />}
           text={loading ? '回复中' : '发送'}
           className="chat-input-send"
           type="primary"

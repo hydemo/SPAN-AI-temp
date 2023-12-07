@@ -32,7 +32,10 @@ export async function newChats(data: { name: string; type?: ChatType }) {
   });
 }
 
-export async function getMessages(params: { chatId: string }) {
+export async function getConversations(params: {
+  chatId: string;
+  type: ChatType;
+}) {
   const token = cookies.get('web_access_token');
   if (!token) {
     return [];
@@ -48,7 +51,7 @@ export async function getMessages(params: { chatId: string }) {
   return Array.isArray(res) ? res : [];
 }
 
-type SendMessageData = {
+export type SendMessageData = {
   content: string;
   model: string;
   parent: string;

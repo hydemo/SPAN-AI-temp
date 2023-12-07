@@ -16,15 +16,20 @@ import { history } from 'umi';
 
 import { IconButton } from '@/components/IconButton';
 import { ReturnIcon } from '@/components/icons';
+import { ChatType } from '@/constant';
 import { changePass } from '@/services/apiList/user';
 
 type Props = {
+  chatId: string;
+  chatType?: ChatType;
   onShowMobileSideBar: () => void;
   topic: string;
   messages?: any[];
 };
 
 export const Header = ({
+  chatId,
+  chatType,
   onShowMobileSideBar,
   topic = '新的聊天',
   messages,
@@ -33,6 +38,7 @@ export const Header = ({
 
   const responsive = useResponsive();
   const isSmallDevice = !responsive.md;
+  const hideTitleInfo = !chatId && chatType === ChatType.Assistant;
 
   if (!messages) {
     return;
@@ -105,36 +111,27 @@ export const Header = ({
             </div>
           </div>
         )}
-        <div className="window-header-title chat-body-title">
-          <div
-            className="window-header-main-title chat-body-main-title"
-            // onClickCapture={() => setIsEditingMessage(true)}
-          >
-            {topic}
+        {hideTitleInfo ? (
+          <div className="window-header-title chat-body-title"></div>
+        ) : (
+          <div className="window-header-title chat-body-title">
+            <div
+              className="window-header-main-title chat-body-main-title"
+              // onClickCapture={() => setIsEditingMessage(true)}
+            >
+              {topic}
+            </div>
+            <div className="window-header-sub-title">
+              共 {messages.length} 条对话
+            </div>
           </div>
-          <div className="window-header-sub-title">
-            共 {messages.length} 条对话
-          </div>
-        </div>
+        )}
         <div>
           <Dropdown overlay={menuHeaderDropdown}>
             <SettingOutlined
               style={{ color: 'var(--primary)', fontSize: '20px' }}
             />
           </Dropdown>
-          {/* {isMobile && (
-          <div className="window-action-button">
-            <IconButton
-              icon={config.tightBorder ? <MinIcon /> : <MaxIcon />}
-              bordered
-              onClick={() => {
-                config.update(
-                  (config) => (config.tightBorder = !config.tightBorder),
-                );
-              }}
-            />
-          </div>
-        )} */}
         </div>
       </div>
       <ModalForm

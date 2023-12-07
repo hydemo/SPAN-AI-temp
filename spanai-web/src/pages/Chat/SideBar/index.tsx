@@ -89,7 +89,7 @@ export const SideBar = ({
             <UploadFile />
           </div>
         )}
-        {chatType !== ChatType.Assistants && (
+        {chatType !== ChatType.Assistant && (
           <div>
             <IconButton
               icon={<AddIcon />}

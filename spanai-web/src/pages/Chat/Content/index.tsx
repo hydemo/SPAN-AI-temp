@@ -1,4 +1,5 @@
 import { useRequest } from 'ahooks';
+import { Empty } from 'antd';
 import { useEffect, useState } from 'react';
 
 import { ChatInput } from './ChatInput';
@@ -8,7 +9,7 @@ import { useScrollToBottom } from './useScrollToBottom';
 import { ChatMessageList } from '@/components/ChatMessageList';
 import { MessageInfo } from '@/components/ChatMessageList/types';
 import { ChatType } from '@/constant';
-import { getMessages } from '@/services/apiList/chat';
+import { getConversations } from '@/services/apiList/chat';
 
 import './content.scss';
 
@@ -41,8 +42,9 @@ export const Content = ({
     any
   >(
     async () => {
-      const result = await getMessages({
+      const result = await getConversations({
         chatId,
+        type: chatType || ChatType.Conversation,
       });
       setInputMessage([]);
       return result;
@@ -60,35 +62,49 @@ export const Content = ({
     setUIMessages([...apiMessages, ...inputMessage]);
   }, [inputMessage]);
 
+  const needToSelectChatId = !chatId && chatType === ChatType.Assistant;
+
   return (
     <div className="window-content">
       <div className="chat">
         <Header
+          chatId={chatId}
+          chatType={chatType}
           topic={uiMessages?.[0]?.content || '新的聊天'}
           messages={uiMessages}
           onShowMobileSideBar={onShowMobileSideBar}
         />
-        <div
-          className="chat-body"
-          ref={scrollRef}
-          onScroll={(e) => onChatBodyScroll(e.currentTarget)}
-          // onWheel={(e) => setAutoScroll(e.deltaY > 0)}
-          onTouchStart={() => {
-            setAutoScroll(false);
-          }}
-        >
-          <ChatMessageList messages={uiMessages} />
-        </div>
-        <ChatInput
-          refreshChats={refreshChats}
-          refreshMessages={refreshMessages}
-          chatId={chatId}
-          chatType={chatType}
-          messages={uiMessages}
-          setInputMessage={setInputMessage}
-          setAutoScroll={setAutoScroll}
-          onSetSelectedChatId={onSetSelectedChatId}
-        />
+        {needToSelectChatId ? (
+          <>
+            <div className="chat-body chat-body_assistant">
+              <Empty description="请选择一个助理" />
+            </div>
+          </>
+        ) : (
+          <>
+            <div
+              className="chat-body"
+              ref={scrollRef}
+              onScroll={(e) => onChatBodyScroll(e.currentTarget)}
+              // onWheel={(e) => setAutoScroll(e.deltaY > 0)}
+              onTouchStart={() => {
+                setAutoScroll(false);
+              }}
+            >
+              <ChatMessageList messages={uiMessages} />
+            </div>
+            <ChatInput
+              refreshChats={refreshChats}
+              refreshMessages={refreshMessages}
+              chatId={chatId}
+              chatType={chatType}
+              messages={uiMessages}
+              setInputMessage={setInputMessage}
+              setAutoScroll={setAutoScroll}
+              onSetSelectedChatId={onSetSelectedChatId}
+            />
+          </>
+        )}
       </div>
     </div>
   );
