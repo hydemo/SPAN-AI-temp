@@ -8,6 +8,7 @@ import * as moment from 'moment';
 import { Model } from 'mongoose';
 import { ApiErrorCode } from 'src/common/enum/api-error-code.enum';
 import { ApiException } from 'src/common/exception/api.exception';
+import { QiniuUtil } from 'src/utils/qiniu.util';
 import * as XLSX from 'xlsx';
 
 import { GPTService } from '../AIHandler/GPT.service';
@@ -28,6 +29,7 @@ export class ConversationService {
     @Inject(ChatService) private readonly chatService: ChatService,
     @Inject(UserService) private readonly userService: UserService,
     @Inject(SummaryService) private readonly summaryService: SummaryService,
+    private readonly qiniuUtil: QiniuUtil,
   ) {}
 
   genSearchCondition(pagination: any) {
@@ -120,18 +122,18 @@ export class ConversationService {
 
   async saveResult(user: IUser, newConversation: CreateConversationDTO, responseContent: string, messages: any) {
     const newUserConversation = await this.conversationModel.create(newConversation);
-    const newAIRespnose: CreateConversationDTO = {
+    const newAIResponse: CreateConversationDTO = {
       ...newConversation,
       content: responseContent,
       parent: newUserConversation._id,
       role: 'assistant',
     };
-    await this.conversationModel.create(newAIRespnose);
+    const aiConversation = await this.conversationModel.create(newAIResponse);
     if (newConversation.type === 'conversation') {
       await this.userService.updateToken(user, newConversation.promptTokens, newConversation.totalTokens);
     }
     await this.chatService.updateConversionCount(newConversation.chat, messages.length + 1);
-    return responseContent;
+    return aiConversation;
   }
 
   async sendConversationMessage(user: IUser, message: SendMessageDTO) {
@@ -199,6 +201,12 @@ export class ConversationService {
     return response;
   }
 
+  async saveImage(conversation: IConversation) {
+    const url = await this.qiniuUtil.saveImage(conversation.content);
+    console.log(url, 'imageUrl');
+    await this.conversationModel.findByIdAndUpdate(conversation._id, { content: url });
+  }
+
   async sendImageMessage(user: IUser, message: SendMessageDTO) {
     const messages = await this.getMessages(message.chatId, message.content);
     const questionTime = Date.now();
@@ -216,7 +224,8 @@ export class ConversationService {
       answerTime: (Date.now() - questionTime) / 1000,
       type: 'image',
     };
-    await this.saveResult(user, newConversation, res.url, messages);
+    const conversation = await this.saveResult(user, newConversation, res.url, messages);
+    this.saveImage(conversation);
     return res;
   }
 

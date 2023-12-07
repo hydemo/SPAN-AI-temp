@@ -11,6 +11,9 @@ export class GPTFile {
   // 名称
   @Prop()
   name: string;
+  // 名称
+  @Prop()
+  user?: string;
 }
 
 export const GPTFileSchema = SchemaFactory.createForClass(GPTFile);

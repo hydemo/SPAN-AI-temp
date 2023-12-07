@@ -35,7 +35,7 @@ export class GPTFileService {
     return { data, total };
   }
 
-  async create(gptFile: CreateGPTFileDTO) {
+  async create(gptFile: CreateGPTFileDTO, user?: string) {
     const path = `temp/gptFile/${gptFile.filename}`;
     const apiKey = await this.gptService.getApiKey();
     const openAIFiles = new OpenAIFiles({ clientOptions: { apiKey } });
@@ -44,7 +44,14 @@ export class GPTFileService {
       purpose: 'assistants',
     });
     fs.unlinkSync(path);
-    await this.gptFileModel.create({ name: gptFile.name, fileId: file.id });
+    const newGptFile: any = {
+      name: gptFile.name,
+      fileId: file.id,
+    };
+    if (user) {
+      newGptFile.user = user;
+    }
+    return await this.gptFileModel.create(newGptFile);
   }
 
   async getGPTFiles(ids: string[]) {

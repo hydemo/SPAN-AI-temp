@@ -4,6 +4,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { PassportModule } from '@nestjs/passport';
 import { CryptoUtil } from '@utils/crypto.util';
 import { EmailUtil } from 'src/utils/email.util';
+import { QiniuUtil } from 'src/utils/qiniu.util';
 
 import { AIHandlerModule } from '../AIHandler/AIHandler.module';
 import { ChatModule } from '../chat/chat.module';
@@ -14,7 +15,7 @@ import { Conversation, ConversationSchema } from './conversation.schema';
 import { ConversationService } from './conversation.service';
 
 @Module({
-  providers: [ConversationService, CryptoUtil, EmailUtil],
+  providers: [ConversationService, CryptoUtil, EmailUtil, QiniuUtil],
   exports: [ConversationService],
   imports: [
     JwtModule.register({

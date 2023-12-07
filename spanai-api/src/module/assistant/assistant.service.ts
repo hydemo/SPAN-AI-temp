@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { OpenAIAssistantRunnable } from 'langchain/experimental/openai_assistant';
-import { OpenAIFiles } from 'langchain/experimental/openai_files';
 import { Model } from 'mongoose';
 
 import { GPTService } from '../AIHandler/GPT.service';
+import { IGPTFile } from '../gptFile/gptFile.schema';
 import { GPTFileService } from '../gptFile/gptFile.service';
 
 import { CreateAssistantDTO } from './assistant.dto';
@@ -37,19 +37,8 @@ export class AssistantService {
     return { data, total };
   }
 
-  async createAgent(assistant: CreateAssistantDTO) {
-    const gptFiles: any[] = await this.gptFileService.getGPTFiles(assistant.files);
+  async createAgent(assistant: CreateAssistantDTO, gptFiles: IGPTFile[]) {
     const apiKey = await this.gptService.getApiKey();
-    console.log({
-      model: assistant.model,
-      // 'gpt-4-1106-preview',
-      instructions: assistant.instructions,
-      name: assistant.name,
-      tools: assistant.tools.map((tool) => ({ type: tool })),
-      asAgent: true,
-      fileIds: gptFiles.map((item) => item.fileId),
-      clientOptions: { apiKey },
-    });
     const agent = await OpenAIAssistantRunnable.createAssistant({
       model: assistant.model,
       // 'gpt-4-1106-preview',
@@ -63,15 +52,25 @@ export class AssistantService {
     return agent.assistantId;
   }
 
+  async createAssistantWithFiles(assistant: CreateAssistantDTO, gptFiles: IGPTFile[]) {
+    const assistantId = await this.createAgent(assistant, gptFiles);
+    return await this.assistantModel.create({
+      ...assistant,
+      assistantId: assistantId,
+      expireTime: Date.now() + 60000000,
+    });
+  }
+
   async create(assistant: CreateAssistantDTO) {
-    const assistantId = await this.createAgent(assistant);
+    const gptFiles = await this.gptFileService.getGPTFiles(assistant.files);
+    const assistantId = await this.createAgent(assistant, gptFiles);
     await this.assistantModel.create({ ...assistant, assistantId: assistantId, expireTime: Date.now() + 60000000 });
   }
 
   async updateAssistant(assistant: IAssistant) {
-    console.log(assistant.expireTime, Date.now() - assistant.expireTime, 'ss');
     if (Date.now() - assistant.expireTime > 0) {
-      const assistantId = await this.createAgent(assistant);
+      const gptFiles = await this.gptFileService.getGPTFiles(assistant.files);
+      const assistantId = await this.createAgent(assistant, gptFiles);
       await this.assistantModel.findByIdAndUpdate(assistant._id, { assistantId, expireTime: Date.now() + 60000000 });
       return assistantId;
     }

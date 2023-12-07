@@ -2,6 +2,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsMongoId, IsString } from 'class-validator';
 
+import { CreateGPTFileDTO } from '../gptFile/gptFile.dto';
+
 export class CreateUserAssistantsDTO {
   @IsMongoId()
   @Type(() => String)
@@ -29,4 +31,31 @@ export class AssistantMessageDTO {
   @Type(() => String)
   @ApiProperty({ description: '助理id' })
   readonly parent?: string;
+}
+
+export class CreateUserAssistantsByUserDTO {
+  @IsString({ each: true })
+  @Type(() => String)
+  @ApiProperty({ description: '文件集' })
+  readonly files: CreateGPTFileDTO[];
+
+  @IsString()
+  @Type(() => String)
+  @ApiProperty({ description: '名称' })
+  readonly name: string;
+
+  @IsString()
+  @Type(() => String)
+  @ApiProperty({ description: '介绍' })
+  readonly instructions: string;
+
+  @IsString()
+  @Type(() => String)
+  @ApiProperty({ description: '模型' })
+  readonly model: string;
+
+  @IsString({ each: true })
+  @Type(() => String)
+  @ApiProperty({ description: '工具集' })
+  readonly tools: any[];
 }

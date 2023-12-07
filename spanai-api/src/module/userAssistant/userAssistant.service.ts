@@ -4,13 +4,16 @@ import { OpenAIAssistantRunnable } from 'langchain/experimental/openai_assistant
 import { Model } from 'mongoose';
 
 import { GPTService } from '../AIHandler/GPT.service';
+import { CreateAssistantDTO } from '../assistant/assistant.dto';
 import { IAssistant } from '../assistant/assistant.schema';
 import { AssistantService } from '../assistant/assistant.service';
 import { CreateConversationDTO } from '../conversation/conversation.dto';
 import { ConversationService } from '../conversation/conversation.service';
+import { IGPTFile } from '../gptFile/gptFile.schema';
+import { GPTFileService } from '../gptFile/gptFile.service';
 import { IUser } from '../user/user.schema';
 
-import { AssistantMessageDTO, CreateUserAssistantsDTO } from './userAssistant.dto';
+import { AssistantMessageDTO, CreateUserAssistantsByUserDTO, CreateUserAssistantsDTO } from './userAssistant.dto';
 import { IUserAssistants, UserAssistants } from './userAssistant.schema';
 
 @Injectable()
@@ -20,6 +23,7 @@ export class UserAssistantsService {
     private gptService: GPTService,
     private assistantService: AssistantService,
     private conversationService: ConversationService,
+    private GPTFileService: GPTFileService,
   ) {}
 
   async list(pagination: any) {
@@ -119,5 +123,23 @@ export class UserAssistantsService {
     await this.saveResult(user, userAssistant.assistant, assistantMessage, content, questionTime);
     await this.updateConversationCount(userAssistant);
     return content;
+  }
+
+  async createUserAssistants(user: IUser, createUserAssistants: CreateUserAssistantsByUserDTO) {
+    const gptFiles: IGPTFile[] = [];
+    for (const file of createUserAssistants.files) {
+      const gptFile = await this.GPTFileService.create(file, user._id);
+      gptFiles.push(gptFile);
+    }
+    const newAssistant: CreateAssistantDTO = {
+      model: createUserAssistants.model,
+      // 'gpt-4-1106-preview',
+      instructions: createUserAssistants.instructions,
+      name: createUserAssistants.name,
+      tools: createUserAssistants.tools.map((tool) => ({ type: tool })),
+      files: [],
+    };
+    const assistant = await this.assistantService.createAssistantWithFiles(newAssistant, gptFiles);
+    await this.userAssistantModel.create({ user: user._id, assistant: assistant._id });
   }
 }

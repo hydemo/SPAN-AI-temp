@@ -14601,10 +14601,10 @@ qiankun@^2.10.1:
     lodash "^4.17.11"
     single-spa "^5.9.2"
 
-qiniu@^7.8.0:
-  version "7.9.0"
-  resolved "https://registry.npmmirror.com/qiniu/-/qiniu-7.9.0.tgz#2e976dac909cee7a682c2c4cc56dec491db48367"
-  integrity sha512-ivtGZnhd9vtQLNdTOWRqgN29Ay0UfiHqaSjrrDHa9TGz6l4DtjZlDxZuhg2wzcp43z2EiHUjeJ1+KE3tBdGAyg==
+qiniu@^7.10.1:
+  version "7.10.1"
+  resolved "https://registry.npmmirror.com/qiniu/-/qiniu-7.10.1.tgz#a9b5f0ae0ceadc9e2591dc5bd8527d85b82d6746"
+  integrity sha512-r/eaQOJ+mBOwz4iA1werRePThr68cekK8xUjeUhfMa7mANDvPaTS/L3Ainyo2y9JiSh4DoRpKaNCNBeS3H3G/g==
   dependencies:
     agentkeepalive "^4.0.2"
     before "^0.0.1"
@@ -14616,7 +14616,7 @@ qiniu@^7.8.0:
     mime "^2.4.4"
     mockdate "^3.0.5"
     tunnel-agent "^0.6.0"
-    urllib "^2.34.1"
+    urllib "^2.41.0"
 
 qrcode.react@^3.1.0:
   version "3.1.0"
@@ -17742,7 +17742,7 @@ url@^0.11.0:
     punycode "^1.4.1"
     qs "^6.11.0"
 
-urllib@^2.34.1:
+urllib@^2.41.0:
   version "2.41.0"
   resolved "https://registry.npmmirror.com/urllib/-/urllib-2.41.0.tgz#be15705e62af4eadcafcfeadda1014b526ae2d0d"
   integrity sha512-pNXdxEv52L67jahLT+/7QE+Fup1y2Gc6EdmrAhQ6OpQIC2rl14oWwv9hvk1GXOZqEnJNwRXHABuwgPOs1CtL7g==

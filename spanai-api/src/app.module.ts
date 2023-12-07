@@ -28,6 +28,7 @@ import { UserModule } from './module/user/user.module';
 import { UserAssistantsModule } from './module/userAssistant/userAssistant.module';
 import { CryptoUtil } from './utils/crypto.util';
 import { EmailUtil } from './utils/email.util';
+import { QiniuUtil } from './utils/qiniu.util';
 
 @Module({
   imports: [
@@ -52,7 +53,7 @@ import { EmailUtil } from './utils/email.util';
       inject: [ConfigService],
     }),
   ],
-  providers: [CryptoUtil, EmailUtil],
+  providers: [CryptoUtil, EmailUtil, QiniuUtil],
   controllers: [
     CMSAdminController,
     CMSUserController,
