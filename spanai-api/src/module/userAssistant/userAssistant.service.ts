@@ -4,6 +4,7 @@ import { OpenAIAssistantRunnable } from 'langchain/experimental/openai_assistant
 import { Model } from 'mongoose';
 
 import { GPTService } from '../AIHandler/GPT.service';
+import { AssistantService } from '../assistant/assistant.service';
 
 import { AssistantMessageDTO, CreateUserAssistantsDTO } from './userAssistant.dto';
 import { IUserAssistants, UserAssistants } from './userAssistant.schema';
@@ -13,6 +14,7 @@ export class UserAssistantsService {
   constructor(
     @InjectModel(UserAssistants.name) private readonly userAssistantModel: Model<IUserAssistants>,
     private gptService: GPTService,
+    private assistantService: AssistantService,
   ) {}
 
   async list(pagination: any) {
@@ -44,7 +46,6 @@ export class UserAssistantsService {
     const assistants: any = await this.userAssistantModel
       .find({ user })
       .sort({ createdAt: -1 })
-      .populate({ path: 'user', model: 'User' })
       .populate({ path: 'assistant', model: 'Assistant' })
       .lean()
       .exec();
@@ -62,13 +63,15 @@ export class UserAssistantsService {
       .findById(assistantMessage.assistant)
       .populate({ path: 'assistant', model: 'Assistant' });
     const apiKey = await this.gptService.getApiKey();
+    const assistantId = await this.assistantService.updateAssistant(userAssistant.assistant);
     const agent = new OpenAIAssistantRunnable({
-      assistantId: userAssistant.assistant.assistantId,
+      assistantId,
       clientOptions: { apiKey },
     });
     const assistantResponse = await agent.invoke({
       content: assistantMessage.content,
     });
+    console.log(assistantResponse[0].content, 'ss');
     return assistantResponse[0].content;
   }
 }

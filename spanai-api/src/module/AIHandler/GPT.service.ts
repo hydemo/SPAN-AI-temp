@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { RedisService } from 'nest-redis';
+import open from 'openai';
 import { ConfigService } from 'src/config/config.service';
 
 import { OpenaiPath } from './constant';

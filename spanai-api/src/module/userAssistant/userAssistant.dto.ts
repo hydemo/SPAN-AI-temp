@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsMongoId } from 'class-validator';
+import { IsMongoId, IsString } from 'class-validator';
 
 export class CreateUserAssistantsDTO {
   @IsMongoId()
@@ -20,7 +20,7 @@ export class AssistantMessageDTO {
   @ApiProperty({ description: '助理id' })
   readonly assistant: string;
 
-  @IsMongoId()
+  @IsString()
   @Type(() => String)
   @ApiProperty({ description: '消息' })
   readonly content: string;
