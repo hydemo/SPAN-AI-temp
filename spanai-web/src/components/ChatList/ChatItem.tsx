@@ -1,4 +1,8 @@
-import { PictureOutlined, MessageOutlined } from '@ant-design/icons';
+import {
+  PictureOutlined,
+  MessageOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Space } from 'antd';
 import moment from 'moment';
 
@@ -44,7 +48,9 @@ export const ChatItem = ({
     >
       <div className={'chat-item-title'}>
         <Space>
-          {type === ChatType.Conversation ? (
+          {type === ChatType.Assistant ? (
+            <UserOutlined />
+          ) : type === ChatType.Conversation ? (
             <MessageOutlined />
           ) : (
             <PictureOutlined />

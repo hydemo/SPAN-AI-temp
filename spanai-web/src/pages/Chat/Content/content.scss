@@ -249,6 +249,12 @@
   overscroll-behavior: none;
 }
 
+.chat-body_assistant {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .chat-body-main-title {
   cursor: pointer;
 

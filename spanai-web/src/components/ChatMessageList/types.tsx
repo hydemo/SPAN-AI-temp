@@ -9,4 +9,10 @@ export type MessageInfo = {
 export enum MessageType {
   Conversation = 'conversation',
   Image = 'image',
+  Loading = 'loading',
+}
+
+export enum MessageRole {
+  User = 'user',
+  Assistant = 'assistant',
 }

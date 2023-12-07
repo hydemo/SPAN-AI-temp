@@ -22,7 +22,7 @@ export default function Chat() {
 
   const { data: chatsData, refresh: refreshChats } = useRequest(
     async () => {
-      if (chatType === ChatType.Assistants) {
+      if (chatType === ChatType.Assistant) {
         return await getAssistants();
       }
       const result = await getChats(chatType);
