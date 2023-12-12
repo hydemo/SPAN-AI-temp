@@ -113,7 +113,6 @@ export class UserAssistantsService {
 
   async updateConversationCount(userAssistant: IUserAssistants) {
     const conversationCount = userAssistant.conversationCount ? userAssistant.conversationCount + 2 : 2;
-    console.log(conversationCount, 'conversationCount');
     await this.userAssistantModel.findByIdAndUpdate(userAssistant._id, { conversationCount });
   }
 
@@ -151,8 +150,8 @@ export class UserAssistantsService {
 
   async getMessage(apiKey: string, threadId: string, messageId: string) {
     const client = new OpenAI({ apiKey });
-    const message = await client.beta.threads.messages.retrieve(threadId, messageId);
-    return message[0].content.text.value;
+    const message: any = await client.beta.threads.messages.retrieve(threadId, messageId);
+    return message.content[0].text ? message.content[0].text.value : 'image';
   }
 
   async formatStepDetail(apiKey: string, threadId: string, stepDetail: any) {
@@ -176,21 +175,24 @@ export class UserAssistantsService {
     let count = 0;
     const existStep = {};
     while (true && count < 20) {
+      await this.sleep(timeout);
       const steps = await this.getRunSteps(apiKey, threadId, runId);
       for (const step of steps) {
         if (!existStep[step.id] && step.status === 'completed') {
           const message = await this.formatStepDetail(apiKey, threadId, step.step_details);
+          console.log(message, 'message');
           res.write(JSON.stringify(message));
+          existStep[step.id] = true;
         }
       }
-      const isComplete = this.isComplete(apiKey, threadId, runId);
+      const isComplete = await this.isComplete(apiKey, threadId, runId);
       if (isComplete) {
         break;
       }
-      await this.sleep(timeout);
       timeout = 10000;
       count++;
     }
+    console.log('complete');
     res.end();
   }
 
