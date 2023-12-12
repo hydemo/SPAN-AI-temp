@@ -1,6 +1,17 @@
 import { extname, join } from 'path';
 
-import { Controller, Post, Inject, UseGuards, Get, Body, Request, UseInterceptors, UploadedFile, Response } from '@nestjs/common';
+import {
+  Controller,
+  Post,
+  Inject,
+  UseGuards,
+  Get,
+  Body,
+  Request,
+  UseInterceptors,
+  UploadedFile,
+  Response,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiConsumes } from '@nestjs/swagger';
@@ -54,3 +65,4 @@ export class ApiAssistantsController {
     res.setHeader('Content-type', 'application/octet-stream');
     this.userAssistantsService.conversation(req.user, assistant, res);
   }
+}
