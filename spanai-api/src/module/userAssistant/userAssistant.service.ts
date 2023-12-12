@@ -1,7 +1,10 @@
+import * as fs from 'fs';
+
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { OpenAIAssistantRunnable } from 'langchain/experimental/openai_assistant';
 import { Model } from 'mongoose';
+import OpenAI from 'openai';
 
 import { GPTService } from '../AIHandler/GPT.service';
 import { CreateAssistantDTO } from '../assistant/assistant.dto';
@@ -19,12 +22,21 @@ import { IUserAssistants, UserAssistants } from './userAssistant.schema';
 @Injectable()
 export class UserAssistantsService {
   constructor(
-    @InjectModel(UserAssistants.name) private readonly userAssistantModel: Model<IUserAssistants>,
+    @InjectModel(UserAssistants.name)
+    private readonly userAssistantModel: Model<IUserAssistants>,
     private gptService: GPTService,
     private assistantService: AssistantService,
     private conversationService: ConversationService,
     private GPTFileService: GPTFileService,
   ) {}
+
+  async sleep(timeout: number) {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(1);
+      }, timeout);
+    });
+  }
 
   async list(pagination: any) {
     const condition: any = {};
@@ -105,24 +117,100 @@ export class UserAssistantsService {
     await this.userAssistantModel.findByIdAndUpdate(userAssistant._id, { conversationCount });
   }
 
-  async conversation(user: IUser, assistantMessage: AssistantMessageDTO) {
-    const questionTime = Date.now();
+  async createThread(apiKey: string, content: string) {
+    const client = new OpenAI({ apiKey });
+    const thread = await client.beta.threads.create({
+      messages: [
+        {
+          role: 'user',
+          content,
+        },
+      ],
+    });
+    return thread;
+  }
+
+  async createRun(apiKey: string, threadId: string, assistantId: string) {
+    const client = new OpenAI({ apiKey });
+    return await client.beta.threads.runs.create(threadId, {
+      assistant_id: assistantId,
+    });
+  }
+
+  async isComplete(apiKey: string, threadId: string, runId: string) {
+    const client = new OpenAI({ apiKey });
+    const run = await client.beta.threads.runs.retrieve(threadId, runId);
+    return run.status === 'completed';
+  }
+
+  async getRunSteps(apiKey: string, threadId: string, runId: string) {
+    const client = new OpenAI({ apiKey });
+    const runSteps = await client.beta.threads.runs.steps.list(threadId, runId);
+    return runSteps.data;
+  }
+
+  async getMessage(apiKey: string, threadId: string, messageId: string) {
+    const client = new OpenAI({ apiKey });
+    const message = await client.beta.threads.messages.retrieve(threadId, messageId);
+    return message[0].content.text.value;
+  }
+
+  async formatStepDetail(apiKey: string, threadId: string, stepDetail: any) {
+    if (stepDetail.type === 'tool_calls') {
+      return {
+        type: 'code',
+        content: stepDetail.tool_calls.map((item) => item.code_interpreter.input),
+      };
+    }
+    if (stepDetail.type === 'message_creation') {
+      const content = await this.getMessage(apiKey, threadId, stepDetail.message_creation.message_id);
+      return {
+        type: 'message',
+        content,
+      };
+    }
+  }
+
+  async formatResponse(apiKey: string, threadId: string, runId: string, res: any) {
+    let timeout = 5000;
+    let count = 0;
+    const existStep = {};
+    while (true && count < 20) {
+      const steps = await this.getRunSteps(apiKey, threadId, runId);
+      for (const step of steps) {
+        if (!existStep[step.id] && step.status === 'completed') {
+          const message = await this.formatStepDetail(apiKey, threadId, step.step_details);
+          res.write(JSON.stringify(message));
+        }
+      }
+      const isComplete = this.isComplete(apiKey, threadId, runId);
+      if (isComplete) {
+        break;
+      }
+      await this.sleep(timeout);
+      timeout = 10000;
+      count++;
+    }
+    res.end();
+  }
+
+  async conversation(user: IUser, assistantMessage: AssistantMessageDTO, res: any) {
+    // const questionTime = Date.now();
     const userAssistant: any = await this.userAssistantModel
       .findById(assistantMessage.assistant)
       .populate({ path: 'assistant', model: 'Assistant' });
-    const apiKey = await this.gptService.getApiKey();
     const assistantId = await this.assistantService.updateAssistant(userAssistant.assistant);
-    const agent = new OpenAIAssistantRunnable({
-      assistantId,
-      clientOptions: { apiKey },
-    });
-    const assistantResponse = await agent.invoke({
-      content: assistantMessage.content,
-    });
-    const content = assistantResponse[0]?.content[0]?.text?.value;
-    await this.saveResult(user, userAssistant.assistant, assistantMessage, content, questionTime);
-    await this.updateConversationCount(userAssistant);
-    return content;
+
+    const apiKey = await this.gptService.getApiKey();
+    const thread = await this.createThread(apiKey, assistantMessage.content);
+    const run = await this.createRun(apiKey, thread.id, assistantId);
+    this.formatResponse(apiKey, thread.id, run.id, res);
+
+    // fs.writeFileSync('temp/a.txt', JSON.stringify(assistantResponse));
+    // const content = assistantResponse[0]?.content[0]?.text?.value;
+    // await this.saveResult(user, userAssistant.assistant, assistantMessage, content, questionTime);
+    // await this.updateConversationCount(userAssistant);
+    // return content;
   }
 
   async createUserAssistants(user: IUser, createUserAssistants: CreateUserAssistantsByUserDTO) {

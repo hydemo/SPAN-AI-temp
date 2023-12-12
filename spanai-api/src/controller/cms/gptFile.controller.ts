@@ -18,7 +18,7 @@ export class CMSGPTFileController {
   @Get('/')
   @ApiOperation({ summary: '文件', description: '文件列表' })
   async list(@Query() query: any) {
-    return await this.gptFileService.list(query);
+    return await this.gptFileService.retrieveFile(query);
   }
 
   @Post('/')

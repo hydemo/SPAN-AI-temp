@@ -13562,7 +13562,7 @@ openai@^3.3.0:
     axios "^0.26.0"
     form-data "^4.0.0"
 
-openai@^4.19.0:
+openai@^4.19.0, openai@^4.20.1:
   version "4.20.1"
   resolved "https://registry.npmmirror.com/openai/-/openai-4.20.1.tgz#afa0d496d125b5a0f6cebcb4b9aeabf71e00214e"
   integrity sha512-Dd3q8EvINfganZFtg6V36HjrMaihqRgIcKiHua4Nq9aw/PxOP48dhbsk8x5klrxajt5Lpnc1KTOG5i1S6BKAJA==

@@ -1,6 +1,6 @@
 import { extname, join } from 'path';
 
-import { Controller, Post, Inject, UseGuards, Get, Body, Request, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Post, Inject, UseGuards, Get, Body, Request, UseInterceptors, UploadedFile, Response } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags, ApiForbiddenResponse, ApiOperation, ApiConsumes } from '@nestjs/swagger';
@@ -50,7 +50,7 @@ export class ApiAssistantsController {
 
   @Post('/conversation')
   @ApiOperation({ summary: '聊天', description: '聊天' })
-  async add(@Request() req: any, @Body() assistant: AssistantMessageDTO) {
-    return await this.userAssistantsService.conversation(req.user, assistant);
+  async add(@Request() req: any, @Body() assistant: AssistantMessageDTO, @Response() res: any) {
+    res.setHeader('Content-type', 'application/octet-stream');
+    this.userAssistantsService.conversation(req.user, assistant, res);
   }
-}

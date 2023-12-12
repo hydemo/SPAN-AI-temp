@@ -18,7 +18,7 @@ export class ApiConversationController {
   @Post('/')
   @UseGuards(AuthGuard())
   @ApiOperation({ summary: '发送消息', description: '发送消息' })
-  async create(@Request() req: any, @Body() message: SendMessageDTO, @Response() res: any) {
+  async create(@Request() req: any, @Body() message: SendMessageDTO) {
     const chat = await this.chatService.getChatsById(message.chatId);
     if (chat.type === 'image') {
       const data = await this.conversationService.sendImageMessage(req.user, message);

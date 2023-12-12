@@ -57,4 +57,22 @@ export class GPTFileService {
   async getGPTFiles(ids: string[]) {
     return await this.gptFileModel.find({ _id: { $in: ids } });
   }
+
+  async retrieveFile(fileId: string) {
+    const apiKey = await this.gptService.getApiKey();
+    const openAIFiles = new OpenAIFiles({ clientOptions: { apiKey } });
+    const result: any = await openAIFiles.retrieveFileContent({
+      fileId: 'file-tEMdaI8vVI0noNkOiwbrBreG',
+      options: { __binaryResponse: true },
+    });
+    const bufferView = new Uint8Array(await result.arrayBuffer());
+
+    fs.writeFileSync('file-RVCrAxkMuRHW7LQ96AvM40mC', bufferView);
+
+    // fs.writeFileSync('file-kqzPeg6MhD0HoCaDnaK3XSJN.png', result, 'binary');
+    // 创建一个 Buffer 对象
+
+    // 写入文件
+    console.log(result, 'result');
+  }
 }
